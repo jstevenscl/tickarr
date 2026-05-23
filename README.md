@@ -14,6 +14,7 @@ A [Dispatcharr](http://dispatcharr.local) plugin that injects dynamic text overl
 - Auto-maps Dispatcharr channels to SiriusXM stations via xmplaylist.com
 - Displays artist, song title, and channel name in a centered overlay box
 - Audio-only channels receive an injected 1280x720 black video background
+- Note: currently clones a stream profile for every channel in the selected scope — see the [User Guide](docs/USERGUIDE.md#channel-mapping) for details
 
 **Custom Text**
 - User-defined static or scrolling text overlay on any channel
