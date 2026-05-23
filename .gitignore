@@ -1,0 +1,13 @@
+_workshop/
+.claude/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+.playwright-mcp/
+emoji-preview.png
+emoji_test.png
+docs/screenshots/_mask.py
+/tickarr-*.zip
+*.log
