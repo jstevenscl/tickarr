@@ -1,0 +1,115 @@
+{
+  "name": "Tickarr",
+  "version": "0.1.0",
+  "logo": "logo.png",
+  "description": "Dynamic text overlays for IPTV channels — SiriusXM Now Playing, Sports Ticker, Custom Text",
+  "author": "jstevenscl",
+  "actions": [
+    {
+      "id": "_header_nowplaying",
+      "type": "info",
+      "label": "── SiriusXM Now Playing ──"
+    },
+    {
+      "id": "enable_nowplaying",
+      "label": "Enable Now Playing",
+      "confirm": {
+        "message": "This will clone a stream profile for each selected channel. Channels already enabled will be skipped. Continue?"
+      }
+    },
+    {
+      "id": "disable_nowplaying",
+      "label": "Disable Now Playing",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove ticker data for the selected Now Playing channel(s). Continue?"
+      }
+    },
+    {
+      "id": "_header_custom",
+      "type": "info",
+      "label": "── Custom Text ──"
+    },
+    {
+      "id": "enable_custom",
+      "label": "Enable Custom Text",
+      "confirm": {
+        "message": "This will clone a stream profile for each selected channel with your custom text overlay. Channels that already have any ticker type enabled will be skipped. Continue?"
+      }
+    },
+    {
+      "id": "update_custom",
+      "label": "Update Custom Text"
+    },
+    {
+      "id": "disable_custom",
+      "label": "Disable Custom Ticker",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove ticker data for the selected Custom Text channel(s). Continue?"
+      }
+    },
+    {
+      "id": "_header_sports",
+      "type": "info",
+      "label": "── Sports Ticker ──"
+    },
+    {
+      "id": "enable_sports",
+      "label": "Enable Sports Ticker",
+      "confirm": {
+        "message": "This will clone a stream profile for each selected channel with a live sports score ticker. Channels that already have any ticker type enabled will be skipped. Continue?"
+      }
+    },
+    {
+      "id": "disable_sports",
+      "label": "Disable Sports Ticker",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove ticker data for the selected Sports Ticker channel(s). Continue?"
+      }
+    },
+    {
+      "id": "_header_manage",
+      "type": "info",
+      "label": "── Manage ──"
+    },
+    {
+      "id": "view_active",
+      "label": "View Active Tickers"
+    },
+    {
+      "id": "refresh_channels",
+      "label": "Refresh Channel Data"
+    },
+    {
+      "id": "disable_all",
+      "label": "Disable All Tickers",
+      "confirm": {
+        "message": "This will restore original stream profiles and remove ticker data for ALL enabled channels. Continue?"
+      }
+    },
+    {
+      "id": "clean_orphans",
+      "label": "Clean Orphaned Profiles",
+      "confirm": {
+        "message": "This will delete all Tickarr-cloned stream profiles that have no active channel mapping. Continue?"
+      }
+    },
+    {
+      "id": "redis_diag",
+      "label": "Redis Diagnostics"
+    },
+    {
+      "id": "reload_poller",
+      "label": "Reload Poller",
+      "confirm": {
+        "message": "This will restart the background polling thread. Active ticker data will resume within 15 seconds. Continue?"
+      }
+    },
+    {
+      "id": "restart_dispatcharr",
+      "label": "Restart Dispatcharr",
+      "confirm": {
+        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly — refresh in about 15 seconds. Continue?"
+      }
+    }
+  ]
+}
