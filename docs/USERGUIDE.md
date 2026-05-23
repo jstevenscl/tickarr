@@ -70,7 +70,7 @@ Tickarr polls xmplaylist.com at regular intervals to find the currently playing 
 
 Tickarr matches Dispatcharr channel names to SiriusXM station names automatically. The match is fuzzy — for example, a channel named "SiriusXM Hits 1" will match the xmplaylist station "Hits 1". You do not need to configure any mapping manually.
 
-> **Note on stream profiles:** Tickarr currently clones a stream profile for every SiriusXM channel in the selected scope. This is a limitation of how Dispatcharr identifies active viewers — the plugin does not yet have access to individual channel IDs at query time. A Dispatcharr feature request is pending to expose per-channel token data, which will allow Tickarr to target only channels with active viewers and eliminate unnecessary profile clones. Until then, enabling Now Playing on a large channel group or "All Channels" will create one cloned profile per SiriusXM channel in that scope.
+> **Note on stream profiles:** Tickarr currently clones a stream profile for every SiriusXM channel in the selected scope. This is a limitation of how Dispatcharr identifies active viewers — the plugin does not yet have access to individual channel IDs at query time. Dispatcharr is actively implementing per-channel token data (expected in an upcoming release), which will allow Tickarr to target only channels with active viewers and eliminate unnecessary profile clones. Until then, enabling Now Playing on a large channel group or "All Channels" will create one cloned profile per SiriusXM channel in that scope.
 
 ### What to expect
 
