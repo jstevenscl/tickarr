@@ -24,6 +24,7 @@ A [Dispatcharr](http://dispatcharr.local) plugin that injects dynamic text overl
 - Live scores from the ESPN API across 23 leagues and NASCAR
 - Scrolling three-color ticker at the top or bottom of the screen
 - Live games shown first; favorites filter to display only selected teams
+- [ESPN team abbreviations reference](docs/TEAMS.md)
 
 ---
 
