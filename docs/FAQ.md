@@ -38,13 +38,13 @@ No — this is normal. It means the ESPN API has no live or recently finished ga
 
 The ticker scrolls approximately 600 characters of content per pass. Live games always appear first, followed by final scores. When many leagues are active and there are lots of games in progress, scores that don't fit in the first 600 characters will appear on the next loop — typically a few seconds later.
 
-If you want to make sure specific teams are always visible regardless of how many games are happening, use the **Favorite Teams** field. When favorites are set, only games involving those teams are included in the ticker.
+If you want to make sure specific teams are always visible regardless of how many games are happening, use the **Favorite Teams** field. When favorites are set, only games involving those teams are included in the ticker. See the [ESPN Team Abbreviations Reference](TEAMS.md) for a full list of abbreviations by league.
 
 ---
 
 **Q: I have a lot of leagues enabled but I'm not seeing my team's game. What's happening?**
 
-The ticker fits roughly 600 characters per scroll pass. If many leagues are active simultaneously, some games may not appear until the next loop. The fix is to enter your teams in the **Favorite Teams** field (comma-separated abbreviations, e.g. `KC, DEN, LAR`). With favorites set, only those teams' games are displayed — the ticker stays focused no matter how many leagues are active.
+The ticker fits roughly 600 characters per scroll pass. If many leagues are active simultaneously, some games may not appear until the next loop. The fix is to enter your teams in the **Favorite Teams** field (comma-separated abbreviations, e.g. `KC, DEN, LAR`). With favorites set, only those teams' games are displayed — the ticker stays focused no matter how many leagues are active. See the [ESPN Team Abbreviations Reference](TEAMS.md) for a full list of valid abbreviations by league.
 
 ---
 

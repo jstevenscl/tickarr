@@ -135,7 +135,7 @@ The sports ticker pulls live scores from the ESPN API and displays them in a scr
 
    NFL, NCAAF, CFL, NBA, WNBA, NCAAB, MLB, NCAA Baseball, NCAA Softball, NHL, MLS, NWSL, EPL, UCL, La Liga, Bundesliga, Serie A, Ligue 1, ATP, WTA, NCAA Volleyball, NCAA Lacrosse, NASCAR
 
-3. Optionally, enter team abbreviations in the **Favorite Teams** field (comma-separated, e.g. `LAL, GSW, BOS`). When favorites are set, only games involving those teams are shown. Leave blank to show all teams.
+3. Optionally, enter team abbreviations in the **Favorite Teams** field (comma-separated, e.g. `LAL, GSW, BOS`). When favorites are set, only games involving those teams are shown. Leave blank to show all teams. See the [ESPN Team Abbreviations Reference](TEAMS.md) for a full list of abbreviations by league.
 4. Set **Ticker Position**: Top or Bottom.
 5. Adjust **Font Size** if needed (default 36, minimum 16).
 6. Choose a **Color Mode**:
@@ -190,7 +190,7 @@ Run **Actions → Disable Sports Ticker**.
 | Channel Group | Dropdown | Channel group selection (visible when Apply To is Channel Group) |
 | Channel | Dropdown | Channel selection (visible when Apply To is Single Channel) |
 | League Toggles | Checkboxes | One toggle per supported league/sport; enable the sports you want shown |
-| Favorite Teams | Text | Comma-separated team abbreviations; leave blank to show all teams |
+| Favorite Teams | Text | Comma-separated team abbreviations; leave blank to show all teams. See the [ESPN Team Abbreviations Reference](TEAMS.md). |
 | Ticker Position | Dropdown | Top or Bottom of the screen |
 | Font Size | Number | Text size in points (default 36, minimum 16) |
 | Color Mode | Dropdown | Single Color — White (default, lower CPU) or Multi-Color (sport labels and team abbreviations in separate colors) |
