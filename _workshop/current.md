@@ -308,9 +308,10 @@ Dispatcharr dev is implementing per-channel token data in response to our FR. Ex
 - **Dispatcharr per-channel FR** — expected ~2026-06-04; when it ships, update enable_nowplaying to use per-channel token, remove limitation note from docs.
 
 ## Session summary (2026-05-31)
-- **stellartunerlog.com website** — improved loading performance: nowplaying.html now renders 437 channel cards in 60-card RAF chunks (fast first paint) with debounced search. index.html paid API section now shows capability-level descriptions only (no specific field names exposed to competitors).
-- **sxmd poller fix** — crashed due to httpx.PoolTimeout from 437 concurrent requests. Fixed with Semaphore(15). All 437 channels now stable. See sxmd current.md for full detail.
-- **Channel coverage confirmed** — all 437 channels are subscribed and accessible. 249 non-music (talk/news/sports all captured). 277 Xtra channels (1000+) investigated and determined not worth pursuing.
+- **stellartunerlog.com website** — nowplaying.html: chunked RAF rendering (fast first paint), debounced search. index.html: paid API fields replaced with capability descriptions only.
+- **sxmd crash fixed** — httpx.PoolTimeout from 437 concurrent requests; fixed with Semaphore(15). All 437 channels stable.
+- **Album artwork** — iTunes fallback live (`itunes.py`): queries on missing art, caches permanently in SQLite. Background backfill running through 6,600+ historical plays. Channel logos now hosted at stellartunerlog.com/logos/ (SiriusXM CDN had broken HTTPS cert). Programs/talk/sports fall back to channel logo in now-playing grid, history modal, and history page.
+- **Channel coverage confirmed** — all 437 subscribed, 0 sat-only. 277 Xtra channels (1000+) investigated — not pollable via streaming API, not worth pursuing.
 
 ## Session Restart Instructions
 1. Read this file first
