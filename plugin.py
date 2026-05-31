@@ -739,56 +739,78 @@ def _fetch_sports_text(sports_list, favorites=""):
     return labels_text, abbrevs_text, scores_text, full_text
 
 # ---------------------------------------------------------------------------
-# xmplaylist.com client
+# tickarr.com data client (replaces xmplaylist.com)
 # ---------------------------------------------------------------------------
 
-STATION_LIST_URL   = "https://xmplaylist.com/api/station"
-STATION_RECENT_URL = "https://xmplaylist.com/api/station/{deeplink}"
-STATION_CACHE_TTL  = 24 * 3600
-STATION_CACHE_FILE = os.path.join(_DATA_DIR, "station_cache.json")
+TICKARR_NOWPLAYING_URL = "https://stellartunerlog.com/nowplaying.json"
+TICKARR_CHANNEL_URL    = "https://stellartunerlog.com/channels.json"
+STATION_CACHE_TTL      = 24 * 3600
+STATION_CACHE_FILE     = os.path.join(_DATA_DIR, "station_cache.json")
+NOWPLAYING_CACHE_TTL   = 30   # seconds — matches tickarr.com update interval
 
-_station_cache = {"fetched_at": 0, "stations": []}
+_station_cache    = {"fetched_at": 0, "stations": []}
+_nowplaying_cache = {"fetched_at": 0.0, "stations": {}}
+_nowplaying_lock  = threading.Lock()
 
 
 def _get_stations(force=False):
+    """Fetch channel catalog from tickarr.com/channels.json (24h TTL, disk-cached)."""
     global _station_cache
     now = time.time()
-    # In-memory hit
     if not force and _station_cache["fetched_at"] + STATION_CACHE_TTL > now and _station_cache["stations"]:
         return _station_cache["stations"]
-    # Disk cache hit
     if not force and os.path.exists(STATION_CACHE_FILE):
         try:
             with open(STATION_CACHE_FILE, encoding="utf-8") as f:
                 cached = json.load(f)
             if cached.get("fetched_at", 0) + STATION_CACHE_TTL > now and cached.get("stations"):
                 _station_cache = cached
-                logger.debug(f"tickarr: station list loaded from disk ({len(cached['stations'])} stations)")
+                logger.debug(f"tickarr: channel list loaded from disk ({len(cached['stations'])} channels)")
                 return cached["stations"]
         except Exception:
             pass
-    # Fetch from API
     try:
-        req = urllib.request.Request(STATION_LIST_URL, headers={"User-Agent": "Tickarr/0.1"})
+        req = urllib.request.Request(TICKARR_CHANNEL_URL, headers={"User-Agent": "Tickarr/0.1"})
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
-        stations = data["results"] if isinstance(data, dict) else data
+        stations = list((data.get("channels") or {}).values())
         _station_cache = {"fetched_at": now, "stations": stations}
         os.makedirs(_DATA_DIR, exist_ok=True)
         tmp = STATION_CACHE_FILE + ".tmp"
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(_station_cache, f)
         os.replace(tmp, STATION_CACHE_FILE)
-        logger.info(f"tickarr: fetched {len(stations)} xmplaylist stations")
+        logger.info(f"tickarr: fetched {len(stations)} channels from tickarr.com")
         return stations
     except Exception as e:
-        logger.error(f"tickarr: station list fetch failed: {e}")
+        logger.error(f"tickarr: channel list fetch failed: {e}")
         return _station_cache.get("stations") or []
 
 
+def _get_nowplaying_bulk():
+    """Fetch all channels' now-playing from tickarr.com in one request (30s TTL)."""
+    global _nowplaying_cache
+    now = time.time()
+    with _nowplaying_lock:
+        if now - _nowplaying_cache["fetched_at"] < NOWPLAYING_CACHE_TTL and _nowplaying_cache["stations"]:
+            return _nowplaying_cache["stations"]
+    try:
+        req = urllib.request.Request(TICKARR_NOWPLAYING_URL, headers={"User-Agent": "Tickarr/0.1"})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            data = json.loads(r.read())
+        stations = data.get("stations") or {}
+        with _nowplaying_lock:
+            _nowplaying_cache = {"fetched_at": time.time(), "stations": stations}
+        return stations
+    except Exception as e:
+        logger.warning(f"tickarr: nowplaying bulk fetch failed: {e}")
+        return _nowplaying_cache.get("stations") or {}
+
+
 def _match_station_by_uuid(uuid, stations):
+    # tickarr.com channels.json uses "guid" for the SiriusXM UUID
     for s in stations:
-        if s.get("id") == uuid:
+        if s.get("guid") == uuid:
             return s
     return None
 
@@ -822,13 +844,13 @@ def _match_station_by_name(channel_name, stations):
         if sn and sn == n:
             return s
 
-    # Pass 4: channel number match — xmplaylist station has a `number` field
+    # Pass 4: channel number match
     try:
         num_match = re.search(r'\b(\d+)\b', channel_name)
         if num_match:
             num = int(num_match.group(1))
             for s in stations:
-                if s.get("number") == num:
+                if s.get("channel_number") == num:
                     return s
     except Exception:
         pass
@@ -857,25 +879,6 @@ def _match_station_by_name(channel_name, stations):
     return None
 
 
-def _get_now_playing(deeplink):
-    global _api_last_request
-    url = STATION_RECENT_URL.format(deeplink=deeplink)
-    try:
-        with _api_rate_lock:
-            wait = API_MIN_INTERVAL - (time.time() - _api_last_request)
-            if wait > 0:
-                time.sleep(wait)
-            _api_last_request = time.time()
-        req = urllib.request.Request(url, headers={"User-Agent": "Tickarr/0.1"})
-        with urllib.request.urlopen(req, timeout=8) as r:
-            data = json.loads(r.read())
-        results = data.get("results", []) if isinstance(data, dict) else data
-        if results and isinstance(results, list):
-            return results[0]
-    except Exception as e:
-        logger.warning(f"tickarr: now playing fetch failed for {deeplink}: {e}")
-    return None
-
 # ---------------------------------------------------------------------------
 # Scheduler / poll loop
 # ---------------------------------------------------------------------------
@@ -885,13 +888,8 @@ _stop_event = threading.Event()
 _redis_client_cache = None
 _redis_client_lock = threading.Lock()
 
-# Global rate limiter — enforces minimum spacing between xmplaylist API calls
-# regardless of how many threads are polling concurrently.
-_api_rate_lock = threading.Lock()
-_api_last_request = 0.0
-API_MIN_INTERVAL  = 1.5   # seconds between any two xmplaylist requests
 STALE_THRESHOLD   = 120   # seconds — channels not updated in this long get auto-refreshed
-STALE_BATCH_SIZE  = 10    # max stale channels to recover per sweep (caps API burst)
+STALE_BATCH_SIZE  = 10    # max stale channels to recover per sweep
 
 # UUID→integer channel ID cache (refreshed every 5 min)
 _uuid_map_cache = {"map": {}, "fetched_at": 0}
@@ -1017,17 +1015,15 @@ def _build_channel_list(channel_mappings):
 def _fetch_and_write(args):
     channel_id, deeplink, channel_name = args
     try:
-        data = _get_now_playing(deeplink)
-        if data:
-            track = data.get("track", {}) or {}
-            song = track.get("title", "") or ""
-            artists = track.get("artists", [])
-            artist = ", ".join(artists) if artists else ""
+        stations = _get_nowplaying_bulk()
+        station = stations.get(deeplink)
+        if station:
+            artist = station.get("artist", "") or ""
+            song   = station.get("title",  "") or ""
             _write_nowplaying(channel_id, artist, song, channel_name)
         else:
-            logger.warning(f"tickarr: no data returned for {channel_name} ({deeplink})")
-            # Touch song.txt so stale recovery backs off — prevents infinite retry loop
-            # when xmplaylist has no data for this deeplink. Display keeps last known song.
+            logger.warning(f"tickarr: no data for {channel_name} ({deeplink})")
+            # Touch song.txt so stale recovery backs off. Display keeps last known song.
             path = os.path.join(TICKER_DIR, f"channel_{channel_id}_song.txt")
             if os.path.exists(path):
                 os.utime(path, None)
@@ -1149,7 +1145,6 @@ def _sports_sweep_loop(stop_event):
 
 def _poll_loop(stop_event):
     try:
-        _get_stations()
         _get_channel_data()
     except Exception:
         pass
@@ -1160,7 +1155,7 @@ def _poll_loop(stop_event):
     # Sports sweep runs independently — 30s interval, ESPN scoreboard polling
     sports_t = threading.Thread(target=_sports_sweep_loop, args=(stop_event,), daemon=True)
     sports_t.start()
-    # xmplaylist sweep loop runs here — sequential, rate-limited, no startup burst
+    # Now-playing sweep loop — one bulk fetch from tickarr.com per cycle
     _sweep_loop(stop_event)
 
 # ---------------------------------------------------------------------------
@@ -1407,7 +1402,7 @@ class Plugin:
                 else:
                     station = _match_station_by_name(channel.name, stations)
                 if station:
-                    deeplink = station.get("deeplink")
+                    deeplink = station.get("id")  # tickarr.com uses "id" as the deeplink
 
                 cloned = _clone_and_inject(channel.id, original_profile)
                 _assign_profile(channel, cloned)
@@ -1765,7 +1760,7 @@ class Plugin:
         if np_channels:
             with_deeplink = [(cid, m) for cid, m in np_channels if m.get("xm_deeplink")]
             no_deeplink   = [(cid, m) for cid, m in np_channels if not m.get("xm_deeplink")]
-            lines.append(f"── Now Playing ({len(np_channels)}, {len(with_deeplink)} matched to xmplaylist) ──")
+            lines.append(f"── Now Playing ({len(np_channels)}, {len(with_deeplink)} matched to tickarr.com) ──")
             for cid, mapping in with_deeplink[:25]:
                 name = mapping.get("channel_name", f"Channel {cid}")
                 deeplink = mapping.get("xm_deeplink")
@@ -1781,7 +1776,7 @@ class Plugin:
                 else:
                     lines.append(f"  [{deeplink}] {name}: (no data yet)")
             if no_deeplink:
-                lines.append(f"  No xmplaylist match ({len(no_deeplink)} — run Refresh Channel Data):")
+                lines.append(f"  No tickarr.com match ({len(no_deeplink)} — run Refresh Channel Data):")
                 for cid, m in no_deeplink[:5]:
                     lines.append(f"    • {m.get('channel_name', cid)}")
             lines.append("")
@@ -1820,7 +1815,7 @@ class Plugin:
             channels, aliases = _get_channel_data(force=True)
             stations = _get_stations(force=True)
             if not stations:
-                return {"success": False, "message": f"xmplaylist station list came back empty — try again in a moment."}
+                return {"success": False, "message": "tickarr.com channel list came back empty — try again in a moment."}
             mappings = _get_mappings()
             deeplinks_fixed = 0
             descs_fixed = 0
@@ -1844,9 +1839,10 @@ class Plugin:
                     else:
                         station = _match_station_by_name(channel_name, stations)
                     if station:
-                        mappings[cid]["xm_deeplink"] = station.get("deeplink")
+                        deeplink = station.get("id")
+                        mappings[cid]["xm_deeplink"] = deeplink
                         deeplinks_fixed += 1
-                        logger.info(f"tickarr: resolved deeplink for {channel_name} → {station.get('deeplink')}")
+                        logger.info(f"tickarr: resolved deeplink for {channel_name} → {deeplink}")
                     else:
                         unmatched.append(channel_name)
 
@@ -1854,15 +1850,15 @@ class Plugin:
                 _save_mappings(mappings)
 
             mapped_deeplinks = {m.get("xm_deeplink") for m in mappings.values() if m.get("xm_deeplink")}
-            orphan_stations = [s["name"] for s in stations if s.get("deeplink") not in mapped_deeplinks]
+            orphan_stations = [s["name"] for s in stations if s.get("id") not in mapped_deeplinks]
 
-            msg = (f"Fetched: {len(channels)} SiriusXM channels, {len(stations)} xmplaylist stations.\n"
+            msg = (f"Fetched: {len(channels)} channel descriptions, {len(stations)} tickarr.com channels.\n"
                    f"Fixed: {deeplinks_fixed} deeplink(s), {descs_fixed} description(s).\n"
-                   f"Matched: {len(mapped_deeplinks)} of {len(stations)} xmplaylist stations.")
+                   f"Matched: {len(mapped_deeplinks)} of {len(stations)} tickarr.com channels.")
             if orphan_stations:
-                msg += f"\n\nxmplaylist stations with NO Dispatcharr match ({len(orphan_stations)}):\n" + ", ".join(orphan_stations)
+                msg += f"\n\nTickarr.com channels with no Dispatcharr match ({len(orphan_stations)}):\n" + ", ".join(orphan_stations[:20])
             if unmatched:
-                msg += f"\n\nNo xmplaylist match for {len(unmatched)} Dispatcharr channel(s) (first 20):\n" + ", ".join(unmatched[:20])
+                msg += f"\n\nNo tickarr.com match for {len(unmatched)} Dispatcharr channel(s) (first 20):\n" + ", ".join(unmatched[:20])
             return {"success": True, "message": msg}
         except Exception as e:
             return {"success": False, "message": f"Refresh failed: {e}"}
