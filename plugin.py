@@ -193,17 +193,22 @@ def _inject_drawtext(params, drawtext_filter, logo_path=None):
         # Remove -vn and existing -map directives (replaced below)
         params = re.sub(r"\s*-vn\b", "", params)
         params = re.sub(r"\s*-map\s+\S+", "", params)
-        # Add lavfi black background as second input after the stream URL input
+        # Add lavfi black background as second input after the stream URL input.
+        # If a logo is available, add it as a third input with -loop 1 (still image
+        # that repeats indefinitely) — far more reliable than the movie filter source
+        # which has its own internal timeline and conflicts with live stream pts.
         lavfi = '-f lavfi -i "color=c=black:s=1280x720:r=25"'
-        params = re.sub(r"(-i\s+\S+)", rf"\1 {lavfi}", params, count=1)
-        # Inject filter_complex + maps + video codec before output format
         if logo_path and os.path.exists(logo_path):
+            # inputs: 0=stream(audio), 1=lavfi(video), 2=logo(still image)
+            extra = f'{lavfi} -loop 1 -i "{logo_path}"'
+            params = re.sub(r"(-i\s+\S+)", rf"\1 {extra}", params, count=1)
             _fc_graph = (
                 f'[1:v]{drawtext_filter}[_dt];'
-                f'movie={logo_path},scale=120:-1[_lg];'
-                f'[_dt][_lg]overlay=W-w-20:20[vout]'
+                f'[2:v]scale=120:-1[_lg];'
+                f'[_dt][_lg]overlay=W-w-20:20:eof_action=repeat[vout]'
             )
         else:
+            params = re.sub(r"(-i\s+\S+)", rf"\1 {lavfi}", params, count=1)
             _fc_graph = f'[1:v]{drawtext_filter}[vout]'
         fc = (
             f'-filter_complex "{_fc_graph}"'
@@ -474,12 +479,15 @@ def _get_channel_data(force=False):
 
 def _match_channel(dispatcharr_name, channels, aliases):
     normalized = _normalize(dispatcharr_name)
+    lookup_lower = dispatcharr_name.lower()
     for alias, canonical in (aliases.items() if isinstance(aliases, dict) else []):
         if _normalize(alias) == normalized:
             normalized = _normalize(canonical)
+            lookup_lower = canonical.lower()
             break
     if isinstance(channels, dict):
-        return channels.get(normalized)
+        # channels.json keyed by name.lower() (e.g. "1st wave"), not fully normalized
+        return channels.get(normalized) or channels.get(lookup_lower)
     for ch in channels:
         if _normalize(ch.get("name", "")) == normalized:
             return ch
