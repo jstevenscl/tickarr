@@ -156,7 +156,33 @@ _SPORTS_LABELS_LAYER = (
 )
 
 
-def _inject_drawtext(params, drawtext_filter):
+def _download_logo(url, channel_id):
+    """Download channel logo PNG at enable-time. Returns path or None on failure."""
+    if not url:
+        return None
+    if url.lower().endswith(".svg"):
+        logger.debug(f"tickarr: skipping SVG logo for channel {channel_id}")
+        return None
+    logo_path = os.path.join(TICKER_DIR, f"channel_{channel_id}_logo.png")
+    try:
+        _ensure_dirs()
+        req = urllib.request.Request(url, headers={"User-Agent": "Tickarr/0.1"})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            data = r.read()
+        if not data:
+            return None
+        tmp = logo_path + ".tmp"
+        with open(tmp, "wb") as f:
+            f.write(data)
+        os.replace(tmp, logo_path)
+        logger.info(f"tickarr: downloaded logo for channel {channel_id}: {url}")
+        return logo_path
+    except Exception as e:
+        logger.warning(f"tickarr: logo download failed for channel {channel_id}: {e}")
+        return None
+
+
+def _inject_drawtext(params, drawtext_filter, logo_path=None):
     is_audio_only = "-vn" in params or (
         ("-c:a" in params or "-acodec" in params)
         and "-c:v" not in params
@@ -171,8 +197,16 @@ def _inject_drawtext(params, drawtext_filter):
         lavfi = '-f lavfi -i "color=c=black:s=1280x720:r=25"'
         params = re.sub(r"(-i\s+\S+)", rf"\1 {lavfi}", params, count=1)
         # Inject filter_complex + maps + video codec before output format
+        if logo_path and os.path.exists(logo_path):
+            _fc_graph = (
+                f'[1:v]{drawtext_filter}[_dt];'
+                f'movie={logo_path},scale=120:-1[_lg];'
+                f'[_dt][_lg]overlay=W-w-20:20[vout]'
+            )
+        else:
+            _fc_graph = f'[1:v]{drawtext_filter}[vout]'
         fc = (
-            f'-filter_complex "[1:v]{drawtext_filter}[vout]"'
+            f'-filter_complex "{_fc_graph}"'
             f' -map "[vout]" -map 0:a:0'
             f' -c:v libx264 -preset ultrafast -tune zerolatency -crf 28 -c:a copy'
         )
@@ -228,10 +262,10 @@ def _inject_drawtext(params, drawtext_filter):
 
 
 
-def _clone_and_inject(channel_id, original_profile):
+def _clone_and_inject(channel_id, original_profile, logo_path=None):
     from core.models import StreamProfile
     drawtext = DRAWTEXT_FILTER_TEMPLATE.format(ticker_dir=TICKER_DIR, channel_id=channel_id)
-    params = _inject_drawtext(original_profile.parameters or "", drawtext)
+    params = _inject_drawtext(original_profile.parameters or "", drawtext, logo_path=logo_path)
     profile = StreamProfile(
         name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel_id}]",
         command=original_profile.command,
@@ -359,6 +393,12 @@ def _remove_channel_files(channel_id):
                 os.remove(path)
         except Exception as e:
             logger.warning(f"tickarr: could not remove {path}: {e}")
+    logo_path = os.path.join(TICKER_DIR, f"channel_{channel_id}_logo.png")
+    try:
+        if os.path.exists(logo_path):
+            os.remove(logo_path)
+    except Exception as e:
+        logger.warning(f"tickarr: could not remove logo {logo_path}: {e}")
 
 
 def _remove_custom_file(channel_id):
@@ -1467,7 +1507,10 @@ class Plugin:
                 if station:
                     deeplink = station.get("id")  # tickarr.com uses "id" as the deeplink
 
-                cloned = _clone_and_inject(channel.id, original_profile)
+                logo_url = xm_entry.get("logo_url") if xm_entry else None
+                logo_path = _download_logo(logo_url, channel.id)
+
+                cloned = _clone_and_inject(channel.id, original_profile, logo_path=logo_path)
                 _assign_profile(channel, cloned)
 
                 mappings[cid] = {
@@ -1477,6 +1520,7 @@ class Plugin:
                     "channel_name": channel.name,
                     "channel_description": channel_description,
                     "type": "nowplaying",
+                    "logo_path": logo_path,
                 }
 
                 # Write fallback immediately — sweep loop fetches live data within 15s
