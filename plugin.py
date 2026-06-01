@@ -29,23 +29,23 @@ PROFILE_PREFIX = "Tickarr — "   # em dash
 DRAWTEXT_FILTER_TEMPLATE = (
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-    ":textfile={ticker_dir}/channel_{channel_id}_header.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_header.txt:reload=1"
     ":fontsize=36:fontcolor=white"
     ":x=(w-text_w)/2:y=(h/2-100)"
     ":box=1:boxcolor=black@0.85:boxborderw=5,"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-    ":textfile={ticker_dir}/channel_{channel_id}_artist.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_artist.txt:reload=1"
     ":fontsize=56:fontcolor=#00d4ff"
     ":x=(w-text_w)/2:y=(h/2-20),"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-    ":textfile={ticker_dir}/channel_{channel_id}_song.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_song.txt:reload=1"
     ":fontsize=48:fontcolor=white"
     ":x=(w-text_w)/2:y=(h/2+60),"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-    ":textfile={ticker_dir}/channel_{channel_id}_channel.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_channel.txt:reload=1"
     ":fontsize=32:fontcolor=#888888"
     ":x=(w-text_w)/2:y=(h/2+130)"
 )
@@ -76,7 +76,7 @@ _FONT_MONO_BOLD = _resolve_mono_font()
 CUSTOM_STATIC_ALWAYS = (
     "drawtext="
     "fontfile={font}"
-    ":textfile={ticker_dir}/channel_{channel_id}_custom.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_custom.txt:reload=1"
     ":fontsize=48:fontcolor=white"
     ":x=(w-text_w)/2:y={y_expr}"
     ":box=1:boxcolor=black@0.85:boxborderw=6"
@@ -85,7 +85,7 @@ CUSTOM_STATIC_ALWAYS = (
 CUSTOM_SCROLL_ALWAYS = (
     "drawtext="
     "fontfile={font}"
-    ":textfile={ticker_dir}/channel_{channel_id}_custom.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_custom.txt:reload=1"
     ":fontsize=40:fontcolor=white"
     ":x=w-mod(t*100\\,w+text_w):y={y_expr}"
     ":box=1:boxcolor=black@0.85:boxborderw=6"
@@ -94,7 +94,7 @@ CUSTOM_SCROLL_ALWAYS = (
 CUSTOM_STATIC_TIMED = (
     "drawtext="
     "fontfile={font}"
-    ":textfile={ticker_dir}/channel_{channel_id}_custom.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_custom.txt:reload=1"
     ":fontsize=48:fontcolor=white"
     ":x=(w-text_w)/2:y={y_expr}"
     ":box=1:boxcolor=black@0.85:boxborderw=6"
@@ -104,7 +104,7 @@ CUSTOM_STATIC_TIMED = (
 CUSTOM_SCROLL_TIMED = (
     "drawtext="
     "fontfile={font}"
-    ":textfile={ticker_dir}/channel_{channel_id}_custom.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_custom.txt:reload=1"
     ":fontsize=40:fontcolor=white"
     ":x=w-mod(mod(t\\,{interval_s})*100\\,w+text_w):y={y_expr}"
     ":box=1:boxcolor=black@0.85:boxborderw=6"
@@ -124,7 +124,7 @@ CUSTOM_SCROLL_TIMED = (
 _SPORTS_SCORES_LAYER = (
     "drawtext="
     "fontfile={font}"
-    ":textfile={ticker_dir}/channel_{channel_id}_sports_scores.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_sports_scores.txt:reload=1"
     ":fontsize={fontsize}:fontcolor=white"
     ":x=w-mod(t*100\\,w+text_w):y={y_expr}"
     ":box=1:boxcolor=black@0.85:boxborderw=6"
@@ -133,7 +133,7 @@ _SPORTS_SCORES_LAYER = (
 _SPORTS_SINGLE_LAYER = (
     "drawtext="
     "fontfile={font}"
-    ":textfile={ticker_dir}/channel_{channel_id}_sports_full.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_sports_full.txt:reload=1"
     ":fontsize={fontsize}:fontcolor=white"
     ":x=w-mod(t*100\\,w+text_w):y={y_expr}"
     ":box=1:boxcolor=black@0.85:boxborderw=6"
@@ -141,7 +141,7 @@ _SPORTS_SINGLE_LAYER = (
 _SPORTS_ABBREVS_LAYER = (
     "drawtext="
     "fontfile={font}"
-    ":textfile={ticker_dir}/channel_{channel_id}_sports_abbrevs.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_sports_abbrevs.txt:reload=1"
     ":fontsize={fontsize}:fontcolor={abbrcolor}"
     ":x=w-mod(t*100\\,w+text_w):y={y_expr}"
     ":box=0"
@@ -149,40 +149,14 @@ _SPORTS_ABBREVS_LAYER = (
 _SPORTS_LABELS_LAYER = (
     "drawtext="
     "fontfile={font}"
-    ":textfile={ticker_dir}/channel_{channel_id}_sports_labels.txt:reload=30"
+    ":textfile={ticker_dir}/channel_{channel_id}_sports_labels.txt:reload=1"
     ":fontsize={fontsize}:fontcolor={labelcolor}"
     ":x=w-mod(t*100\\,w+text_w):y={y_expr}"
     ":box=0"
 )
 
 
-def _download_logo(url, channel_id):
-    """Download channel logo PNG at enable-time. Returns path or None on failure."""
-    if not url:
-        return None
-    if url.lower().endswith(".svg"):
-        logger.debug(f"tickarr: skipping SVG logo for channel {channel_id}")
-        return None
-    logo_path = os.path.join(TICKER_DIR, f"channel_{channel_id}_logo.png")
-    try:
-        _ensure_dirs()
-        req = urllib.request.Request(url, headers={"User-Agent": "Tickarr/0.1"})
-        with urllib.request.urlopen(req, timeout=10) as r:
-            data = r.read()
-        if not data:
-            return None
-        tmp = logo_path + ".tmp"
-        with open(tmp, "wb") as f:
-            f.write(data)
-        os.replace(tmp, logo_path)
-        logger.info(f"tickarr: downloaded logo for channel {channel_id}: {url}")
-        return logo_path
-    except Exception as e:
-        logger.warning(f"tickarr: logo download failed for channel {channel_id}: {e}")
-        return None
-
-
-def _inject_drawtext(params, drawtext_filter, logo_path=None):
+def _inject_drawtext(params, drawtext_filter):
     is_audio_only = "-vn" in params or (
         ("-c:a" in params or "-acodec" in params)
         and "-c:v" not in params
@@ -193,27 +167,14 @@ def _inject_drawtext(params, drawtext_filter, logo_path=None):
         # Remove -vn and existing -map directives (replaced below)
         params = re.sub(r"\s*-vn\b", "", params)
         params = re.sub(r"\s*-map\s+\S+", "", params)
-        # Add lavfi black background as second input after the stream URL input.
-        # If a logo is available, add it as a third input with -loop 1 (still image
-        # that repeats indefinitely) — far more reliable than the movie filter source
-        # which has its own internal timeline and conflicts with live stream pts.
+        # Add lavfi black background as second input after the stream URL input
         lavfi = '-f lavfi -i "color=c=black:s=1280x720:r=25"'
-        if logo_path and os.path.exists(logo_path):
-            # inputs: 0=stream(audio), 1=lavfi(video), 2=logo(still image)
-            extra = f'{lavfi} -loop 1 -i "{logo_path}"'
-            params = re.sub(r"(-i\s+\S+)", rf"\1 {extra}", params, count=1)
-            _fc_graph = (
-                f'[1:v]{drawtext_filter}[_dt];'
-                f'[2:v]scale=120:-1[_lg];'
-                f'[_dt][_lg]overlay=W-w-20:20:eof_action=repeat[vout]'
-            )
-        else:
-            params = re.sub(r"(-i\s+\S+)", rf"\1 {lavfi}", params, count=1)
-            _fc_graph = f'[1:v]{drawtext_filter}[vout]'
+        params = re.sub(r"(-i\s+\S+)", rf"\1 {lavfi}", params, count=1)
+        _fc_graph = f'[1:v]{drawtext_filter}[vout]'
         fc = (
             f'-filter_complex "{_fc_graph}"'
             f' -map "[vout]" -map 0:a:0'
-            f' -c:v libx264 -preset ultrafast -tune zerolatency -crf 28 -c:a copy'
+            f' -c:v libx264 -preset ultrafast -tune stillimage -crf 28'
         )
         if "-f mpegts" in params:
             params = params.replace("-f mpegts", f"{fc} -f mpegts")
@@ -267,10 +228,10 @@ def _inject_drawtext(params, drawtext_filter, logo_path=None):
 
 
 
-def _clone_and_inject(channel_id, original_profile, logo_path=None):
+def _clone_and_inject(channel_id, original_profile):
     from core.models import StreamProfile
     drawtext = DRAWTEXT_FILTER_TEMPLATE.format(ticker_dir=TICKER_DIR, channel_id=channel_id)
-    params = _inject_drawtext(original_profile.parameters or "", drawtext, logo_path=logo_path)
+    params = _inject_drawtext(original_profile.parameters or "", drawtext)
     profile = StreamProfile(
         name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel_id}]",
         command=original_profile.command,
@@ -398,12 +359,6 @@ def _remove_channel_files(channel_id):
                 os.remove(path)
         except Exception as e:
             logger.warning(f"tickarr: could not remove {path}: {e}")
-    logo_path = os.path.join(TICKER_DIR, f"channel_{channel_id}_logo.png")
-    try:
-        if os.path.exists(logo_path):
-            os.remove(logo_path)
-    except Exception as e:
-        logger.warning(f"tickarr: could not remove logo {logo_path}: {e}")
 
 
 def _remove_custom_file(channel_id):
@@ -801,6 +756,9 @@ XMPLAYLIST_MIN_INTERVAL = 1.5  # seconds between per-channel requests
 
 # cut_type values that indicate non-song content (talk, ads, promos, etc.)
 _NON_SONG_CUT_TYPES = frozenset({"talk", "exp", "perm", "pgm_segment", "link", "spot", "promo"})
+# subset where STL artist field contains an actual program/show name worth displaying
+# "spot"/"promo" excluded — their artist field contains ad/promo copy, not program names
+_PROGRAM_CUT_TYPES  = frozenset({"talk", "pgm_segment", "exp", "perm", "link"})
 
 _station_cache    = {"fetched_at": 0, "stations": []}
 _nowplaying_cache = {"fetched_at": 0.0, "stations": {}}
@@ -1097,28 +1055,36 @@ def _build_channel_list(channel_mappings):
             channel_id = int(cid_str)
         except (ValueError, TypeError):
             continue
-        ch.append((channel_id, deeplink, mapping.get("channel_name", "")))
+        ch.append((channel_id, deeplink, mapping.get("channel_name", ""),
+                   mapping.get("channel_description", "")))
     return ch
 
 
-def _write_on_air(channel_id, channel_name):
-    """Write 'On Air' overlay for non-song content (talk, spots, promos, etc.)."""
+def _write_on_air(channel_id, channel_name, title=""):
+    """Write 'On Air' overlay for non-song content (talk, spots, promos, etc.).
+    Shows program title when available from stellartunerlog."""
     _ensure_dirs()
     _atomic_write(f"channel_{channel_id}_header.txt",  "On Air")
-    _atomic_write(f"channel_{channel_id}_artist.txt",  "")
+    _atomic_write(f"channel_{channel_id}_artist.txt",  _truncate(title or "", 38))
     _atomic_write(f"channel_{channel_id}_song.txt",    "")
     _atomic_write(f"channel_{channel_id}_channel.txt", channel_name or "")
 
 
 def _fetch_and_write(args):
-    channel_id, deeplink, channel_name = args
+    channel_id, deeplink, channel_name, channel_description = args
     try:
         stations = _get_nowplaying_bulk()
         station  = stations.get(deeplink) if deeplink else None
         if station:
             cut_type = station.get("cut_type", "")
             if (cut_type or "").lower() in _NON_SONG_CUT_TYPES:
-                _write_on_air(channel_id, channel_name)
+                if (cut_type or "").lower() in _PROGRAM_CUT_TYPES:
+                    # talk/pgm_segment: artist = stable program/show name
+                    program = station.get("artist", "") or ""
+                    _write_on_air(channel_id, channel_name, title=program.strip())
+                else:
+                    # spot/promo/exp/etc: artist = ad or promo copy, not useful
+                    _write_on_air(channel_id, channel_name, title="")
             else:
                 artist = station.get("artist", "") or ""
                 song   = station.get("title",  "") or ""
@@ -1515,10 +1481,7 @@ class Plugin:
                 if station:
                     deeplink = station.get("id")  # tickarr.com uses "id" as the deeplink
 
-                logo_url = xm_entry.get("logo_url") if xm_entry else None
-                logo_path = _download_logo(logo_url, channel.id)
-
-                cloned = _clone_and_inject(channel.id, original_profile, logo_path=logo_path)
+                cloned = _clone_and_inject(channel.id, original_profile)
                 _assign_profile(channel, cloned)
 
                 mappings[cid] = {
@@ -1528,7 +1491,6 @@ class Plugin:
                     "channel_name": channel.name,
                     "channel_description": channel_description,
                     "type": "nowplaying",
-                    "logo_path": logo_path,
                 }
 
                 # Write fallback immediately — sweep loop fetches live data within 15s

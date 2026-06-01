@@ -9,25 +9,34 @@
     "registry_name": "jstevenscl/tickarr",
     "last_updated": "2026-06-01T06:00:00Z",
     "latest": {
-      "version": "0.1.83",
-      "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.83.zip",
-      "checksum_md5": "1bae445b9336c3b46cf2719f536a80c8",
-      "checksum_sha256": "12e7c6bbd5869a56978ec112ca4e972f255d735912cfffabb94c4e5f4b843932",
-      "size": 22775,
-      "last_updated": "2026-06-01T06:00:00Z",
-      "build_timestamp": "2026-06-01T06:00:00Z",
+      "version": "0.1.84",
+      "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.84.zip",
+      "checksum_md5": "2656a688804031c065e5ed43f7017d46",
+      "checksum_sha256": "69cf38e53fee6eb99c71423ccaee85a080e99b59281fbc3e9aae8eb5b5f098f1",
+      "size": 22666,
+      "last_updated": "2026-06-01T08:00:00Z",
+      "build_timestamp": "2026-06-01T08:00:00Z",
       "latest_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-latest.zip"
     },
     "versions": [
       {
+        "version": "0.1.84",
+        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.84.zip",
+        "checksum_md5": "2656a688804031c065e5ed43f7017d46",
+        "checksum_sha256": "69cf38e53fee6eb99c71423ccaee85a080e99b59281fbc3e9aae8eb5b5f098f1",
+        "size": 22666,
+        "last_updated": "2026-06-01T08:00:00Z",
+        "build_timestamp": "2026-06-01T08:00:00Z",
+        "note": "dev/testing — not yet officially released"
+      },
+      {
         "version": "0.1.83",
         "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.83.zip",
-        "checksum_md5": "1bae445b9336c3b46cf2719f536a80c8",
-        "checksum_sha256": "12e7c6bbd5869a56978ec112ca4e972f255d735912cfffabb94c4e5f4b843932",
-        "size": 22775,
+        "checksum_md5": "bc8b81a511c50f34c13a34c929ea10fc",
+        "checksum_sha256": "46c02b0d8e9394705a13a607b9706402a21622e65e739e7affa6a44c1f0d791e",
+        "size": 22438,
         "last_updated": "2026-06-01T06:00:00Z",
-        "build_timestamp": "2026-06-01T06:00:00Z",
-        "note": "dev/testing — not yet officially released"
+        "build_timestamp": "2026-06-01T06:00:00Z"
       },
       {
         "version": "0.1.82",
