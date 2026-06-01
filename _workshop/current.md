@@ -292,7 +292,8 @@ After plugin update: use **Restart Dispatcharr** action in Tickarr (no SSH/Porta
 - **GitHub Release:** v0.1.0 release still the tagged public release; v0.1.81 is on master but no new release tag yet
 - **Dispatcharr/Plugins PR:** https://github.com/Dispatcharr/Plugins/pull/96 — open, awaiting maintainer review
 - **Docs:** README, USERGUIDE, FAQ, TEAMS.md published; screenshots masked for PII
-- **tickarr.com:** Now a Tickarr plugin landing page only — data service moved to stellartunerlog.com
+- **tickarr.com:** Plugin landing page only — website hosted on Namecheap shared hosting (hosting plan kept). DNS now managed by Cloudflare (nameservers: macy.ns.cloudflare.com / odin.ns.cloudflare.com). Root domain and www still point to Namecheap hosting IP.
+- **api.tickarr.com:** Now served from Cloudflare R2 bucket `sports-data-api` (Sports Data Platform publisher). Live at https://api.tickarr.com/v1/sports.json. No longer uses FTP.
 - **Data source:** stellartunerlog.com (was xmplaylist.com — switched in v0.1.81)
 
 ## Pending: Dispatcharr Channel ID FR
@@ -318,5 +319,5 @@ Dispatcharr dev is implementing per-channel token data in response to our FR. Ex
 2. Current version on GitHub master: **0.1.81** — Now Playing uses stellartunerlog.com (not xmplaylist.com)
 3. All three phases working: Now Playing, Custom Text, Sports Ticker
 4. Data source: https://stellartunerlog.com/nowplaying.json (bulk fetch, all 437 channels, one request per sweep)
-5. tickarr.com is now the plugin landing page only — separate from StellarTunerLog
+5. tickarr.com is now the plugin landing page only — website on Namecheap hosting (kept), DNS via Cloudflare. api.tickarr.com serves Sports Data Platform JSON from Cloudflare R2.
 6. Memory folder: `C:\Users\Owner\.claude\projects\C--Projects-Tickarr\memory\`

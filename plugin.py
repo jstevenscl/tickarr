@@ -746,11 +746,19 @@ TICKARR_NOWPLAYING_URL = "https://stellartunerlog.com/nowplaying.json"
 TICKARR_CHANNEL_URL    = "https://stellartunerlog.com/channels.json"
 STATION_CACHE_TTL      = 24 * 3600
 STATION_CACHE_FILE     = os.path.join(_DATA_DIR, "station_cache.json")
-NOWPLAYING_CACHE_TTL   = 30   # seconds — matches tickarr.com update interval
+NOWPLAYING_CACHE_TTL   = 30   # seconds — matches stellartunerlog.com update interval
+
+XMPLAYLIST_STATION_URL  = "https://xmplaylist.com/api/station/{deeplink}"
+XMPLAYLIST_MIN_INTERVAL = 1.5  # seconds between per-channel requests
+
+# cut_type values that indicate non-song content (talk, ads, promos, etc.)
+_NON_SONG_CUT_TYPES = frozenset({"talk", "exp", "perm", "pgm_segment", "link", "spot", "promo"})
 
 _station_cache    = {"fetched_at": 0, "stations": []}
 _nowplaying_cache = {"fetched_at": 0.0, "stations": {}}
 _nowplaying_lock  = threading.Lock()
+_xmplaylist_lock  = threading.Lock()
+_xmplaylist_last  = {"time": 0.0}
 
 
 def _get_stations(force=False):
@@ -807,6 +815,33 @@ def _get_nowplaying_bulk():
         return _nowplaying_cache.get("stations") or {}
 
 
+def _xmplaylist_fetch(deeplink):
+    """Per-channel xmplaylist.com fallback with rate limiting.
+    Returns (artist, song) strings, or (None, None) on failure.
+    Only called when stellartunerlog.com bulk data is available but missing this channel.
+    """
+    global _xmplaylist_last
+    with _xmplaylist_lock:
+        elapsed = time.time() - _xmplaylist_last["time"]
+        if elapsed < XMPLAYLIST_MIN_INTERVAL:
+            time.sleep(XMPLAYLIST_MIN_INTERVAL - elapsed)
+        try:
+            url = XMPLAYLIST_STATION_URL.format(deeplink=deeplink)
+            req = urllib.request.Request(url, headers={"User-Agent": "Tickarr/0.1"})
+            with urllib.request.urlopen(req, timeout=8) as r:
+                data = json.loads(r.read())
+            _xmplaylist_last["time"] = time.time()
+            if data and isinstance(data, list) and data[0].get("track"):
+                track  = data[0]["track"]
+                artist = (track.get("artists") or [""])[0]
+                song   = track.get("title", "")
+                return artist or "", song or ""
+        except Exception as e:
+            logger.debug(f"tickarr: xmplaylist fallback failed for {deeplink}: {e}")
+        _xmplaylist_last["time"] = time.time()
+    return None, None
+
+
 def _match_station_by_uuid(uuid, stations):
     # tickarr.com channels.json uses "guid" for the SiriusXM UUID
     for s in stations:
@@ -824,9 +859,11 @@ def _match_station_by_name(channel_name, stations):
         return None
     n = _norm(channel_name)
 
-    # Pass 1: exact normalized name or deeplink match
+    # Pass 1: exact normalized name, deeplink_id, or id match
     for s in stations:
-        if _norm(s.get("name", "")) == n or s.get("deeplink", "").lower() == n:
+        if (_norm(s.get("name", "")) == n
+                or _norm(s.get("deeplink_id", "")) == n
+                or _norm(s.get("id", "")) == n):
             return s
 
     # Pass 2: strip leading "siriusxm" from channel name
@@ -834,8 +871,9 @@ def _match_station_by_name(channel_name, stations):
     if n2 and n2 != n:
         for s in stations:
             sn = _norm(s.get("name", ""))
-            dl = s.get("deeplink", "").lower()
-            if sn == n2 or dl == n2:
+            dl = _norm(s.get("deeplink_id", ""))
+            di = _norm(s.get("id", ""))
+            if sn == n2 or dl == n2 or di == n2:
                 return s
 
     # Pass 3: strip leading "siriusxm" from station name
@@ -866,14 +904,17 @@ def _match_station_by_name(channel_name, stations):
     n6 = re.sub(r"radio$", "", n)
     if n6 and n6 != n:
         for s in stations:
-            if _norm(s.get("name", "")) == n6 or s.get("deeplink", "").lower() == n6:
+            if (_norm(s.get("name", "")) == n6
+                    or _norm(s.get("deeplink_id", "")) == n6
+                    or _norm(s.get("id", "")) == n6):
                 return s
 
-    # Pass 7: strip trailing "radio" from station name, then rematch
+    # Pass 7: strip trailing "radio" from station name/id, then rematch
     for s in stations:
         sn = re.sub(r"radio$", "", _norm(s.get("name", "")))
-        dl = re.sub(r"radio$", "", s.get("deeplink", "").lower())
-        if (sn and sn == n) or (dl and dl == n):
+        dl = re.sub(r"radio$", "", _norm(s.get("deeplink_id", "")))
+        di = re.sub(r"radio$", "", _norm(s.get("id", "")))
+        if (sn and sn == n) or (dl and dl == n) or (di and di == n):
             return s
 
     return None
@@ -1012,18 +1053,40 @@ def _build_channel_list(channel_mappings):
     return ch
 
 
+def _write_on_air(channel_id, channel_name):
+    """Write 'On Air' overlay for non-song content (talk, spots, promos, etc.)."""
+    _ensure_dirs()
+    _atomic_write(f"channel_{channel_id}_header.txt",  "On Air")
+    _atomic_write(f"channel_{channel_id}_artist.txt",  "")
+    _atomic_write(f"channel_{channel_id}_song.txt",    "")
+    _atomic_write(f"channel_{channel_id}_channel.txt", channel_name or "")
+
+
 def _fetch_and_write(args):
     channel_id, deeplink, channel_name = args
     try:
         stations = _get_nowplaying_bulk()
-        station = stations.get(deeplink)
+        station  = stations.get(deeplink) if deeplink else None
         if station:
-            artist = station.get("artist", "") or ""
-            song   = station.get("title",  "") or ""
-            _write_nowplaying(channel_id, artist, song, channel_name)
+            cut_type = station.get("cut_type", "")
+            if (cut_type or "").lower() in _NON_SONG_CUT_TYPES:
+                _write_on_air(channel_id, channel_name)
+            else:
+                artist = station.get("artist", "") or ""
+                song   = station.get("title",  "") or ""
+                _write_nowplaying(channel_id, artist, song, channel_name)
+        elif stations and deeplink:
+            # Bulk is up but this deeplink is absent — try xmplaylist per-channel
+            artist, song = _xmplaylist_fetch(deeplink)
+            if artist is not None or song is not None:
+                _write_nowplaying(channel_id, artist or "", song or "", channel_name)
+            else:
+                logger.warning(f"tickarr: no data for {channel_name} ({deeplink}) from either source")
+                path = os.path.join(TICKER_DIR, f"channel_{channel_id}_song.txt")
+                if os.path.exists(path):
+                    os.utime(path, None)
         else:
             logger.warning(f"tickarr: no data for {channel_name} ({deeplink})")
-            # Touch song.txt so stale recovery backs off. Display keeps last known song.
             path = os.path.join(TICKER_DIR, f"channel_{channel_id}_song.txt")
             if os.path.exists(path):
                 os.utime(path, None)
@@ -1897,8 +1960,8 @@ class Plugin:
         if rc is None:
             return {"success": False, "message": (
                 "Redis unavailable — could not connect.\n\n"
-                "Stream-start detection is disabled. The sweep loop will poll all channels "
-                f"(slow: ~{160 * API_MIN_INTERVAL:.0f}s per full cycle if no active gating)."
+                "Stream-start detection is disabled. The sweep loop will poll all active "
+                "channels every 15 seconds (one bulk stellartunerlog.com fetch per cycle)."
             )}
 
         lines = ["Redis: connected\n"]
