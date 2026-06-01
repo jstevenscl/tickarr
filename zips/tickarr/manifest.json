@@ -7,18 +7,28 @@
     "author": "jstevenscl",
     "registry_url": "https://github.com/jstevenscl/tickarr",
     "registry_name": "jstevenscl/tickarr",
-    "last_updated": "2026-05-31T06:00:00Z",
+    "last_updated": "2026-06-01T06:00:00Z",
     "latest": {
-      "version": "0.1.81",
-      "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.81.zip",
-      "checksum_md5": "04b60eac9ecb9ac9de3ad037a3d346c7",
-      "checksum_sha256": "0693454d45569a3b751ec68fde19abb3b7e54838b52f753fd3fead49ad178752",
-      "size": 21689,
-      "last_updated": "2026-05-31T06:00:00Z",
-      "build_timestamp": "2026-05-31T06:00:00Z",
+      "version": "0.1.83",
+      "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.83.zip",
+      "checksum_md5": "1bae445b9336c3b46cf2719f536a80c8",
+      "checksum_sha256": "12e7c6bbd5869a56978ec112ca4e972f255d735912cfffabb94c4e5f4b843932",
+      "size": 22775,
+      "last_updated": "2026-06-01T06:00:00Z",
+      "build_timestamp": "2026-06-01T06:00:00Z",
       "latest_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-latest.zip"
     },
     "versions": [
+      {
+        "version": "0.1.83",
+        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.83.zip",
+        "checksum_md5": "1bae445b9336c3b46cf2719f536a80c8",
+        "checksum_sha256": "12e7c6bbd5869a56978ec112ca4e972f255d735912cfffabb94c4e5f4b843932",
+        "size": 22775,
+        "last_updated": "2026-06-01T06:00:00Z",
+        "build_timestamp": "2026-06-01T06:00:00Z",
+        "note": "dev/testing — not yet officially released"
+      },
       {
         "version": "0.1.82",
         "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.82.zip",
@@ -26,8 +36,7 @@
         "checksum_sha256": "5769a6a79459fa7d525eec10221a983c95633ed9214e748485b4f5e2ea8770f1",
         "size": 22375,
         "last_updated": "2026-06-01T06:00:00Z",
-        "build_timestamp": "2026-06-01T06:00:00Z",
-        "note": "dev/testing — not yet officially released"
+        "build_timestamp": "2026-06-01T06:00:00Z"
       },
       {
         "version": "0.1.81",
