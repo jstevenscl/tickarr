@@ -313,7 +313,7 @@ def _ensure_dirs():
 
 def _atomic_write(filename, content):
     path = os.path.join(TICKER_DIR, filename)
-    tmp = path + ".tmp"
+    tmp = path + f".tmp.{os.getpid()}"
     try:
         with open(tmp, "w", encoding="utf-8") as f:
             f.write(content)
@@ -942,6 +942,14 @@ STALE_BATCH_SIZE  = 10    # max stale channels to recover per sweep
 _uuid_map_cache = {"map": {}, "fetched_at": 0}
 UUID_MAP_TTL = 300
 
+# Distributed lock keys — one winner per loop across all uWSGI workers
+SWEEP_LOCK_KEY   = "tickarr:sweep_lock"
+FAST_LOCK_KEY    = "tickarr:fast_lock"
+SPORTS_LOCK_KEY  = "tickarr:sports_lock"
+_SWEEP_LOCK_TTL  = 45   # SWEEP_SLEEP(15) + up to 10s poll + 20s buffer; refreshed post-sweep
+_FAST_LOCK_TTL   = 10   # renewed every 2s tick; 10s crash-recovery window
+_SPORTS_LOCK_TTL = 60   # SPORTS_SWEEP_SLEEP(30) + poll time + buffer; refreshed post-sweep
+
 
 def _get_redis_client():
     global _redis_client_cache
@@ -973,6 +981,20 @@ def _get_redis_client():
         except Exception:
             pass
         return None
+
+
+def _redis_lock_acquire_or_refresh(rc, key, ttl):
+    """Acquire or renew a Redis distributed lock for this process.
+    Returns True if this worker holds the lock, False if another worker holds it.
+    On first call uses NX-set; on subsequent calls by the same pid, refreshes TTL."""
+    my_pid = str(os.getpid())
+    if rc.set(key, my_pid, nx=True, ex=ttl):
+        return True
+    current = rc.get(key)
+    if current and current.decode() == my_pid:
+        rc.expire(key, ttl)
+        return True
+    return False
 
 
 def _get_uuid_to_id_map(mappings):
@@ -1073,6 +1095,10 @@ def _write_on_air(channel_id, channel_name, title=""):
 def _fetch_and_write(args):
     channel_id, deeplink, channel_name, channel_description = args
     try:
+        rc = _get_redis_client()
+        if rc is not None:
+            if not rc.set(f"tickarr:last_fetch:{channel_id}", "1", nx=True, ex=8):
+                return  # another worker fetched this channel in the last 8s — skip
         stations = _get_nowplaying_bulk()
         station  = stations.get(deeplink) if deeplink else None
         if station:
@@ -1119,6 +1145,9 @@ def _fast_loop(stop_event):
     known_active = None  # None = uninitialized; skip polling on first observation
     while not stop_event.wait(timeout=2):
         try:
+            rc = _get_redis_client()
+            if rc is not None and not _redis_lock_acquire_or_refresh(rc, FAST_LOCK_KEY, _FAST_LOCK_TTL):
+                continue
             mappings = _get_mappings()
             if not mappings:
                 continue
@@ -1157,7 +1186,12 @@ def _sweep_loop(stop_event):
     Also auto-recovers channels whose text files haven't been updated recently."""
     SWEEP_SLEEP = 15
     while not stop_event.is_set():
+        rc = None
         try:
+            rc = _get_redis_client()
+            if rc is not None and not _redis_lock_acquire_or_refresh(rc, SWEEP_LOCK_KEY, _SWEEP_LOCK_TTL):
+                stop_event.wait(timeout=SWEEP_SLEEP)
+                continue
             mappings = _get_mappings()
             if mappings:
                 all_ch = _build_channel_list(mappings)
@@ -1181,6 +1215,12 @@ def _sweep_loop(stop_event):
                         _poll_channels(all_ch)
         except Exception as e:
             logger.error(f"tickarr: sweep error: {e}", exc_info=True)
+        # Refresh lock after work so TTL covers the sleep period too
+        if rc is not None:
+            try:
+                _redis_lock_acquire_or_refresh(rc, SWEEP_LOCK_KEY, _SWEEP_LOCK_TTL)
+            except Exception:
+                pass
         stop_event.wait(timeout=SWEEP_SLEEP)
 
 
@@ -1188,7 +1228,12 @@ def _sports_sweep_loop(stop_event):
     """Poll ESPN every 30s and write scores to text files for active sports channels."""
     SWEEP_SLEEP = 30
     while not stop_event.is_set():
+        rc = None
         try:
+            rc = _get_redis_client()
+            if rc is not None and not _redis_lock_acquire_or_refresh(rc, SPORTS_LOCK_KEY, _SPORTS_LOCK_TTL):
+                stop_event.wait(timeout=SWEEP_SLEEP)
+                continue
             mappings = _get_mappings()
             sports_channels = [(cid, m) for cid, m in mappings.items() if m.get("type") == "sports"]
             if sports_channels:
@@ -1215,6 +1260,12 @@ def _sports_sweep_loop(stop_event):
             try:
                 from django.db import connection
                 connection.close()
+            except Exception:
+                pass
+        # Refresh lock after work so TTL covers the sleep period too
+        if rc is not None:
+            try:
+                _redis_lock_acquire_or_refresh(rc, SPORTS_LOCK_KEY, _SPORTS_LOCK_TTL)
             except Exception:
                 pass
         stop_event.wait(timeout=SWEEP_SLEEP)
