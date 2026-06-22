@@ -1,6 +1,6 @@
 {
   "name": "Tickarr",
-  "version": "0.2.00-dev.20260622.1037",
+  "version": "0.2.00-dev.20260622.1241",
   "logo": "logo.png",
   "description": "Dynamic text overlays for IPTV channels — SiriusXM Now Playing, Sports Ticker, Custom Text",
   "author": "jstevenscl",
@@ -67,12 +67,12 @@
       }
     },
     {
-      "id": "_header_logos",
+      "id": "_header_ch_mgmt",
       "type": "info",
-      "label": "── Logo Assignment ──"
+      "label": "── Channel Management ──"
     },
     {
-      "id": "logo_target_type",
+      "id": "ch_target_type",
       "type": "select",
       "label": "Apply To",
       "options": [
@@ -82,22 +82,74 @@
       "default": "group"
     },
     {
-      "id": "logo_channel_group_id",
+      "id": "ch_channel_group_id",
       "type": "channel_group",
       "label": "Channel Group",
-      "condition": { "logo_target_type": "group" }
+      "condition": { "ch_target_type": "group" }
     },
     {
-      "id": "logo_channel_id",
+      "id": "ch_channel_id",
       "type": "channel",
       "label": "Channel",
-      "condition": { "logo_target_type": "channel" }
+      "condition": { "ch_target_type": "channel" }
+    },
+    {
+      "id": "sort_start_number",
+      "type": "text",
+      "label": "Sort Start Number",
+      "default": "",
+      "placeholder": "Auto-detect from current channel range"
+    },
+    {
+      "id": "_header_ch_individual",
+      "type": "info",
+      "label": "Individual Actions"
+    },
+    {
+      "id": "fill_sxm_epg",
+      "label": "SiriusXM Fill EPG",
+      "confirm": {
+        "message": "This will download Tickarr's SiriusXM EPG data and assign program schedules to the selected channels. Continue?"
+      }
+    },
+    {
+      "id": "fill_epg",
+      "label": "Fill EPG (TVG ID only)",
+      "confirm": {
+        "message": "This will set the TVG ID on selected channels to enable EPG source matching. Continue?"
+      }
+    },
+    {
+      "id": "sort_channels",
+      "label": "Sort Channels",
+      "confirm": {
+        "message": "This will renumber the selected channels by SiriusXM lineup order starting from Sort Start Number (or auto-detected). Continue?"
+      }
     },
     {
       "id": "assign_logos",
       "label": "Assign Logos",
       "confirm": {
         "message": "This will set logos on the selected channel(s) using Tickarr's built-in SiriusXM logo library. Channels with no match will be skipped. Continue?"
+      }
+    },
+    {
+      "id": "_header_ch_combined",
+      "type": "info",
+      "label": "Combined Actions"
+    },
+    {
+      "id": "fill_and_sort",
+      "label": "SiriusXM Fill + Sort",
+      "confirm": {
+        "message": "This will run SiriusXM Fill EPG and Sort Channels together. Continue?"
+      }
+    },
+    {
+      "id": "fill_sort_logos",
+      "label": "SiriusXM Fill + Sort + Logos",
+      "confirm": {
+        "message": "This will run SiriusXM Fill EPG, Sort Channels, and Assign Logos together. Continue?"
       }
     },
     {

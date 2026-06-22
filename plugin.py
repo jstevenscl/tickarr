@@ -833,6 +833,8 @@ def _fetch_sports_text(sports_list, favorites=""):
 
 TICKARR_NOWPLAYING_URL = "https://stellartunerlog.com/nowplaying.json"
 TICKARR_CHANNEL_URL    = "https://stellartunerlog.com/channels.json"
+TICKARR_SXM_EPG_URL    = "https://jstevenscl.github.io/tickarr/lib/siriusxm_epg.xml"
+TICKARR_SXM_SOURCE     = "Tickarr: SiriusXM"
 STATION_CACHE_TTL      = 24 * 3600
 STATION_CACHE_FILE     = os.path.join(_DATA_DIR, "station_cache.json")
 NOWPLAYING_CACHE_TTL   = 30   # seconds — matches stellartunerlog.com update interval
@@ -1553,7 +1555,12 @@ class Plugin:
             "disable_all":          self._disable_all,
             "view_active":          self._view_active,
             "refresh_channels":     self._refresh_channels,
+            "fill_sxm_epg":         self._fill_sxm_epg,
+            "fill_epg":             self._fill_epg,
+            "sort_channels":        self._sort_channels,
             "assign_logos":         self._assign_logos,
+            "fill_and_sort":        self._fill_and_sort,
+            "fill_sort_logos":      self._fill_sort_logos,
             "clean_orphans":        self._clean_orphans,
             "redis_diag":           self._redis_diag,
             "reload_poller":        self._reload_poller,
@@ -2084,53 +2091,320 @@ class Plugin:
         except Exception as e:
             return {"success": False, "message": f"Refresh failed: {e}"}
 
-    def _assign_logos(self, params):
+    # ------------------------------------------------------------------ #
+    # Channel Management — Fill / Sort / Logos                           #
+    # Mirrors EPGeditARR's structure exactly (no separate Order action). #
+    # ------------------------------------------------------------------ #
+
+    def _ch_resolve(self, params):
+        """Return (channels_data, aliases, dispatch_channels, group_or_None) or raise ValueError."""
         from apps.channels.models import Channel, ChannelGroup
         channels_data, aliases = _get_channel_data()
         if not channels_data:
-            return {"success": False, "message": "Channel data not available — run Refresh Channel Data first."}
-
-        target_type = params.get("logo_target_type", "group")
+            raise ValueError("Channel data not available — run Refresh Channel Data first.")
+        target_type = params.get("ch_target_type", "group")
         if target_type == "group":
-            group_id = params.get("logo_channel_group_id")
+            group_id = params.get("ch_channel_group_id")
             if not group_id:
-                return {"success": False, "message": "Select a channel group in the Logo Assignment section."}
+                raise ValueError("Select a channel group in the Channel Management section.")
             try:
                 group = ChannelGroup.objects.get(id=int(group_id))
-                dispatch_channels = list(Channel.objects.filter(channel_group=group).order_by("name"))
+                return channels_data, aliases, list(
+                    Channel.objects.filter(channel_group=group).order_by("channel_number", "name")
+                ), group
             except ChannelGroup.DoesNotExist:
-                return {"success": False, "message": "Channel group not found."}
+                raise ValueError("Channel group not found.")
         else:
-            channel_id = params.get("logo_channel_id")
+            channel_id = params.get("ch_channel_id")
             if not channel_id:
-                return {"success": False, "message": "Select a channel in the Logo Assignment section."}
+                raise ValueError("Select a channel in the Channel Management section.")
             try:
-                dispatch_channels = [Channel.objects.get(id=int(channel_id))]
+                return channels_data, aliases, [Channel.objects.get(id=int(channel_id))], None
             except Channel.DoesNotExist:
-                return {"success": False, "message": "Channel not found."}
+                raise ValueError("Channel not found.")
 
-        assigned, skipped, failed = [], [], []
-        for channel in dispatch_channels:
-            xm_entry = _match_channel(channel.name, channels_data, aliases)
-            if not xm_entry:
-                skipped.append(f"{channel.name} (no SiriusXM match)")
+    def _do_fill(self, channel, xm_entry):
+        """Set tvg_id to the official SiriusXM channel name for EPG source matching."""
+        try:
+            channel.tvg_id = xm_entry.get("name", channel.name)
+            channel.save(update_fields=["tvg_id"])
+            return True
+        except Exception as e:
+            logger.warning(f"tickarr: fill failed for {channel.name}: {e}")
+            return False
+
+    def _do_logos(self, channel, xm_entry):
+        """Assign logo from bundled data. Returns (ok, created)."""
+        logo_url = xm_entry.get("logo_url", "")
+        if not logo_url:
+            return False, False
+        return _assign_logo(channel, logo_url, xm_entry.get("name", channel.name))
+
+    def _fill_epg(self, params):
+        try:
+            channels_data, aliases, dispatch_channels, _ = self._ch_resolve(params)
+        except ValueError as e:
+            return {"success": False, "message": str(e)}
+        filled, skipped, failed = [], [], []
+        for ch in dispatch_channels:
+            xm = _match_channel(ch.name, channels_data, aliases)
+            if not xm:
+                skipped.append(f"{ch.name} (no SiriusXM match)")
                 continue
-            logo_url = xm_entry.get("logo_url", "")
-            if not logo_url:
-                skipped.append(f"{channel.name} (no logo URL in channel data)")
-                continue
-            ok, created = _assign_logo(channel, logo_url, xm_entry.get("name", channel.name))
-            if ok:
-                tag = " (new)" if created else ""
-                assigned.append(f"{channel.name}{tag}")
+            if self._do_fill(ch, xm):
+                filled.append(ch.name)
             else:
-                failed.append(channel.name)
-
+                failed.append(ch.name)
         parts = []
-        if assigned: parts.append(f"Assigned logos: {len(assigned)} channel(s)\n" + "\n".join(f"  • {n}" for n in assigned))
+        if filled:  parts.append(f"Filled EPG TVG IDs: {len(filled)} channel(s)")
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _sort_channels(self, params):
+        """Renumber channels sequentially from sort_start_number, ordered by SXM channel number.
+        Auto-detects start number from the current minimum channel_number if not configured."""
+        from apps.channels.models import Channel
+        try:
+            channels_data, aliases, dispatch_channels, group = self._ch_resolve(params)
+        except ValueError as e:
+            return {"success": False, "message": str(e)}
+
+        start_raw = (params.get("sort_start_number") or "").strip()
+        auto_detected = False
+        if start_raw:
+            try:
+                start_number = int(start_raw)
+            except (ValueError, TypeError):
+                return {"success": False, "message": f"Invalid Sort Start Number: {start_raw!r} — enter a whole number or leave blank to auto-detect."}
+        else:
+            auto_detected = True
+            nums = [ch.channel_number for ch in dispatch_channels if ch.channel_number is not None]
+            start_number = int(min(nums)) if nums else 1
+
+        # Build ordered list: matched channels sorted by SXM number, unmatched at end
+        matched, unmatched = [], []
+        for ch in dispatch_channels:
+            xm = _match_channel(ch.name, channels_data, aliases)
+            if xm and xm.get("sxm_number"):
+                matched.append((xm["sxm_number"], ch))
+            else:
+                unmatched.append(ch)
+        matched.sort(key=lambda x: x[0])
+        ordered = [ch for _, ch in matched] + unmatched
+
+        # Null out all channel numbers first to avoid unique-within-group constraint conflicts
+        if group:
+            Channel.objects.filter(channel_group=group).update(channel_number=None)
+        else:
+            for ch in ordered:
+                ch.channel_number = None
+                ch.save(update_fields=["channel_number"])
+
+        updated, failed = 0, []
+        for i, ch in enumerate(ordered):
+            new_num = start_number + i
+            try:
+                ch.channel_number = new_num
+                ch.save(update_fields=["channel_number"])
+                updated += 1
+            except Exception as e:
+                logger.warning(f"tickarr: sort failed for {ch.name}: {e}")
+                failed.append(ch.name)
+
+        start_note = " (auto-detected)" if auto_detected else ""
+        parts = [f"Sort complete — {updated} channel(s) renumbered from {start_number}{start_note}"]
+        if unmatched: parts.append(f"No SXM match (placed at end): {', '.join(c.name for c in unmatched[:10])}")
+        if failed:    parts.append("Failed:\n" + "\n".join(f"  • {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts)}
+
+    def _assign_logos(self, params):
+        try:
+            channels_data, aliases, dispatch_channels, _ = self._ch_resolve(params)
+        except ValueError as e:
+            return {"success": False, "message": str(e)}
+        assigned, skipped, failed = [], [], []
+        for ch in dispatch_channels:
+            xm = _match_channel(ch.name, channels_data, aliases)
+            if not xm:
+                skipped.append(f"{ch.name} (no SiriusXM match)")
+                continue
+            ok, created = self._do_logos(ch, xm)
+            if ok:
+                assigned.append(f"{ch.name}" + (" (new)" if created else ""))
+            elif not xm.get("logo_url"):
+                skipped.append(f"{ch.name} (no logo in channel data)")
+            else:
+                failed.append(ch.name)
+        parts = []
+        if assigned: parts.append(f"Assigned logos: {len(assigned)} channel(s)")
         if skipped:  parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
         if failed:   parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _fill_sxm_epg(self, params):
+        """Download Tickarr's own SiriusXM XMLTV and import EPG data into Dispatcharr."""
+        import xml.etree.ElementTree as ET
+        import io
+        import gc
+        from datetime import datetime, timedelta, timezone
+        from apps.epg.models import EPGSource, EPGData, ProgramData
+        from django.db import transaction
+
+        try:
+            channels_data, aliases, dispatch_channels, _ = self._ch_resolve(params)
+        except ValueError as e:
+            return {"success": False, "message": str(e)}
+
+        # Download Tickarr's own hosted XMLTV
+        xml_bytes = None
+        last_err = None
+        for _attempt in range(2):
+            try:
+                req = urllib.request.Request(TICKARR_SXM_EPG_URL, headers={"User-Agent": "Tickarr/0.1"})
+                with urllib.request.urlopen(req, timeout=60) as r:
+                    xml_bytes = r.read()
+                break
+            except Exception as e:
+                last_err = e
+        if xml_bytes is None:
+            return {"success": False, "message": f"Failed to download SiriusXM EPG data: {last_err}"}
+
+        # Strip control characters invalid in XML 1.0
+        xml_bytes = re.sub(rb'[\x00-\x08\x0b\x0c\x0e-\x1f]', b'', xml_bytes)
+
+        sxm_src, _ = EPGSource.objects.get_or_create(
+            name=TICKARR_SXM_SOURCE,
+            defaults={"source_type": "xmltv", "url": TICKARR_SXM_EPG_URL},
+        )
+
+        now = datetime.now(timezone.utc)
+        purge_before = now - timedelta(days=1)
+
+        def _parse_dt(s):
+            s = s.strip()
+            dt = datetime.strptime(s[:14], "%Y%m%d%H%M%S")
+            tz_str = s[14:].strip()
+            if tz_str:
+                sign = 1 if tz_str[0] == '+' else -1
+                offset = timedelta(hours=int(tz_str[1:3]), minutes=int(tz_str[3:5])) * sign
+            else:
+                offset = timedelta(0)
+            return (dt - offset).replace(tzinfo=timezone.utc)
+
+        # Phase 1: create/update EPGData records from <channel> elements
+        existing_epg = {e.tvg_id: e for e in EPGData.objects.filter(epg_source=sxm_src)}
+        channel_map = {}
+        with transaction.atomic():
+            for _ev, elem in ET.iterparse(io.BytesIO(xml_bytes), events=('end',)):
+                if elem.tag == 'channel':
+                    ch_id = elem.get('id', '').strip()
+                    if ch_id:
+                        display = (elem.findtext('display-name') or ch_id).strip()
+                        icon_el = elem.find('icon')
+                        icon_url = (icon_el.get('src', '') if icon_el is not None else '').strip()
+                        if ch_id in existing_epg:
+                            entry = existing_epg[ch_id]
+                            changed = []
+                            if entry.name != display: entry.name = display; changed.append('name')
+                            if entry.icon_url != icon_url: entry.icon_url = icon_url; changed.append('icon_url')
+                            if changed: entry.save(update_fields=changed)
+                        else:
+                            entry = EPGData.objects.create(tvg_id=ch_id, name=display, icon_url=icon_url, epg_source=sxm_src)
+                        channel_map[ch_id] = entry
+                    elem.clear()
+                elif elem.tag == 'programme':
+                    elem.clear()
+
+        # Phase 2: import ProgramData from <programme> elements
+        total_programs = 0
+        with transaction.atomic():
+            ProgramData.objects.filter(epg__epg_source=sxm_src, end_time__lt=purge_before).delete()
+            ProgramData.objects.filter(epg__epg_source=sxm_src, start_time__gte=now).delete()
+            batch = []
+            for _ev, elem in ET.iterparse(io.BytesIO(xml_bytes), events=('end',)):
+                if elem.tag == 'channel':
+                    elem.clear(); continue
+                if elem.tag != 'programme':
+                    continue
+                ch_id = elem.get('channel', '').strip()
+                entry = channel_map.get(ch_id)
+                if entry:
+                    try:
+                        start = _parse_dt(elem.get('start', ''))
+                        end   = _parse_dt(elem.get('stop', ''))
+                    except Exception:
+                        elem.clear(); continue
+                    if end > purge_before:
+                        batch.append(ProgramData(
+                            epg=entry,
+                            start_time=start, end_time=end,
+                            title=(elem.findtext('title') or '').strip(),
+                            sub_title=(elem.findtext('sub-title') or '').strip() or None,
+                            description=(elem.findtext('desc') or '').strip(),
+                            tvg_id=ch_id, custom_properties={},
+                        ))
+                        if len(batch) >= 2000:
+                            ProgramData.objects.bulk_create(batch)
+                            total_programs += len(batch)
+                            batch = []
+                elem.clear()
+            if batch:
+                ProgramData.objects.bulk_create(batch)
+                total_programs += len(batch)
+
+        del xml_bytes
+
+        # Fuzzy-match dispatch channels to EPGData and assign channel.epg_data
+        epg_lookup = {}
+        for entry in channel_map.values():
+            norm = _normalize(entry.name)
+            epg_lookup[norm] = entry
+
+        matched, unmatched = 0, []
+        with transaction.atomic():
+            for ch in dispatch_channels:
+                key = _normalize(ch.name)
+                xm = _match_channel(ch.name, channels_data, aliases)
+                # Try alias-resolved name first, then direct
+                best = (epg_lookup.get(_normalize(xm["name"])) if xm else None) or epg_lookup.get(key)
+                if best:
+                    if ch.epg_data_id != best.id:
+                        ch.epg_data = best
+                        ch.save(update_fields=['epg_data'])
+                    matched += 1
+                else:
+                    unmatched.append(ch.name)
+
+        n_ch = len(channel_map)
+        del channel_map, epg_lookup
+        gc.collect()
+
+        sxm_src.status = "success"
+        sxm_src.last_message = f"Tickarr: {n_ch:,} channels, {total_programs:,} programs"
+        sxm_src.save(update_fields=["status", "last_message"])
+
+        lines = [
+            f"SiriusXM Fill EPG complete\n",
+            f"  Channels assigned : {matched:,} / {len(dispatch_channels):,}",
+            f"  Programs loaded   : {total_programs:,}  ({n_ch:,} XMLTV channels)",
+        ]
+        if unmatched:
+            lines.append(f"  No match ({len(unmatched)}): " + ", ".join(unmatched[:10]))
+        return {"success": True, "message": "\n".join(lines)}
+
+    def _fill_and_sort(self, params):
+        r1 = self._fill_sxm_epg(params)
+        r2 = self._sort_channels(params)
+        msg = "\n\n".join(filter(None, [r1["message"], r2["message"]]))
+        return {"success": r1["success"] and r2["success"], "message": msg}
+
+    def _fill_sort_logos(self, params):
+        r1 = self._fill_sxm_epg(params)
+        r2 = self._sort_channels(params)
+        r3 = self._assign_logos(params)
+        msg = "\n\n".join(filter(None, [r1["message"], r2["message"], r3["message"]]))
+        return {"success": all(r["success"] for r in [r1, r2, r3]), "message": msg}
 
     def _clean_orphans(self, params):
         from core.models import StreamProfile
