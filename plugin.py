@@ -228,10 +228,62 @@ def _inject_drawtext(params, drawtext_filter):
 
 
 
-def _clone_and_inject(channel_id, original_profile):
+# Flags that must never appear in a Tickarr-cloned profile.
+# These cause audio gaps or stream instability on burst-delivered streams (e.g. SiriusXM).
+# Only the cloned profile is modified — the original base profile is never touched.
+_DANGEROUS_FLAGS = {
+    "nobuffer":  "+nobuffer in -fflags causes audio gaps on burst-delivered streams (e.g. SiriusXM via best-streams.tv). FFmpeg passes burst gaps directly to the client with no internal buffering.",
+    "low_delay": "-flags low_delay disables decoder delay compensation, causing the same burst-gap disconnects.",
+}
+
+
+def _strip_dangerous_flags(channel_name, params):
+    """Strip known problematic FFmpeg flags from cloned profile parameters.
+    Logs a clear notification for every flag removed.
+    The original base profile is never modified — only the Tickarr clone is cleaned.
+    """
+    removed = []
+
+    # Strip +nobuffer from -fflags value (e.g. -fflags +discardcorrupt+nobuffer)
+    if "nobuffer" in params:
+        def _remove_nobuffer(m):
+            value = re.sub(r'\+?nobuffer', '', m.group(2))
+            value = re.sub(r'\++', '+', value).strip('+')
+            if not value:
+                return ''
+            return m.group(1) + value
+        new_params = re.sub(r'(-fflags\s+)(\S+)', _remove_nobuffer, params)
+        if new_params != params:
+            removed.append("+nobuffer")
+            params = new_params
+
+    # Strip -flags low_delay
+    if "low_delay" in params:
+        new_params = re.sub(r'\s*-flags\s+low_delay\b', '', params)
+        if new_params != params:
+            removed.append("-flags low_delay")
+            params = new_params
+
+    for flag in removed:
+        key = flag.lstrip('+-').split()[0]
+        reason = _DANGEROUS_FLAGS.get(key, "known to cause stream issues")
+        logger.warning(
+            f"[Tickarr] Auto-removed {flag} from cloned profile for \"{channel_name}\" "
+            f"— {reason} "
+            f"Your original base profile is unchanged."
+        )
+
+    return params, removed
+
+
+def _clone_and_inject(channel_id, original_profile, channel_name=""):
     from core.models import StreamProfile
+    raw_params = original_profile.parameters or ""
+    cleaned_params, removed_flags = _strip_dangerous_flags(
+        channel_name or f"channel {channel_id}", raw_params
+    )
     drawtext = DRAWTEXT_FILTER_TEMPLATE.format(ticker_dir=TICKER_DIR, channel_id=channel_id)
-    params = _inject_drawtext(original_profile.parameters or "", drawtext)
+    params = _inject_drawtext(cleaned_params, drawtext)
     profile = StreamProfile(
         name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel_id}]",
         command=original_profile.command,
@@ -240,8 +292,9 @@ def _clone_and_inject(channel_id, original_profile):
         is_active=True,
     )
     profile.save()
-    logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}")
-    return profile
+    logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
+                + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
+    return profile, removed_flags
 
 
 def _assign_profile(channel, profile):
@@ -1532,7 +1585,7 @@ class Plugin:
                 if station:
                     deeplink = station.get("id")  # tickarr.com uses "id" as the deeplink
 
-                cloned = _clone_and_inject(channel.id, original_profile)
+                cloned, removed_flags = _clone_and_inject(channel.id, original_profile, channel.name)
                 _assign_profile(channel, cloned)
 
                 mappings[cid] = {
@@ -1547,7 +1600,9 @@ class Plugin:
                 # Write fallback immediately — sweep loop fetches live data within 15s
                 _write_fallback(channel.id, channel.name, channel_description)
 
-                enabled.append(channel.name)
+                note = (f" [auto-removed from cloned profile: {', '.join(removed_flags)}]"
+                        if removed_flags else "")
+                enabled.append(f"{channel.name}{note}")
             except Exception as e:
                 logger.error(f"tickarr: enable failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
@@ -1607,8 +1662,9 @@ class Plugin:
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
                     continue
 
+                raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
                 drawtext = _build_custom_filter(channel.id, style, position, schedule, duration, interval)
-                new_params = _inject_drawtext(original_profile.parameters or "", drawtext)
+                new_params = _inject_drawtext(raw_params, drawtext)
 
                 from core.models import StreamProfile
                 cloned = StreamProfile(
@@ -1634,7 +1690,8 @@ class Plugin:
                     "custom_interval":     interval,
                 }
                 _write_custom_text(channel.id, custom_text)
-                enabled.append(channel.name)
+                note = (f" [auto-removed: {', '.join(removed_flags)}]" if removed_flags else "")
+                enabled.append(f"{channel.name}{note}")
 
             except Exception as e:
                 logger.error(f"tickarr: enable_custom failed for {channel.name}: {e}", exc_info=True)
@@ -1715,9 +1772,10 @@ class Plugin:
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
                     continue
 
+                raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
                 drawtext   = _build_sports_filter(channel.id, position, fontsize,
                                                   labelcolor, abbrcolor, color_mode)
-                new_params = _inject_drawtext(original_profile.parameters or "", drawtext)
+                new_params = _inject_drawtext(raw_params, drawtext)
 
                 from core.models import StreamProfile
                 cloned = StreamProfile(
@@ -1750,7 +1808,8 @@ class Plugin:
                                    pad,
                                    placeholder,
                                    placeholder)
-                enabled.append(channel.name)
+                note = (f" [auto-removed: {', '.join(removed_flags)}]" if removed_flags else "")
+                enabled.append(f"{channel.name}{note}")
 
             except Exception as e:
                 logger.error(f"tickarr: enable_sports failed for {channel.name}: {e}", exc_info=True)
