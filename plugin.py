@@ -451,9 +451,12 @@ def _remove_sports_file(channel_id):
 # Channel cache helpers
 # ---------------------------------------------------------------------------
 
-CHANNELS_URL = "https://jstevenscl.github.io/epgeditarr/channels.json"
-ALIASES_URL  = "https://jstevenscl.github.io/epgeditarr/channel_aliases.json"
-CACHE_TTL    = 7 * 24 * 3600
+CACHE_TTL = 7 * 24 * 3600
+
+# Bundled channel data ships inside the plugin directory alongside plugin.py.
+# No EPGeditARR dependency at runtime — data updates with each Tickarr release.
+_BUNDLED_CHANNELS = os.path.join(_PLUGIN_DIR, "channels.json")
+_BUNDLED_ALIASES  = os.path.join(_PLUGIN_DIR, "channel_aliases.json")
 
 
 def _get_channel_data(force=False):
@@ -466,23 +469,38 @@ def _get_channel_data(force=False):
         except Exception:
             pass
 
-    try:
-        req = urllib.request.Request(CHANNELS_URL, headers={"User-Agent": "Tickarr/0.1"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            channels = json.loads(r.read())
-        req = urllib.request.Request(ALIASES_URL, headers={"User-Agent": "Tickarr/0.1"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            aliases = json.loads(r.read())
+    channels, aliases = {}, {}
+
+    # Load channels — bundled file is authoritative
+    if os.path.exists(_BUNDLED_CHANNELS):
+        try:
+            with open(_BUNDLED_CHANNELS, encoding="utf-8") as f:
+                channels = json.load(f)
+            logger.info(f"tickarr: loaded {len(channels)} channels from bundled channels.json")
+        except Exception as e:
+            logger.error(f"tickarr: failed to load bundled channels.json: {e}")
+    else:
+        logger.warning("tickarr: bundled channels.json not found — channel matching unavailable")
+
+    # Load aliases — bundled file, flat dict format
+    if os.path.exists(_BUNDLED_ALIASES):
+        try:
+            with open(_BUNDLED_ALIASES, encoding="utf-8") as f:
+                raw = json.load(f)
+            # Support both flat dict and wrapped {"aliases": {...}} format
+            aliases = raw.get("aliases", raw) if isinstance(raw, dict) and "aliases" in raw else raw
+            logger.info(f"tickarr: loaded {len(aliases)} aliases from bundled channel_aliases.json")
+        except Exception as e:
+            logger.error(f"tickarr: failed to load bundled channel_aliases.json: {e}")
+
+    if channels:
         os.makedirs(_DATA_DIR, exist_ok=True)
         tmp = CHANNEL_CACHE_FILE + ".tmp"
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump({"fetched_at": time.time(), "channels": channels, "aliases": aliases}, f)
         os.replace(tmp, CHANNEL_CACHE_FILE)
-        logger.info(f"tickarr: fetched {len(channels)} channels, {len(aliases)} aliases")
-        return channels, aliases
-    except Exception as e:
-        logger.error(f"tickarr: channel cache fetch failed: {e}")
-        return {}, {}
+
+    return channels, aliases
 
 
 def _match_channel(dispatcharr_name, channels, aliases):
