@@ -306,6 +306,21 @@ def _assign_profile(channel, profile):
         pass
 
 
+def _assign_logo(channel, logo_url, channel_display_name):
+    from apps.channels.models import Logo
+    try:
+        logo, created = Logo.objects.get_or_create(
+            url=logo_url,
+            defaults={"name": channel_display_name},
+        )
+        channel.logo = logo
+        channel.save(update_fields=["logo"])
+        return True, created
+    except Exception as e:
+        logger.warning(f"tickarr: logo assign failed for {channel_display_name}: {e}")
+        return False, False
+
+
 def _restore_profile(channel, original_profile_id):
     from core.models import StreamProfile
     try:
@@ -1538,6 +1553,7 @@ class Plugin:
             "disable_all":          self._disable_all,
             "view_active":          self._view_active,
             "refresh_channels":     self._refresh_channels,
+            "assign_logos":         self._assign_logos,
             "clean_orphans":        self._clean_orphans,
             "redis_diag":           self._redis_diag,
             "reload_poller":        self._reload_poller,
@@ -2067,6 +2083,54 @@ class Plugin:
             return {"success": True, "message": msg}
         except Exception as e:
             return {"success": False, "message": f"Refresh failed: {e}"}
+
+    def _assign_logos(self, params):
+        from apps.channels.models import Channel, ChannelGroup
+        channels_data, aliases = _get_channel_data()
+        if not channels_data:
+            return {"success": False, "message": "Channel data not available — run Refresh Channel Data first."}
+
+        target_type = params.get("logo_target_type", "group")
+        if target_type == "group":
+            group_id = params.get("logo_channel_group_id")
+            if not group_id:
+                return {"success": False, "message": "Select a channel group in the Logo Assignment section."}
+            try:
+                group = ChannelGroup.objects.get(id=int(group_id))
+                dispatch_channels = list(Channel.objects.filter(channel_group=group).order_by("name"))
+            except ChannelGroup.DoesNotExist:
+                return {"success": False, "message": "Channel group not found."}
+        else:
+            channel_id = params.get("logo_channel_id")
+            if not channel_id:
+                return {"success": False, "message": "Select a channel in the Logo Assignment section."}
+            try:
+                dispatch_channels = [Channel.objects.get(id=int(channel_id))]
+            except Channel.DoesNotExist:
+                return {"success": False, "message": "Channel not found."}
+
+        assigned, skipped, failed = [], [], []
+        for channel in dispatch_channels:
+            xm_entry = _match_channel(channel.name, channels_data, aliases)
+            if not xm_entry:
+                skipped.append(f"{channel.name} (no SiriusXM match)")
+                continue
+            logo_url = xm_entry.get("logo_url", "")
+            if not logo_url:
+                skipped.append(f"{channel.name} (no logo URL in channel data)")
+                continue
+            ok, created = _assign_logo(channel, logo_url, xm_entry.get("name", channel.name))
+            if ok:
+                tag = " (new)" if created else ""
+                assigned.append(f"{channel.name}{tag}")
+            else:
+                failed.append(channel.name)
+
+        parts = []
+        if assigned: parts.append(f"Assigned logos: {len(assigned)} channel(s)\n" + "\n".join(f"  • {n}" for n in assigned))
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _clean_orphans(self, params):
         from core.models import StreamProfile

@@ -1,6 +1,6 @@
 {
   "name": "Tickarr",
-  "version": "0.2.00-dev.20260622.1033",
+  "version": "0.2.00-dev.20260622.1037",
   "logo": "logo.png",
   "description": "Dynamic text overlays for IPTV channels — SiriusXM Now Playing, Sports Ticker, Custom Text",
   "author": "jstevenscl",
@@ -64,6 +64,40 @@
       "label": "Disable Sports Ticker",
       "confirm": {
         "message": "This will restore the original stream profile and remove ticker data for the selected Sports Ticker channel(s). Continue?"
+      }
+    },
+    {
+      "id": "_header_logos",
+      "type": "info",
+      "label": "── Logo Assignment ──"
+    },
+    {
+      "id": "logo_target_type",
+      "type": "select",
+      "label": "Apply To",
+      "options": [
+        { "value": "group",   "label": "Channel Group" },
+        { "value": "channel", "label": "Single Channel" }
+      ],
+      "default": "group"
+    },
+    {
+      "id": "logo_channel_group_id",
+      "type": "channel_group",
+      "label": "Channel Group",
+      "condition": { "logo_target_type": "group" }
+    },
+    {
+      "id": "logo_channel_id",
+      "type": "channel",
+      "label": "Channel",
+      "condition": { "logo_target_type": "channel" }
+    },
+    {
+      "id": "assign_logos",
+      "label": "Assign Logos",
+      "confirm": {
+        "message": "This will set logos on the selected channel(s) using Tickarr's built-in SiriusXM logo library. Channels with no match will be skipped. Continue?"
       }
     },
     {
