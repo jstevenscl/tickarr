@@ -30,24 +30,24 @@ DRAWTEXT_FILTER_TEMPLATE = (
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_header.txt:reload=1"
-    ":fontsize=36:fontcolor=white"
-    ":x=(w-text_w)/2:y=(h/2-100)"
-    ":box=1:boxcolor=black@0.85:boxborderw=5,"
+    ":fontsize=24:fontcolor=white"
+    ":x=(w-text_w)/2:y=(h/2-66)"
+    ":box=1:boxcolor=black@0.85:boxborderw=4,"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_artist.txt:reload=1"
-    ":fontsize=56:fontcolor=#00d4ff"
-    ":x=(w-text_w)/2:y=(h/2-20),"
+    ":fontsize=37:fontcolor=#00d4ff"
+    ":x=(w-text_w)/2:y=(h/2-13),"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_song.txt:reload=1"
-    ":fontsize=48:fontcolor=white"
-    ":x=(w-text_w)/2:y=(h/2+60),"
+    ":fontsize=32:fontcolor=white"
+    ":x=(w-text_w)/2:y=(h/2+40),"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_channel.txt:reload=1"
-    ":fontsize=32:fontcolor=#888888"
-    ":x=(w-text_w)/2:y=(h/2+130)"
+    ":fontsize=21:fontcolor=#888888"
+    ":x=(w-text_w)/2:y=(h/2+86)"
 )
 
 # ---------------------------------------------------------------------------
@@ -168,7 +168,7 @@ def _inject_drawtext(params, drawtext_filter):
         params = re.sub(r"\s*-vn\b", "", params)
         params = re.sub(r"\s*-map\s+\S+", "", params)
         # Add lavfi black background as second input after the stream URL input
-        lavfi = '-f lavfi -i "color=c=black:s=1280x720:r=25"'
+        lavfi = '-f lavfi -i "color=c=black:s=854x480:r=15"'
         params = re.sub(r"(-i\s+\S+)", rf"\1 {lavfi}", params, count=1)
         _fc_graph = f'[1:v]{drawtext_filter}[vout]'
         fc = (
