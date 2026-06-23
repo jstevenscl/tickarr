@@ -1,6 +1,6 @@
 {
   "name": "Tickarr",
-  "version": "0.2.00-dev.20260622.2202",
+  "version": "0.2.00-dev.20260622.2259",
   "logo": "logo.png",
   "description": "Dynamic text overlays for IPTV channels — SiriusXM Now Playing, Sports Ticker, Custom Text",
   "author": "jstevenscl",
@@ -64,6 +64,25 @@
       "label": "Disable Sports Ticker",
       "confirm": {
         "message": "This will restore the original stream profile and remove ticker data for the selected Sports Ticker channel(s). Continue?"
+      }
+    },
+    {
+      "id": "_header_eas",
+      "type": "info",
+      "label": "── EAS Weather Alerts ──"
+    },
+    {
+      "id": "enable_eas",
+      "label": "Enable EAS Silent Ticker",
+      "confirm": {
+        "message": "This will clone a stream profile for each selected channel with a silent EAS overlay. The overlay is invisible under normal conditions and activates automatically when an NWS alert fires for your configured zones. Continue?"
+      }
+    },
+    {
+      "id": "disable_eas",
+      "label": "Disable EAS Ticker",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove the EAS overlay for the selected channel(s). Continue?"
       }
     },
     {

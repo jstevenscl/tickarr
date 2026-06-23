@@ -155,6 +155,34 @@ _SPORTS_LABELS_LAYER = (
     ":box=0"
 )
 
+# ---------------------------------------------------------------------------
+# EAS — Emergency Alert System overlay filter templates
+# ---------------------------------------------------------------------------
+# EAS Weather Alert — dedicated to jesmannstl
+# A Dispatcharr community member and severe weather enthusiast
+# whose passion for keeping people informed inspired this feature.
+# Rest easy.
+# ---------------------------------------------------------------------------
+# Alert type: red box, flashing at 1 Hz — centered on screen
+_EAS_TYPE_LAYER = (
+    "drawtext="
+    "fontfile={font}"
+    ":textfile={ticker_dir}/eas_{channel_id}_type.txt:reload=1"
+    ":fontsize=28:fontcolor=white"
+    ":x=(w-text_w)/2:y=(h/2)-38"
+    ":box=1:boxcolor=0xFF0000@0.92:boxborderw=14"
+    ":enable='lt(mod(t\\,1)\\,0.5)'"
+)
+# Area description: yellow text, black box, static
+_EAS_AREA_LAYER = (
+    "drawtext="
+    "fontfile={font}"
+    ":textfile={ticker_dir}/eas_{channel_id}_area.txt:reload=1"
+    ":fontsize=18:fontcolor=yellow@0.95"
+    ":x=(w-text_w)/2:y=(h/2)+12"
+    ":box=1:boxcolor=black@0.82:boxborderw=8"
+)
+
 
 def _inject_drawtext(params, drawtext_filter):
     is_audio_only = "-vn" in params or (
@@ -293,6 +321,31 @@ def _clone_and_inject(channel_id, original_profile, channel_name=""):
     )
     profile.save()
     logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
+                + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
+    return profile, removed_flags
+
+
+def _clone_and_inject_eas(channel_id, original_profile, channel_name=""):
+    from core.models import StreamProfile
+    raw_params = original_profile.parameters or ""
+    cleaned_params, removed_flags = _strip_dangerous_flags(
+        channel_name or f"channel {channel_id}", raw_params
+    )
+    eas_filter = (
+        _EAS_TYPE_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=channel_id)
+        + ","
+        + _EAS_AREA_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=channel_id)
+    )
+    params = _inject_drawtext(cleaned_params, eas_filter)
+    profile = StreamProfile(
+        name=f"{PROFILE_PREFIX}EAS [{original_profile.name}] [ch{channel_id}]",
+        command=original_profile.command,
+        parameters=params,
+        locked=False,
+        is_active=True,
+    )
+    profile.save()
+    logger.info(f"tickarr: EAS profile cloned {original_profile.id} → {profile.id} for channel {channel_id}"
                 + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
     return profile, removed_flags
 
@@ -444,6 +497,101 @@ def _write_sports_text(channel_id, labels_text, abbrevs_text, scores_text, full_
     _atomic_write(f"channel_{channel_id}_sports_abbrevs.txt", abbrevs_text or "")
     _atomic_write(f"channel_{channel_id}_sports_scores.txt",  scores_text  or "")
     _atomic_write(f"channel_{channel_id}_sports_full.txt",    full_text    or "")
+
+
+def _eas_write_alert(channel_id, alert):
+    _ensure_dirs()
+    _atomic_write(f"eas_{channel_id}_type.txt", f"⚠  {alert['event'].upper()}  ⚠")
+    area = (alert.get("area") or "").replace("; ", " · ")
+    _atomic_write(f"eas_{channel_id}_area.txt", _truncate(area, 60))
+
+
+def _eas_clear(channel_id):
+    _ensure_dirs()
+    _atomic_write(f"eas_{channel_id}_type.txt", "")
+    _atomic_write(f"eas_{channel_id}_area.txt", "")
+
+
+def _fetch_nws_alerts(zones, severity_threshold="Moderate"):
+    zone_str = ",".join(z.upper() for z in zones if z.strip())
+    if not zone_str:
+        return []
+    url = f"{NWS_ALERTS_URL}?zone={zone_str}&status=Actual"
+    req = urllib.request.Request(url, headers={
+        "User-Agent": NWS_UA,
+        "Accept": "application/geo+json",
+    })
+    with urllib.request.urlopen(req, timeout=15) as r:
+        data = json.loads(r.read())
+    min_sev = _EAS_SEV.get(severity_threshold, 2)
+    alerts = []
+    for feature in data.get("features", []):
+        props = feature.get("properties", {})
+        if props.get("status") != "Actual":
+            continue
+        if props.get("urgency") in ("Past", "Unknown"):
+            continue
+        if _EAS_SEV.get(props.get("severity", "Unknown"), 0) < min_sev:
+            continue
+        alerts.append({
+            "id":       props.get("id", ""),
+            "event":    props.get("event", "Weather Alert"),
+            "area":     props.get("areaDesc", ""),
+            "severity": props.get("severity", "Unknown"),
+            "expires":  props.get("expires", ""),
+        })
+    return alerts
+
+
+def _eas_sweep():
+    settings = _get_settings()
+    zones_raw = (settings.get("eas_zones") or "").strip()
+    if not zones_raw:
+        return
+    zones = [z.strip() for z in zones_raw.split(",") if z.strip()]
+    severity_threshold = settings.get("eas_severity_filter") or "Moderate"
+    mappings = _get_mappings()
+    eas_cids = [cid for cid, m in mappings.items() if m and m.get("type") == "eas"]
+    if not eas_cids:
+        return
+    try:
+        alerts = _fetch_nws_alerts(zones, severity_threshold)
+    except Exception as e:
+        logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
+        return
+    worst = (max(alerts, key=lambda a: _EAS_SEV.get(a["severity"], 0)) if alerts else None)
+    with _eas_lock:
+        for cid in eas_cids:
+            active = _eas_active.get(cid)
+            if worst:
+                if active != worst["event"]:
+                    _eas_write_alert(cid, worst)
+                    _eas_active[cid] = worst["event"]
+                    if not active:
+                        logger.info(f"[Tickarr] EAS ALERT: {worst['event']} — {worst['area'][:60]} (ch {cid})")
+            else:
+                if active:
+                    _eas_clear(cid)
+                    _eas_active.pop(cid, None)
+                    logger.info(f"[Tickarr] EAS: alert cleared — ch {cid}")
+
+
+def _eas_sweep_loop(stop_event):
+    # EAS Weather Alert — dedicated to jesmannstl
+    # A Dispatcharr community member and severe weather enthusiast
+    # whose passion for keeping people informed inspired this feature.
+    # Rest easy.
+    logger.info("[Tickarr] EAS module initialized — for jesmannstl, who understood why this matters.")
+    while not stop_event.is_set():
+        try:
+            interval = max(15, int((_get_settings().get("eas_poll_interval") or 60)))
+        except Exception:
+            interval = 60
+        try:
+            _eas_sweep()
+        except Exception as e:
+            logger.error(f"[Tickarr] EAS loop error: {e}", exc_info=True)
+        stop_event.wait(timeout=interval)
 
 
 def _remove_sports_file(channel_id):
@@ -616,6 +764,13 @@ KNOWN_SPORTS = list(ESPN_PATHS.keys()) + ['nascar']
 
 _sports_text_cache = {"key": None, "labels": "", "abbrevs": "", "scores": "", "full": "", "fetched_at": 0.0}
 SPORTS_CACHE_TTL = 30  # seconds
+
+# EAS globals
+NWS_ALERTS_URL  = "https://api.weather.gov/alerts/active"
+NWS_UA          = "Tickarr/0.2 (github.com/jstevenscl/tickarr)"
+_EAS_SEV        = {"Unknown": 0, "Minor": 1, "Moderate": 2, "Severe": 3, "Extreme": 4}
+_eas_active     = {}   # channel_id → alert event string when alert is active
+_eas_lock       = threading.Lock()
 _TICKER_FIXED_LEN = 600  # all ticker strings are always exactly this many chars
 # Fixed length keeps text_w constant across reloads — prevents scroll position jumping
 # when game count changes between ESPN polls. Content beyond 600 chars is truncated
@@ -1185,6 +1340,10 @@ def _write_on_air(channel_id, channel_name, title="", subtitle=""):
 
 def _fetch_and_write(args):
     channel_id, deeplink, channel_name, channel_description = args
+    # EAS alert is active — preserve alert content, skip now-playing update
+    with _eas_lock:
+        if _eas_active.get(str(channel_id)):
+            return
     try:
         rc = _get_redis_client()
         if rc is not None:
@@ -1378,6 +1537,9 @@ def _poll_loop(stop_event):
     # Sports sweep runs independently — 30s interval, ESPN scoreboard polling
     sports_t = threading.Thread(target=_sports_sweep_loop, args=(stop_event,), daemon=True)
     sports_t.start()
+    # EAS sweep — NWS alert polling, interval configurable (default 60s)
+    eas_t = threading.Thread(target=_eas_sweep_loop, args=(stop_event,), daemon=True)
+    eas_t.start()
     # Now-playing sweep loop — one bulk fetch from tickarr.com per cycle
     _sweep_loop(stop_event)
 
@@ -1541,6 +1703,23 @@ class Plugin:
              "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
             {"id": "sports_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
             {"id": "sports_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+            # ── EAS ───────────────────────────────────────────────────────
+            {"id": "_eas_section",  "type": "info", "label": "━━━━━━━━━━  EAS WEATHER ALERTS  ━━━━━━━━━━"},
+            {"id": "_eas_about",    "type": "info",
+             "label": "Monitors NWS alerts for configured zones. Overlay is invisible until an alert fires, then shows alert type and affected area. Clears automatically when the alert expires."},
+            {"id": "eas_zones",     "type": "text",   "label": "NWS Zone / County Codes",
+             "placeholder": "e.g. TXC113,TXC121  (comma-separated — find yours at alerts.weather.gov)"},
+            {"id": "eas_severity_filter", "type": "select", "label": "Minimum Severity",
+             "options": [
+                 {"value": "Moderate", "label": "Watch (Moderate and above)"},
+                 {"value": "Severe",   "label": "Warning (Severe and above)"},
+                 {"value": "Extreme",  "label": "Emergency (Extreme only)"},
+             ]},
+            {"id": "eas_poll_interval", "type": "number", "label": "Poll Interval (seconds)", "min": 15},
+            {"id": "eas_target_type",   "type": "select", "label": "Apply To",
+             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "eas_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
+            {"id": "eas_channel_id",       "type": "select", "label": "Channel",       "options": channels},
             # ── Active Tickers ────────────────────────────────────────────
             {"id": "_active_section", "type": "info", "label": "━━━━━━━━━━  ACTIVE TICKERS  ━━━━━━━━━━"},
             {"id": "_ticker_list",    "type": "info", "label": active_label},
@@ -1559,6 +1738,8 @@ class Plugin:
             "disable_custom":       self._disable_custom_ticker,
             "enable_sports":        self._enable_sports,
             "disable_sports":       self._disable_sports_ticker,
+            "enable_eas":           self._enable_eas,
+            "disable_eas":          self._disable_eas,
             "disable_all":          self._disable_all,
             "view_active":          self._view_active,
             "refresh_channels":     self._refresh_channels,
@@ -1944,6 +2125,88 @@ class Plugin:
         if not channels:
             return {"success": False, "message": "No channels found. Set the Sports Ticker → Apply To / Channel selector above."}
         return self._do_disable(channels, type_filter="sports")
+
+    def _enable_eas(self, params):
+        from apps.channels.models import Channel
+
+        zones = (params.get("eas_zones") or "").strip()
+        if not zones:
+            return {"success": False, "message": "No NWS zone codes configured. Enter at least one zone code in EAS Weather Alerts → NWS Zone / County Codes above."}
+
+        channels = self._resolve_channels(params, prefix="eas_")
+        if not channels:
+            return {"success": False, "message": "No channels found. Set the EAS Weather Alerts → Apply To / Channel selector above."}
+
+        mappings = _get_mappings()
+        enabled, skipped, failed = [], [], []
+
+        for channel in channels:
+            cid = str(channel.id)
+            if cid in mappings:
+                existing = mappings[cid].get("type", "nowplaying")
+                skipped.append(f"{channel.name} (already has {existing} ticker — disable first)")
+                continue
+            try:
+                original_profile = channel.stream_profile
+                if not original_profile:
+                    skipped.append(f"{channel.name} (no stream profile assigned — assign one in Channels first)")
+                    continue
+                if original_profile.name.startswith(PROFILE_PREFIX):
+                    skipped.append(f"{channel.name} (already has a Tickarr profile — disable first)")
+                    continue
+                cloned, removed_flags = _clone_and_inject_eas(channel.id, original_profile, channel.name)
+                _assign_profile(channel, cloned)
+                _eas_clear(channel.id)
+                mappings[cid] = {
+                    "original_profile_id": original_profile.id,
+                    "ticker_profile_id":   cloned.id,
+                    "channel_name":        channel.name,
+                    "type":                "eas",
+                }
+                note = (f" [auto-removed: {', '.join(removed_flags)}]" if removed_flags else "")
+                enabled.append(f"{channel.name}{note}")
+            except Exception as e:
+                logger.error(f"tickarr: enable EAS failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} ({e})")
+
+        _save_mappings(mappings)
+        parts = []
+        if enabled:
+            parts.append(f"EAS enabled: {len(enabled)} channel(s)\n" + "\n".join(f"  • {e}" for e in enabled))
+            parts.append(f"Monitoring zones: {zones}\nThe overlay is silent until a qualifying NWS alert fires.")
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _disable_eas(self, params):
+        channels = self._resolve_channels(params, prefix="eas_")
+        if not channels:
+            return {"success": False, "message": "No channels found. Set the EAS Weather Alerts → Apply To / Channel selector above."}
+        mappings = _get_mappings()
+        disabled, skipped, failed = [], [], []
+        for channel in channels:
+            cid = str(channel.id)
+            mapping = mappings.get(cid)
+            if not mapping or mapping.get("type") != "eas":
+                skipped.append(f"{channel.name} (no EAS ticker active)")
+                continue
+            try:
+                _restore_profile(channel, mapping["original_profile_id"])
+                _delete_cloned_profile(mapping["ticker_profile_id"])
+                _eas_clear(channel.id)
+                with _eas_lock:
+                    _eas_active.pop(cid, None)
+                del mappings[cid]
+                disabled.append(channel.name)
+            except Exception as e:
+                logger.error(f"tickarr: disable EAS failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} ({e})")
+        _save_mappings(mappings)
+        parts = []
+        if disabled: parts.append(f"EAS disabled: {len(disabled)} channel(s)")
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _disable_all(self, params):
         from apps.channels.models import Channel
