@@ -1170,13 +1170,16 @@ def _build_channel_list(channel_mappings):
     return ch
 
 
-def _write_on_air(channel_id, channel_name, title=""):
-    """Write 'On Air' overlay for non-song content (talk, spots, promos, etc.).
-    Shows program title when available from stellartunerlog."""
+def _write_on_air(channel_id, channel_name, title="", subtitle=""):
+    """Write 'On Air' overlay for non-song content.
+    title   → artist slot (show/match name)
+    subtitle → song slot  (live score line, segment title, etc.)
+    SiriusXM sports channels send match + score as artist + title fields."""
     _ensure_dirs()
     _atomic_write(f"channel_{channel_id}_header.txt",  "On Air")
     _atomic_write(f"channel_{channel_id}_artist.txt",  _truncate(title or "", 38))
-    _atomic_write(f"channel_{channel_id}_song.txt",    "")
+    sub = (subtitle or "").strip()
+    _atomic_write(f"channel_{channel_id}_song.txt",    _truncate(sub, 45) if sub else "")
     _atomic_write(f"channel_{channel_id}_channel.txt", channel_name or "")
 
 
@@ -1193,9 +1196,13 @@ def _fetch_and_write(args):
             cut_type = station.get("cut_type", "")
             if (cut_type or "").lower() in _NON_SONG_CUT_TYPES:
                 if (cut_type or "").lower() in _PROGRAM_CUT_TYPES:
-                    # talk/pgm_segment: artist = stable program/show name
-                    program = station.get("artist", "") or ""
-                    _write_on_air(channel_id, channel_name, title=program.strip())
+                    # talk/pgm_segment: artist = show/match name, title = score or segment
+                    # SiriusXM sports channels send e.g. artist="Norway v Senegal",
+                    # title="NOR 3 - SEN 1 • 2H" — both fields are meaningful
+                    program  = station.get("artist", "") or ""
+                    score    = station.get("title",  "") or ""
+                    _write_on_air(channel_id, channel_name,
+                                  title=program.strip(), subtitle=score.strip())
                 else:
                     # spot/promo/exp/etc: artist = ad or promo copy, not useful
                     _write_on_air(channel_id, channel_name, title="")
