@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Build SiriusXM sports EPG from siriusxm.com/sports schedule pages.
+Build satellite radio sports EPG from public sports schedule pages.
 
 Outputs (repo root, served via GitHub Pages):
-  siriusxm_epg.xml          — XMLTV file for community use as an EPG source
+  satellite_radio_epg.xml   — XMLTV file for community use as an EPG source
   sports_schedule.json      — structured schedule for plugin use
 
 Run manually:
@@ -11,9 +11,9 @@ Run manually:
 
 Called automatically by .github/workflows/update-sports-epg.yml every 4 hours.
 
-XMLTV channel IDs match SiriusXM channel names from channels.json:
+XMLTV channel IDs match satellite radio channel names from channels.json:
   - Team games  → home team name, away team name, + league/national channel
-  - Events      → sport's satellite channel name (e.g. "SiriusXM NASCAR Radio")
+  - Events      → sport's satellite channel name
 Users of the raw XMLTV must set tvg-id on their channels to match these names.
 The plugin action bypasses tvg-id and matches by channel name directly.
 """
@@ -29,7 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent
 CHANNELS_JSON = ROOT / "lib" / "channels.json"
 LOGOS_DIR = ROOT / "lib" / "logos"
-OUT_XML = ROOT / "lib" / "siriusxm_epg.xml"
+OUT_XML = ROOT / "lib" / "satellite_radio_epg.xml"
 OUT_JSON = ROOT / "lib" / "sports_schedule.json"
 
 GITHUB_PAGES_BASE = "https://jstevenscl.github.io/tickarr/lib/logos"
@@ -127,12 +127,12 @@ def load_channel_map():
 
 
 def channel_name_for_num(num, ch_map, sport_slug):
-    """Return a channel name for a SiriusXM channel number, always producing something."""
+    """Return a channel name for a satellite radio channel number, always producing something."""
     ch = ch_map.get(num)
     if ch:
         return ch
     # Unknown number — generate a descriptive name so it still appears in the XMLTV
-    return f"SiriusXM Channel {num}"
+    return f"Satellite Radio Channel {num}"
 
 
 def fetch_html(url):
@@ -501,7 +501,7 @@ def xml_esc(s):
 
 
 def build_xmltv(all_events, ch_segments, ch_logos=None):
-    """Build XMLTV covering all SiriusXM channels.
+    """Build XMLTV covering all satellite radio channels.
 
     all_events  — list of game event dicts (for the sports_schedule.json channels)
     ch_segments — dict of ch_name -> [(start_dt, end_dt, title, desc), ...]
@@ -513,9 +513,9 @@ def build_xmltv(all_events, ch_segments, ch_logos=None):
     lines = ['<?xml version="1.0" encoding="UTF-8"?>']
     lines.append('<!DOCTYPE tv SYSTEM "xmltv.dtd">')
     lines.append(
-        '<tv source-info-name="SiriusXM EPG" '
-        'source-info-url="https://jstevenscl.github.io/tickarr/lib/siriusxm_epg.xml" '
-        'generator-info-name="EPGeditARR">'
+        '<tv source-info-name="Tickarr Satellite Radio EPG" '
+        'source-info-url="https://jstevenscl.github.io/tickarr/lib/satellite_radio_epg.xml" '
+        'generator-info-name="Tickarr">'
     )
 
     for ch in sorted(ch_segments):
@@ -585,7 +585,7 @@ def main():
     OUT_JSON.write_text(json.dumps(schedule, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Written: {OUT_JSON}  ({len(all_events)} total events)")
 
-    # ── Build XMLTV with ALL SiriusXM channels ───────────────────────────────
+    # ── Build XMLTV with ALL satellite radio channels ────────────────────────
     # Invert events: ch_name -> [(ev, start_dt, end_dt)]
     ch_name_to_ev_list = {}
     for ev in all_events:
@@ -621,7 +621,7 @@ def main():
             ch_name, ch_desc, ev_list, window_start, window_end, block_delta,
         )
 
-    # Write siriusxm_epg.xml  (all channels: sports segments + fill for every channel)
+    # Write satellite_radio_epg.xml  (all channels: sports segments + fill for every channel)
     xml_str = build_xmltv(all_events, ch_segments, ch_logos)
     OUT_XML.write_text(xml_str, encoding="utf-8")
     total_programmes = sum(len(v) for v in ch_segments.values())

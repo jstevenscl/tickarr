@@ -1,4 +1,4 @@
-name: Update SiriusXM Sports EPG
+name: Update Satellite Radio EPG
 
 on:
   schedule:
@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Build SiriusXM sports EPG
+      - name: Build satellite radio EPG
         run: python scripts/build_sports_epg.py
 
       - name: Commit and push if XML changed
@@ -28,9 +28,9 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add lib/siriusxm_epg.xml lib/sports_schedule.json
-          if git diff --staged -- lib/siriusxm_epg.xml | grep -q .; then
-            git commit -m "chore: update SiriusXM sports EPG"
+          git add lib/satellite_radio_epg.xml lib/sports_schedule.json
+          if git diff --staged -- lib/satellite_radio_epg.xml | grep -q .; then
+            git commit -m "chore: update satellite radio EPG"
             git push
           else
             echo "Sports EPG content unchanged -- nothing to commit"
@@ -53,9 +53,9 @@ jobs:
           **Workflow run:** ${RUN_URL}
 
           **Likely causes:**
-          - Network error fetching SiriusXM schedule pages
-          - SiriusXM page structure changed (parser needs updating)
+          - Network error fetching schedule pages
+          - Schedule page structure changed (parser needs updating)
           - Python exception in build script
 
-          Check the run logs above. The last successfully built \`siriusxm_epg.xml\` remains in place until fixed." \
+          Check the run logs above. The last successfully built \`satellite_radio_epg.xml\` remains in place until fixed." \
             --label "sports-epg" || true
