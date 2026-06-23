@@ -989,8 +989,8 @@ def _fetch_sports_text(sports_list, favorites=""):
 
 TICKARR_NOWPLAYING_URL = "https://stellartunerlog.com/nowplaying.json"
 TICKARR_CHANNEL_URL    = "https://stellartunerlog.com/channels.json"
-TICKARR_SXM_EPG_URL    = "https://jstevenscl.github.io/tickarr/lib/siriusxm_epg.xml"
-TICKARR_SXM_SOURCE     = "Tickarr: SiriusXM"
+TICKARR_SXM_EPG_URL    = "https://jstevenscl.github.io/tickarr/lib/satellite_radio_epg.xml"
+TICKARR_SXM_SOURCE     = "Tickarr: Satellite Radio"
 STATION_CACHE_TTL      = 24 * 3600
 STATION_CACHE_FILE     = os.path.join(_DATA_DIR, "station_cache.json")
 NOWPLAYING_CACHE_TTL   = 30   # seconds — matches stellartunerlog.com update interval
@@ -1704,6 +1704,16 @@ class Plugin:
              "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
             {"id": "sports_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
             {"id": "sports_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+            # ── Channel Setup ─────────────────────────────────────────────
+            {"id": "_ch_section", "type": "info", "label": "━━━━━━━━━━  SATELLITE RADIO CHANNEL SETUP  ━━━━━━━━━━"},
+            {"id": "_ch_about",   "type": "info",
+             "label": "Select a group or channel below, then use the Channel Setup actions to fill EPG, sort, or assign logos."},
+            {"id": "ch_target_type", "type": "select", "label": "Apply To",
+             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "ch_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
+            {"id": "ch_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+            {"id": "sort_start_number",   "type": "text",   "label": "Sort Start Number",
+             "placeholder": "Leave blank to auto-detect from current channel numbers"},
             # ── EAS ───────────────────────────────────────────────────────
             {"id": "_eas_section",  "type": "info", "label": "━━━━━━━━━━  EAS WEATHER ALERTS  ━━━━━━━━━━"},
             {"id": "_eas_about",    "type": "info",
