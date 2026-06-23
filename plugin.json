@@ -2,19 +2,26 @@
   "name": "Tickarr",
   "version": "0.2.00-dev.20260622.2317",
   "logo": "logo.png",
-  "description": "Dynamic text overlays for IPTV channels — SiriusXM Now Playing, Sports Ticker, Custom Text",
+  "description": "Dynamic text overlays for IPTV channels — SiriusXM Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
   "actions": [
+
+    {
+      "id": "_header_siriusxm",
+      "type": "info",
+      "label": "── SiriusXM ──"
+    },
+
     {
       "id": "_header_nowplaying",
       "type": "info",
-      "label": "── SiriusXM Now Playing ──"
+      "label": "Now Playing Ticker"
     },
     {
       "id": "enable_nowplaying",
       "label": "Enable Now Playing",
       "confirm": {
-        "message": "This will clone a stream profile for each selected channel. Channels already enabled will be skipped. Continue?"
+        "message": "This will clone a stream profile for each selected channel and start showing live SiriusXM now-playing data on the overlay. Channels already enabled will be skipped. Continue?"
       }
     },
     {
@@ -24,76 +31,16 @@
         "message": "This will restore the original stream profile and remove ticker data for the selected Now Playing channel(s). Continue?"
       }
     },
-    {
-      "id": "_header_custom",
-      "type": "info",
-      "label": "── Custom Text ──"
-    },
-    {
-      "id": "enable_custom",
-      "label": "Enable Custom Text",
-      "confirm": {
-        "message": "This will clone a stream profile for each selected channel with your custom text overlay. Channels that already have any ticker type enabled will be skipped. Continue?"
-      }
-    },
-    {
-      "id": "update_custom",
-      "label": "Update Custom Text"
-    },
-    {
-      "id": "disable_custom",
-      "label": "Disable Custom Ticker",
-      "confirm": {
-        "message": "This will restore the original stream profile and remove ticker data for the selected Custom Text channel(s). Continue?"
-      }
-    },
-    {
-      "id": "_header_sports",
-      "type": "info",
-      "label": "── Sports Ticker ──"
-    },
-    {
-      "id": "enable_sports",
-      "label": "Enable Sports Ticker",
-      "confirm": {
-        "message": "This will clone a stream profile for each selected channel with a live sports score ticker. Channels that already have any ticker type enabled will be skipped. Continue?"
-      }
-    },
-    {
-      "id": "disable_sports",
-      "label": "Disable Sports Ticker",
-      "confirm": {
-        "message": "This will restore the original stream profile and remove ticker data for the selected Sports Ticker channel(s). Continue?"
-      }
-    },
-    {
-      "id": "_header_eas",
-      "type": "info",
-      "label": "── EAS Weather Alerts ──"
-    },
-    {
-      "id": "enable_eas",
-      "label": "Enable EAS Silent Ticker",
-      "confirm": {
-        "message": "This will clone a stream profile for each selected channel with a silent EAS overlay. The overlay is invisible under normal conditions and activates automatically when an NWS alert fires for your configured zones. Continue?"
-      }
-    },
-    {
-      "id": "disable_eas",
-      "label": "Disable EAS Ticker",
-      "confirm": {
-        "message": "This will restore the original stream profile and remove the EAS overlay for the selected channel(s). Continue?"
-      }
-    },
+
     {
       "id": "_header_sxm_setup",
       "type": "info",
-      "label": "── SiriusXM Channel Setup ──"
+      "label": "Channel Setup"
     },
     {
       "id": "_sxm_setup_note",
       "type": "info",
-      "label": "Set EPG guide data, channel sort order, and logos for SiriusXM channels in Dispatcharr. Select a group or single channel, then run the action you need."
+      "label": "Set EPG guide data, channel sort order, and logos for SiriusXM channels in Dispatcharr."
     },
     {
       "id": "ch_target_type",
@@ -155,7 +102,7 @@
     {
       "id": "_header_sxm_combined",
       "type": "info",
-      "label": "── Run Everything Together ──"
+      "label": "Run Everything Together"
     },
     {
       "id": "fill_and_sort",
@@ -171,6 +118,71 @@
         "message": "Runs Full SiriusXM EPG fill, Sort Channels, and Assign Logos together on the selected channels. Continue?"
       }
     },
+
+    {
+      "id": "_header_custom",
+      "type": "info",
+      "label": "── Custom Text ──"
+    },
+    {
+      "id": "enable_custom",
+      "label": "Enable Custom Text",
+      "confirm": {
+        "message": "This will clone a stream profile for each selected channel with your custom text overlay. Channels that already have any ticker type enabled will be skipped. Continue?"
+      }
+    },
+    {
+      "id": "update_custom",
+      "label": "Update Custom Text"
+    },
+    {
+      "id": "disable_custom",
+      "label": "Disable Custom Ticker",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove ticker data for the selected Custom Text channel(s). Continue?"
+      }
+    },
+
+    {
+      "id": "_header_sports",
+      "type": "info",
+      "label": "── Sports Ticker ──"
+    },
+    {
+      "id": "enable_sports",
+      "label": "Enable Sports Ticker",
+      "confirm": {
+        "message": "This will clone a stream profile for each selected channel with a live sports score ticker. Channels that already have any ticker type enabled will be skipped. Continue?"
+      }
+    },
+    {
+      "id": "disable_sports",
+      "label": "Disable Sports Ticker",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove ticker data for the selected Sports Ticker channel(s). Continue?"
+      }
+    },
+
+    {
+      "id": "_header_eas",
+      "type": "info",
+      "label": "── EAS Weather Alerts ──"
+    },
+    {
+      "id": "enable_eas",
+      "label": "Enable EAS Silent Ticker",
+      "confirm": {
+        "message": "This will clone a stream profile for each selected channel with a silent EAS overlay. The overlay is invisible under normal conditions and activates automatically when an NWS alert fires for your configured zones. Continue?"
+      }
+    },
+    {
+      "id": "disable_eas",
+      "label": "Disable EAS Ticker",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove the EAS overlay for the selected channel(s). Continue?"
+      }
+    },
+
     {
       "id": "_header_manage",
       "type": "info",
@@ -216,5 +228,6 @@
         "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly — refresh in about 15 seconds. Continue?"
       }
     }
+
   ]
 }
