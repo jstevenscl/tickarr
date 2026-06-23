@@ -14,8 +14,9 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _PLUGIN_DIR        = os.path.dirname(os.path.abspath(__file__))
-# Store runtime data in a sibling directory so plugin updates never wipe it
-_DATA_DIR          = _PLUGIN_DIR + "_data"   # /data/plugins/tickarr_data/
+# Always use a fixed data directory name regardless of versioned install dir
+_PLUGINS_DIR       = os.path.dirname(_PLUGIN_DIR)
+_DATA_DIR          = os.path.join(_PLUGINS_DIR, "tickarr_data")
 TICKER_DIR         = os.path.join(_DATA_DIR, "tickers")
 MAPPINGS_FILE      = os.path.join(_DATA_DIR, "mappings.json")
 CHANNEL_CACHE_FILE = os.path.join(_DATA_DIR, "channel_cache.json")
