@@ -1,15 +1,15 @@
 {
   "name": "Tickarr",
-  "version": "0.2.00-dev.20260622.2317",
+  "version": "0.2.00-dev.20260623.1000",
   "logo": "logo.png",
-  "description": "Dynamic text overlays for IPTV channels — SiriusXM Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
+  "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
   "actions": [
 
     {
       "id": "_header_siriusxm",
       "type": "info",
-      "label": "── SiriusXM ──"
+      "label": "── Satellite Radio ──"
     },
 
     {
@@ -21,7 +21,7 @@
       "id": "enable_nowplaying",
       "label": "Enable Now Playing",
       "confirm": {
-        "message": "This will clone a stream profile for each selected channel and start showing live SiriusXM now-playing data on the overlay. Channels already enabled will be skipped. Continue?"
+        "message": "This will clone a stream profile for each selected channel and start showing live satellite radio now-playing data on the overlay. Channels already enabled will be skipped. Continue?"
       }
     },
     {
@@ -40,7 +40,7 @@
     {
       "id": "_sxm_setup_note",
       "type": "info",
-      "label": "Set EPG guide data, channel sort order, and logos for SiriusXM channels in Dispatcharr."
+      "label": "Set EPG guide data, channel sort order, and logos for your satellite radio channels in Dispatcharr."
     },
     {
       "id": "ch_target_type",
@@ -73,9 +73,9 @@
     },
     {
       "id": "fill_sxm_epg",
-      "label": "Fill EPG — Full SiriusXM Guide",
+      "label": "Fill EPG — Full Satellite Radio Guide",
       "confirm": {
-        "message": "Downloads Tickarr's SiriusXM EPG (sports schedules + channel guide data) and assigns it to the selected channels. Continue?"
+        "message": "Downloads Tickarr's satellite radio EPG (sports schedules + channel guide data) and assigns it to the selected channels. Continue?"
       }
     },
     {
@@ -89,14 +89,14 @@
       "id": "sort_channels",
       "label": "Sort Channels",
       "confirm": {
-        "message": "Renumbers selected channels by SiriusXM lineup order, starting from Sort Start Number (or auto-detected if blank). Continue?"
+        "message": "Renumbers selected channels by satellite radio lineup order, starting from Sort Start Number (or auto-detected if blank). Continue?"
       }
     },
     {
       "id": "assign_logos",
       "label": "Assign Logos",
       "confirm": {
-        "message": "Sets logos on selected channels using Tickarr's built-in SiriusXM logo library. Channels with no match are skipped. Continue?"
+        "message": "Sets logos on selected channels using Tickarr's built-in satellite radio logo library. Channels with no match are skipped. Continue?"
       }
     },
     {
@@ -108,14 +108,14 @@
       "id": "fill_and_sort",
       "label": "Fill EPG + Sort",
       "confirm": {
-        "message": "Runs Full SiriusXM EPG fill and Sort Channels together on the selected channels. Continue?"
+        "message": "Runs Full Satellite Radio EPG fill and Sort Channels together on the selected channels. Continue?"
       }
     },
     {
       "id": "fill_sort_logos",
       "label": "Fill EPG + Sort + Logos",
       "confirm": {
-        "message": "Runs Full SiriusXM EPG fill, Sort Channels, and Assign Logos together on the selected channels. Continue?"
+        "message": "Runs Full Satellite Radio EPG fill, Sort Channels, and Assign Logos together on the selected channels. Continue?"
       }
     },
 
