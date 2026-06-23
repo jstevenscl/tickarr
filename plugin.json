@@ -1,6 +1,6 @@
 {
   "name": "Tickarr",
-  "version": "0.2.00-dev.20260623.1020",
+  "version": "0.2.00-dev.20260623.1159",
   "logo": "logo.png",
   "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
@@ -40,36 +40,7 @@
     {
       "id": "_sxm_setup_note",
       "type": "info",
-      "label": "Set EPG guide data, channel sort order, and logos for your satellite radio channels in Dispatcharr."
-    },
-    {
-      "id": "ch_target_type",
-      "type": "select",
-      "label": "Apply To",
-      "options": [
-        { "value": "group",   "label": "Channel Group" },
-        { "value": "channel", "label": "Single Channel" }
-      ],
-      "default": "group"
-    },
-    {
-      "id": "ch_channel_group_id",
-      "type": "channel_group",
-      "label": "Channel Group",
-      "condition": { "ch_target_type": "group" }
-    },
-    {
-      "id": "ch_channel_id",
-      "type": "channel",
-      "label": "Channel",
-      "condition": { "ch_target_type": "channel" }
-    },
-    {
-      "id": "sort_start_number",
-      "type": "text",
-      "label": "Sort Start Number",
-      "default": "",
-      "placeholder": "Leave blank to auto-detect from current channel numbers"
+      "label": "Uses the channel group / channel selected in Settings above."
     },
     {
       "id": "fill_sxm_epg",
