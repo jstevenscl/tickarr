@@ -37,7 +37,7 @@ GITHUB_PAGES_BASE = "https://jstevenscl.github.io/tickarr/lib/logos"
 UA = "Tickarr-SportsEPG/1.0 (github.com/jstevenscl/tickarr)"
 
 FILL_DAYS = 14        # fill window: how many days ahead to generate EPG
-FILL_BLOCK_HOURS = 1  # fill block size for non-game time slots
+FILL_BLOCK_HOURS = 24  # daily filler blocks between/around game slots
 
 SPORTS = [
     {"slug": "nba",     "label": "NBA",           "url": "https://www.siriusxm.com/sports/nba",       "type": "matchup", "duration_h": 2.5},
@@ -411,9 +411,14 @@ def build_channel_segments(ch_name, ch_desc, ev_list, window_start, window_end, 
 
     Block sequence around each game:
       [generic fill] -> [Upcoming: title -- Day, Mon D H:MM AM/PM TZ] -> [LIVE: title] -> [Post-game: title]
-    Channels with no events get only generic fill blocks.
+    Channels with no events get a single programme spanning the full window.
     """
     sorted_evs = sorted(ev_list, key=lambda x: x[1])
+
+    # No events — one programme for the entire window (avoids hundreds of hourly filler entries)
+    if not sorted_evs:
+        return [(window_start, window_end, ch_name, ch_desc or None)]
+
     segments   = []
     current    = window_start
     block_s    = block_delta.total_seconds()
