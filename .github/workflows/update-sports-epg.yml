@@ -2,7 +2,7 @@ name: Update Satellite Radio EPG
 
 on:
   schedule:
-    - cron: '0 6 * * *'   # Once daily at 6 AM UTC
+    - cron: '0 */4 * * *'   # Every 4 hours — sports schedules change (rain delays, postponements)
   workflow_dispatch:         # Allow manual trigger
 
 jobs:
