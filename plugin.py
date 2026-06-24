@@ -1742,9 +1742,11 @@ class Plugin:
         ]
 
     def run(self, action, params, context):
-        if not params:
-            saved = _get_settings()
-            params = {k: v for k, v in saved.items() if k not in ("channel_mappings", "channel_cache")}
+        saved = _get_settings()
+        base = {k: v for k, v in saved.items() if k not in ("channel_mappings", "channel_cache")}
+        if params:
+            base.update(params)
+        params = base
 
         dispatch = {
             "enable_nowplaying":    self._enable_nowplaying,
