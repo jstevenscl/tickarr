@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T06:01:07Z",
+  "generated_at": "2026-06-24T06:13:16Z",
   "events": [
     {
       "slug": "mlb",
@@ -11,7 +11,7 @@
         "Texas Rangers",
         "Miami Marlins",
         "MLB Play-by-Play 175",
-        "Satellite Radio Channel 870",
+        "MLB en Español 870",
         "MLB Network Radio"
       ]
     },
@@ -37,7 +37,6 @@
       "channels": [
         "Cleveland Guardians",
         "Chicago White Sox",
-        "Satellite Radio Channel 89",
         "MLB Network Radio"
       ]
     },
@@ -50,7 +49,7 @@
       "channels": [
         "Canada",
         "Switzerland",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -63,7 +62,6 @@
       "channels": [
         "Qatar",
         "Bosnia and Herzegovina",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -102,7 +100,7 @@
       "channels": [
         "Brazil",
         "Scotland",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -115,7 +113,6 @@
       "channels": [
         "Haiti",
         "Morocco",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -206,7 +203,6 @@
       "channels": [
         "Chicago Cubs",
         "New York Mets",
-        "Satellite Radio Channel 89",
         "MLB Network Radio"
       ]
     },
@@ -220,7 +216,7 @@
         "Los Angeles Dodgers",
         "Minnesota Twins",
         "MLB Play-by-Play 184",
-        "Satellite Radio Channel 870",
+        "MLB en Español 870",
         "MLB Network Radio"
       ]
     },
@@ -259,7 +255,6 @@
       "channels": [
         "South Korea",
         "South Africa",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -272,7 +267,7 @@
       "channels": [
         "Mexico",
         "Czechia",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -296,7 +291,7 @@
       "start_utc": "2026-06-25T16:00:00Z",
       "end_utc": "2026-06-25T21:00:00Z",
       "channels": [
-        "Satellite Radio Channel 92",
+        "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
       ]
     },
@@ -309,7 +304,7 @@
       "channels": [
         "Germany",
         "Ecuador",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -322,7 +317,7 @@
       "channels": [
         "Sweden",
         "Japan",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -335,7 +330,6 @@
       "channels": [
         "Netherlands",
         "Tunisia",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -348,7 +342,6 @@
       "channels": [
         "Australia",
         "Paraguay",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -361,7 +354,7 @@
       "channels": [
         "USA",
         "Türkiye",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -372,6 +365,7 @@
       "start_utc": "2026-06-26T11:25:00Z",
       "end_utc": "2026-06-26T13:25:00Z",
       "channels": [
+        "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
       ]
     },
@@ -382,6 +376,7 @@
       "start_utc": "2026-06-26T14:55:00Z",
       "end_utc": "2026-06-26T16:55:00Z",
       "channels": [
+        "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
       ]
     },
@@ -392,7 +387,7 @@
       "start_utc": "2026-06-26T16:00:00Z",
       "end_utc": "2026-06-26T21:00:00Z",
       "channels": [
-        "Satellite Radio Channel 92",
+        "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
       ]
     },
@@ -405,7 +400,6 @@
       "channels": [
         "Iraq",
         "Senegal",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -418,7 +412,7 @@
       "channels": [
         "France",
         "Norway",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -431,7 +425,6 @@
       "channels": [
         "Saudi Arabia",
         "Cape Verde",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -444,7 +437,7 @@
       "channels": [
         "Spain",
         "Uruguay",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -457,7 +450,7 @@
       "channels": [
         "Belgium",
         "New Zealand",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -470,7 +463,6 @@
       "channels": [
         "Iran",
         "Egypt",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -481,6 +473,7 @@
       "start_utc": "2026-06-27T10:25:00Z",
       "end_utc": "2026-06-27T12:25:00Z",
       "channels": [
+        "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
       ]
     },
@@ -491,6 +484,7 @@
       "start_utc": "2026-06-27T13:55:00Z",
       "end_utc": "2026-06-27T15:55:00Z",
       "channels": [
+        "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
       ]
     },
@@ -501,7 +495,7 @@
       "start_utc": "2026-06-27T17:00:00Z",
       "end_utc": "2026-06-27T22:00:00Z",
       "channels": [
-        "Satellite Radio Channel 92",
+        "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
       ]
     },
@@ -512,7 +506,6 @@
       "start_utc": "2026-06-27T18:00:00Z",
       "end_utc": "2026-06-27T21:30:00Z",
       "channels": [
-        "Satellite Radio Channel 90",
         "SiriusXM NASCAR Radio"
       ]
     },
@@ -525,7 +518,7 @@
       "channels": [
         "England",
         "Panama",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -538,7 +531,6 @@
       "channels": [
         "Ghana",
         "Croatia",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -549,7 +541,6 @@
       "start_utc": "2026-06-27T21:00:00Z",
       "end_utc": "2026-06-28T00:30:00Z",
       "channels": [
-        "Satellite Radio Channel 90",
         "SiriusXM NASCAR Radio"
       ]
     },
@@ -562,7 +553,7 @@
       "channels": [
         "Portugal",
         "Colombia",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -575,7 +566,6 @@
       "channels": [
         "Uzbekistan",
         "Congo DR",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -588,7 +578,6 @@
       "channels": [
         "Austria",
         "Algeria",
-        "Satellite Radio Channel 157",
         "SiriusXM FC"
       ]
     },
@@ -601,7 +590,7 @@
       "channels": [
         "Argentina",
         "Jordan",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -612,6 +601,7 @@
       "start_utc": "2026-06-28T13:00:00Z",
       "end_utc": "2026-06-28T15:00:00Z",
       "channels": [
+        "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
       ]
     },
@@ -622,7 +612,7 @@
       "start_utc": "2026-06-28T18:00:00Z",
       "end_utc": "2026-06-28T23:00:00Z",
       "channels": [
-        "Satellite Radio Channel 92",
+        "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
       ]
     },
@@ -633,11 +623,10 @@
       "start_utc": "2026-06-28T18:30:00Z",
       "end_utc": "2026-06-28T22:00:00Z",
       "channels": [
-        "Satellite Radio Channel 90",
-        "College Sports Play-by-Play 997",
-        "College Sports Play-by-Play 998",
-        "College Sports Play-by-Play 992",
-        "SiriusXM NASCAR Radio"
+        "SiriusXM NASCAR Radio",
+        "Sports 997",
+        "Sports 998",
+        "Sports 992"
       ]
     },
     {
@@ -649,7 +638,7 @@
       "channels": [
         "To Be Determined",
         "To Be Determined",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -662,7 +651,7 @@
       "channels": [
         "To Be Determined",
         "To Be Determined",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -675,7 +664,7 @@
       "channels": [
         "To Be Determined",
         "To Be Determined",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -688,7 +677,7 @@
       "channels": [
         "To Be Determined",
         "To Be Determined",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -701,7 +690,7 @@
       "channels": [
         "To Be Determined",
         "To Be Determined",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -714,7 +703,7 @@
       "channels": [
         "To Be Determined",
         "To Be Determined",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -727,7 +716,7 @@
       "channels": [
         "To Be Determined",
         "To Be Determined",
-        "Satellite Radio Channel 83",
+        "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
@@ -738,7 +727,6 @@
       "start_utc": "2026-07-04T16:55:00Z",
       "end_utc": "2026-07-04T19:25:00Z",
       "channels": [
-        "Satellite Radio Channel 218",
         "SiriusXM INDYCAR Nation"
       ]
     },
@@ -749,7 +737,6 @@
       "start_utc": "2026-07-05T13:55:00Z",
       "end_utc": "2026-07-05T16:25:00Z",
       "channels": [
-        "Satellite Radio Channel 218",
         "SiriusXM INDYCAR Nation"
       ]
     },
@@ -760,7 +747,6 @@
       "start_utc": "2026-07-05T16:00:00Z",
       "end_utc": "2026-07-05T18:30:00Z",
       "channels": [
-        "Satellite Radio Channel 218",
         "SiriusXM INDYCAR Nation"
       ]
     },
@@ -771,7 +757,6 @@
       "start_utc": "2026-07-19T16:00:00Z",
       "end_utc": "2026-07-19T18:30:00Z",
       "channels": [
-        "Satellite Radio Channel 218",
         "SiriusXM INDYCAR Nation"
       ]
     },
@@ -782,7 +767,6 @@
       "start_utc": "2026-07-19T18:30:00Z",
       "end_utc": "2026-07-19T21:00:00Z",
       "channels": [
-        "Satellite Radio Channel 218",
         "SiriusXM INDYCAR Nation"
       ]
     }
