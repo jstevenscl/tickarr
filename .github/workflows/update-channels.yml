@@ -1,0 +1,60 @@
+name: Update Channel Cache
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'   # Every Monday at 06:00 UTC — SiriusXM lineup changes are infrequent
+  workflow_dispatch:       # Allow manual trigger
+
+jobs:
+  update-cache:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build channel cache
+        run: python scripts/build_channels_sxm.py
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add lib/channels.json
+          if git diff --staged --quiet; then
+            echo "Channel cache unchanged -- nothing to commit"
+          else
+            git commit -m "chore: update SiriusXM channel cache from STL"
+            git push
+          fi
+
+      - name: Create issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          gh label create channel-update --color 0075ca --description "Channel cache alerts" 2>/dev/null || true
+          gh issue create \
+            --title "Channel cache update failed -- ${DATE}" \
+            --body "## Tickarr channel cache update failed
+
+          The \`update-channels\` workflow failed on ${DATE}.
+
+          **Workflow run:** ${RUN_URL}
+
+          **Likely causes:**
+          - StellarTunerLog unreachable (STL down or rate-limited)
+          - Rebrowser fallback also failed
+          - Script error in build_channels_sxm.py
+
+          The existing \`lib/channels.json\` remains in place until fixed." \
+            --label "channel-update" || true
