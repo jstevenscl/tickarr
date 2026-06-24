@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _PLUGIN_DIR        = os.path.dirname(os.path.abspath(__file__))
+_PLUGIN_KEY        = os.path.basename(_PLUGIN_DIR)   # e.g. "tickarr" or "tickarr_0_2_00_dev"
 # Always use a fixed data directory name regardless of versioned install dir
 _PLUGINS_DIR       = os.path.dirname(_PLUGIN_DIR)
 _DATA_DIR          = os.path.join(_PLUGINS_DIR, "tickarr_data")
@@ -713,7 +714,7 @@ def _save_mappings(mappings):
 
 def _get_settings():
     from apps.plugins.models import PluginConfig
-    config = PluginConfig.objects.filter(key="tickarr").first()
+    config = PluginConfig.objects.filter(key=_PLUGIN_KEY).first()
     if not config or not config.settings:
         return {}
     settings = dict(config.settings)
