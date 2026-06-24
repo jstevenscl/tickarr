@@ -21,7 +21,9 @@ jobs:
           python-version: '3.12'
 
       - name: Build satellite radio EPG
-        run: python scripts/build_sports_epg.py
+        run: |
+          mkdir -p lib
+          python scripts/build_sports_epg.py
 
       - name: Commit and push if XML changed
         if: success()
