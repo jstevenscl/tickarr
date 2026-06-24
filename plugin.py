@@ -328,13 +328,13 @@ def _clone_and_inject(channel_id, original_profile, channel_name=""):
 
 
 def _inject_eas_tone(params, interval_secs=300):
-    """Add a periodic EAS attention tone (1050 Hz) to the audio stream."""
+    """Add a periodic EAS attention tone (853+960 Hz dual tone) to the audio stream."""
     if "-vn" in params or "aeval" in params:
         return params  # audio-only or tone already injected
     tone = (
         f"aeval="
-        f"'val(0)+if(lt(mod(t\\,{interval_secs})\\,2)\\,0.25*sin(6.2832*1050*t)\\,0)"
-        f"|val(1)+if(lt(mod(t\\,{interval_secs})\\,2)\\,0.25*sin(6.2832*1050*t)\\,0)'"
+        f"'val(0)+if(lt(mod(t\\,{interval_secs})\\,2)\\,0.3*sin(6.2832*853*t)+0.3*sin(6.2832*960*t)\\,0)"
+        f"|val(1)+if(lt(mod(t\\,{interval_secs})\\,2)\\,0.3*sin(6.2832*853*t)+0.3*sin(6.2832*960*t)\\,0)'"
         f":c=same"
     )
     params = re.sub(r'\s*-c:a\s+copy\b', '', params)
@@ -641,13 +641,29 @@ def _eas_sweep():
         except Exception:
             pass
 
+    # Channels currently being streamed (Redis channel_stream:{id} key exists).
+    # EAS only activates on channels with an active viewer; clears always run so
+    # profiles are restored even if the viewer stopped watching mid-alert.
+    streaming_ids = set()
+    if rc:
+        try:
+            for k in rc.keys("channel_stream:*"):
+                streaming_ids.add((k if isinstance(k, str) else k.decode()).split(":")[-1])
+        except Exception:
+            pass
+
     # Determine which channels need a state transition.
     transitions = {}
     for cid in eas_cids:
         old_event = current_state.get(cid)
         new_event = worst["event"] if worst else None
-        if old_event != new_event:
-            transitions[cid] = (old_event, new_event)
+        if old_event == new_event:
+            continue
+        # Skip activation for channels nobody is watching right now.
+        # Clears (new_event is None) always run to restore profiles cleanly.
+        if new_event and cid not in streaming_ids:
+            continue
+        transitions[cid] = (old_event, new_event)
 
     if not transitions:
         return
@@ -1768,7 +1784,7 @@ class Plugin:
                 now_playing = f"[sports: {labels_str}]" + (f" favs: {fav}" if fav else "")
             elif ticker_type == "eas":
                 event = _eas_active.get(cid)
-                now_playing = f"[EAS] ⚠ ALERT: {event}" if event else "[EAS] monitoring — no active alert"
+                now_playing = f"[EAS] ALERT: {event}" if event else "[EAS] monitoring - no active alert"
             else:
                 artist_file = os.path.join(TICKER_DIR, f"channel_{cid}_artist.txt")
                 song_file   = os.path.join(TICKER_DIR, f"channel_{cid}_song.txt")
@@ -1777,20 +1793,22 @@ class Plugin:
                     with open(song_file,   encoding="utf-8") as f: song   = f.read().strip()
                 except Exception:
                     artist = song = ""
-                now_playing = f"{artist} — {song}".strip(" —") if (artist or song) else "(no data yet)"
-            ticker_lines.append(f"• {name}: {now_playing}")
+                now_playing = f"{artist} - {song}".strip(" -") if (artist or song) else "(no data yet)"
+            ticker_lines.append(f"- {name}: {now_playing}")
 
         active_label = (f"{len(mappings)} active ticker(s):\n" + "\n".join(ticker_lines)) if mappings else "No active tickers."
 
         return [
             # ── Now Playing ───────────────────────────────────────────────
-            {"id": "_np_section",       "type": "info",   "label": "━━━━━━━━━━  NOW PLAYING  ━━━━━━━━━━"},
+            {"id": "_np_section",       "type": "info",   "label": "==========  NOW PLAYING  =========="},
             {"id": "np_target_type",    "type": "select", "label": "Apply To",
-             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "np_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
-            {"id": "np_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_np_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
+            {"id": "np_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
+            {"id": "np_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
+            {"id": "np_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             # ── Satellite Radio Channel Setup ─────────────────────────────
-            {"id": "_ch_section", "type": "info", "label": "━━━━━━━━━━  SATELLITE RADIO CHANNEL SETUP  ━━━━━━━━━━"},
+            {"id": "_ch_section", "type": "info", "label": "==========  SATELLITE RADIO CHANNEL SETUP  =========="},
             {"id": "_ch_about",   "type": "info",
              "label": "Select a group or channel below, then use the Channel Setup actions to fill EPG, sort, or assign logos."},
             {"id": "ch_target_type", "type": "select", "label": "Apply To",
@@ -1800,11 +1818,15 @@ class Plugin:
             {"id": "sort_start_number",   "type": "text",   "label": "Sort Start Number",
              "placeholder": "Leave blank to auto-detect from current channel numbers"},
             # ── EAS ───────────────────────────────────────────────────────
-            {"id": "_eas_section",  "type": "info", "label": "━━━━━━━━━━  EAS WEATHER ALERTS  ━━━━━━━━━━"},
+            {"id": "_eas_section",  "type": "info", "label": "==========  EAS/JAS WEATHER ALERTS  =========="},
+            {"id": "_eas_tribute",  "type": "info",
+             "label": "JAS = jesmannstl Alert System. Dedicated to jesmannstl -- a weather fanatic and beloved member of the Dispatcharr community. Every alert that fires is a reminder of him. Rest in peace."},
             {"id": "_eas_about",    "type": "info",
              "label": "Monitors NWS alerts for configured zones. When an alert fires, affected channels automatically switch to an EAS overlay profile (red flashing banner + siren tone) and restart. Channels return to normal passthrough when the alert clears."},
+            {"id": "_eas_zone_help", "type": "info",
+             "label": "To find your zone or county code: visit alerts.weather.gov, select your state, then click your county. The code appears in the URL and alert details (e.g. TXC113 = Texas, County 113). You can enter multiple codes separated by commas to cover multiple counties."},
             {"id": "eas_zones",     "type": "text",   "label": "NWS Zone / County Codes",
-             "placeholder": "e.g. TXC113,TXC121  (comma-separated — find yours at alerts.weather.gov)"},
+             "placeholder": "e.g. TXC113,TXC121"},
             {"id": "eas_severity_filter", "type": "select", "label": "Minimum Severity",
              "options": [
                  {"value": "Moderate", "label": "Watch (Moderate and above)"},
@@ -1812,17 +1834,21 @@ class Plugin:
                  {"value": "Extreme",  "label": "Emergency (Extreme only)"},
              ]},
             {"id": "eas_poll_interval",   "type": "number", "label": "Poll Interval (seconds)", "min": 15},
-            {"id": "eas_tone_interval",   "type": "number", "label": "Siren Tone Interval (seconds) — how often the attention tone repeats during an active alert", "min": 30},
+            {"id": "eas_tone_interval",   "type": "number", "label": "Siren Tone Interval (seconds) - how often the attention tone repeats during an active alert", "min": 30},
             {"id": "eas_target_type",   "type": "select", "label": "Apply To",
-             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "eas_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
-            {"id": "eas_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_eas_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
+            {"id": "eas_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
+            {"id": "eas_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
+            {"id": "eas_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             # ── Custom Text ───────────────────────────────────────────────
-            {"id": "_custom_section",      "type": "info",   "label": "━━━━━━━━━━  CUSTOM TEXT  ━━━━━━━━━━"},
+            {"id": "_custom_section",      "type": "info",   "label": "==========  CUSTOM TEXT  =========="},
             {"id": "custom_target_type",   "type": "select", "label": "Apply To",
-             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "custom_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
-            {"id": "custom_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_custom_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
+            {"id": "custom_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
+            {"id": "custom_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
+            {"id": "custom_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             {"id": "custom_text",      "type": "text",   "label": "Custom Text"},
             {"id": "custom_style",     "type": "select", "label": "Style",
              "options": [{"value": "static", "label": "Static"}, {"value": "scrolling", "label": "Scrolling"}]},
@@ -1834,25 +1860,25 @@ class Plugin:
              ]},
             {"id": "custom_schedule",  "type": "select", "label": "Schedule",
              "options": [{"value": "always", "label": "Always On"}, {"value": "timed", "label": "Timed"}]},
-            {"id": "custom_duration",  "type": "number", "label": "Display Duration (seconds) — Timed only"},
-            {"id": "custom_interval",  "type": "number", "label": "Repeat Interval (minutes) — Timed only"},
+            {"id": "custom_duration",  "type": "number", "label": "Display Duration (seconds) - Timed only"},
+            {"id": "custom_interval",  "type": "number", "label": "Repeat Interval (minutes) - Timed only"},
             # ── Sports Ticker ─────────────────────────────────────────────
-            {"id": "_sports_section",       "type": "info",    "label": "━━━━━━━━━━  SPORTS TICKER  ━━━━━━━━━━"},
-            {"id": "_sports_football",      "type": "info",    "label": "── Football ──"},
+            {"id": "_sports_section",       "type": "info",    "label": "==========  SPORTS TICKER  =========="},
+            {"id": "_sports_football",      "type": "info",    "label": "-- Football --"},
             {"id": "sports_nfl",            "type": "boolean", "label": "NFL"},
             {"id": "sports_ncaafb",         "type": "boolean", "label": "College Football (NCAAF)"},
             {"id": "sports_cfl",            "type": "boolean", "label": "CFL"},
-            {"id": "_sports_basketball",    "type": "info",    "label": "── Basketball ──"},
+            {"id": "_sports_basketball",    "type": "info",    "label": "-- Basketball --"},
             {"id": "sports_nba",            "type": "boolean", "label": "NBA"},
             {"id": "sports_wnba",           "type": "boolean", "label": "WNBA"},
             {"id": "sports_ncaamb",         "type": "boolean", "label": "College Basketball (NCAAB)"},
-            {"id": "_sports_baseball",      "type": "info",    "label": "── Baseball / Softball ──"},
+            {"id": "_sports_baseball",      "type": "info",    "label": "-- Baseball / Softball --"},
             {"id": "sports_mlb",            "type": "boolean", "label": "MLB"},
             {"id": "sports_ncaabase",       "type": "boolean", "label": "NCAA Baseball"},
             {"id": "sports_ncaasb",         "type": "boolean", "label": "NCAA Softball"},
-            {"id": "_sports_hockey",        "type": "info",    "label": "── Hockey ──"},
+            {"id": "_sports_hockey",        "type": "info",    "label": "-- Hockey --"},
             {"id": "sports_nhl",            "type": "boolean", "label": "NHL"},
-            {"id": "_sports_soccer",        "type": "info",    "label": "── Soccer ──"},
+            {"id": "_sports_soccer",        "type": "info",    "label": "-- Soccer --"},
             {"id": "sports_mls",            "type": "boolean", "label": "MLS"},
             {"id": "sports_nwsl",           "type": "boolean", "label": "NWSL"},
             {"id": "sports_epl",            "type": "boolean", "label": "EPL (English Premier League)"},
@@ -1861,24 +1887,24 @@ class Plugin:
             {"id": "sports_bundesliga",     "type": "boolean", "label": "Bundesliga"},
             {"id": "sports_seriea",         "type": "boolean", "label": "Serie A"},
             {"id": "sports_ligue1",         "type": "boolean", "label": "Ligue 1"},
-            {"id": "_sports_tennis",        "type": "info",    "label": "── Tennis ──"},
+            {"id": "_sports_tennis",        "type": "info",    "label": "-- Tennis --"},
             {"id": "sports_atp",            "type": "boolean", "label": "ATP"},
             {"id": "sports_wta",            "type": "boolean", "label": "WTA"},
-            {"id": "_sports_motor",         "type": "info",    "label": "── Motor ──"},
+            {"id": "_sports_motor",         "type": "info",    "label": "-- Motor --"},
             {"id": "sports_nascar",         "type": "boolean", "label": "NASCAR (live races only)"},
-            {"id": "_sports_college_other", "type": "info",    "label": "── College Other ──"},
+            {"id": "_sports_college_other", "type": "info",    "label": "-- College Other --"},
             {"id": "sports_ncaavb",         "type": "boolean", "label": "NCAA Volleyball"},
             {"id": "sports_ncaalax",        "type": "boolean", "label": "NCAA Lacrosse"},
-            {"id": "sports_favorites",      "type": "text",    "label": "Favorite Teams (abbreviations, comma-separated — blank = all teams)"},
+            {"id": "sports_favorites",      "type": "text",    "label": "Favorite Teams (abbreviations, comma-separated - blank = all teams)"},
             {"id": "sports_color_mode",     "type": "select",  "label": "Color Mode",
              "options": [
-                 {"value": "single", "label": "Single Color — White (recommended, lower CPU)"},
-                 {"value": "multi",  "label": "Multi-Color — Sport labels + team abbreviations colored"},
+                 {"value": "single", "label": "Single Color - White (recommended, lower CPU)"},
+                 {"value": "multi",  "label": "Multi-Color - Sport labels + team abbreviations colored"},
              ]},
             {"id": "sports_position",       "type": "select",  "label": "Ticker Position",
              "options": [{"value": "bottom", "label": "Bottom"}, {"value": "top", "label": "Top"}]},
             {"id": "sports_fontsize",       "type": "number",  "label": "Font Size (default 36)", "min": 16},
-            {"id": "sports_labelcolor",     "type": "select",  "label": "Sport Label Color (NFL:, NBA:, etc.) — Multi-Color only",
+            {"id": "sports_labelcolor",     "type": "select",  "label": "Sport Label Color (NFL:, NBA:, etc.) - Multi-Color only",
              "options": [
                  {"value": "#ffd700", "label": "Gold (default)"},
                  {"value": "#00d4ff", "label": "Cyan"},
@@ -1887,7 +1913,7 @@ class Plugin:
                  {"value": "#ff4444", "label": "Red"},
                  {"value": "#ffffff", "label": "White (no distinction)"},
              ]},
-            {"id": "sports_abbrcolor",      "type": "select",  "label": "Team Abbreviation Color (KC, DEN, etc.) — Multi-Color only",
+            {"id": "sports_abbrcolor",      "type": "select",  "label": "Team Abbreviation Color (KC, DEN, etc.) - Multi-Color only",
              "options": [
                  {"value": "#00d4ff", "label": "Cyan (default)"},
                  {"value": "#ffd700", "label": "Gold"},
@@ -1897,11 +1923,13 @@ class Plugin:
                  {"value": "#ffffff", "label": "White (no distinction)"},
              ]},
             {"id": "sports_target_type",    "type": "select",  "label": "Apply To",
-             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "sports_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
-            {"id": "sports_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_sports_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
+            {"id": "sports_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
+            {"id": "sports_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
+            {"id": "sports_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             # ── Active Tickers ────────────────────────────────────────────
-            {"id": "_active_section", "type": "info", "label": "━━━━━━━━━━  ACTIVE TICKERS  ━━━━━━━━━━"},
+            {"id": "_active_section", "type": "info", "label": "==========  ACTIVE TICKERS  =========="},
             {"id": "_ticker_list",    "type": "info", "label": active_label},
         ]
 
@@ -2023,8 +2051,8 @@ class Plugin:
 
         parts = []
         if enabled:  parts.append(f"Enabled: {len(enabled)} channel(s)")
-        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:   parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _enable_custom(self, params):
@@ -2050,7 +2078,7 @@ class Plugin:
             if interval <= 0:
                 return {"success": False, "message": "Repeat Interval must be greater than 0."}
             if duration >= interval * 60:
-                return {"success": False, "message": "Display Duration (seconds) must be less than Repeat Interval (minutes × 60)."}
+                return {"success": False, "message": "Display Duration (seconds) must be less than Repeat Interval (minutes x 60)."}
 
         channels = self._resolve_channels(params, prefix="custom_")
         if not channels:
@@ -2113,8 +2141,8 @@ class Plugin:
 
         parts = []
         if enabled: parts.append(f"Enabled: {len(enabled)} channel(s)")
-        if skipped: parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:  parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _update_custom(self, params):
@@ -2146,8 +2174,8 @@ class Plugin:
             _save_mappings(mappings)
 
         parts = []
-        if updated: parts.append(f"Updated {len(updated)} channel(s) — text live immediately:\n" + "\n".join(f"  • {u}" for u in updated))
-        if skipped: parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
+        if updated: parts.append(f"Updated {len(updated)} channel(s) - text live immediately:\n" + "\n".join(f"  - {u}" for u in updated))
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
         return {"success": bool(updated), "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _enable_sports(self, params):
@@ -2230,7 +2258,7 @@ class Plugin:
         _save_mappings(mappings)
 
         if color_mode == "multi" and _FONT_MONO_BOLD:
-            color_note = f"Mode: Multi-Color — sport labels = {labelcolor}, team abbreviations = {abbrcolor}."
+            color_note = f"Mode: Multi-Color - sport labels = {labelcolor}, team abbreviations = {abbrcolor}."
         elif color_mode == "multi" and not _FONT_MONO_BOLD:
             color_note = "Mode: Multi-Color requested but monospace font not found — using Single Color white. Install fonts-dejavu or fonts-liberation to enable colors."
         else:
@@ -2243,12 +2271,12 @@ class Plugin:
                 f"Sports: {sports_label}\n"
                 f"Live scores will appear within 30 seconds.\n"
                 f"{color_note}\n"
-                + "\n".join(f"  • {n}" for n in enabled)
+                + "\n".join(f"  - {n}" for n in enabled)
             )
         if skipped:
-            parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
+            parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
         if failed:
-            parts.append("Failed:\n" + "\n".join(f"  • {f}" for f in failed))
+            parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     # ------------------------------------------------------------------ #
@@ -2287,36 +2315,36 @@ class Plugin:
         _save_mappings(mappings)
         parts = []
         if disabled: parts.append(f"Disabled: {len(disabled)} channel(s)")
-        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:   parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _disable_nowplaying(self, params):
         channels = self._resolve_channels(params, prefix="np_")
         if not channels:
-            return {"success": False, "message": "No channels found. Set the Now Playing → Apply To / Channel selector above."}
+            return {"success": False, "message": "No channels found. Set the Now Playing > Apply To / Channel selector above."}
         return self._do_disable(channels, type_filter="nowplaying")
 
     def _disable_custom_ticker(self, params):
         channels = self._resolve_channels(params, prefix="custom_")
         if not channels:
-            return {"success": False, "message": "No channels found. Set the Custom Text → Apply To / Channel selector above."}
+            return {"success": False, "message": "No channels found. Set the Custom Text > Apply To / Channel selector above."}
         return self._do_disable(channels, type_filter="custom")
 
     def _disable_sports_ticker(self, params):
         channels = self._resolve_channels(params, prefix="sports_")
         if not channels:
-            return {"success": False, "message": "No channels found. Set the Sports Ticker → Apply To / Channel selector above."}
+            return {"success": False, "message": "No channels found. Set the Sports Ticker > Apply To / Channel selector above."}
         return self._do_disable(channels, type_filter="sports")
 
     def _enable_eas(self, params):
         zones = (params.get("eas_zones") or "").strip()
         if not zones:
-            return {"success": False, "message": "No NWS zone codes configured. Enter at least one zone code in EAS Weather Alerts → NWS Zone / County Codes above."}
+            return {"success": False, "message": "No NWS zone codes configured. Enter at least one zone code in EAS Weather Alerts > NWS Zone / County Codes above."}
 
         channels = self._resolve_channels(params, prefix="eas_")
         if not channels:
-            return {"success": False, "message": "No channels found. Set the EAS Weather Alerts → Apply To / Channel selector above."}
+            return {"success": False, "message": "No channels found. Set the EAS Weather Alerts > Apply To / Channel selector above."}
 
         mappings = _get_mappings()
         enabled, skipped, failed = [], [], []
@@ -2349,16 +2377,16 @@ class Plugin:
         _save_mappings(mappings)
         parts = []
         if enabled:
-            parts.append(f"EAS registered: {len(enabled)} channel(s)\n" + "\n".join(f"  • {e}" for e in enabled))
+            parts.append(f"EAS registered: {len(enabled)} channel(s)\n" + "\n".join(f"  - {e}" for e in enabled))
             parts.append(f"Monitoring zones: {zones}\nChannels continue using their normal profile. When a qualifying NWS alert fires, they automatically switch to the EAS overlay and restart. No re-encoding overhead until an actual alert occurs.")
-        if skipped: parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:  parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _disable_eas(self, params):
         channels = self._resolve_channels(params, prefix="eas_")
         if not channels:
-            return {"success": False, "message": "No channels found. Set the EAS Weather Alerts → Apply To / Channel selector above."}
+            return {"success": False, "message": "No channels found. Set the EAS Weather Alerts > Apply To / Channel selector above."}
         mappings = _get_mappings()
         disabled, skipped, failed = [], [], []
         for channel in channels:
@@ -2383,8 +2411,8 @@ class Plugin:
         _save_mappings(mappings)
         parts = []
         if disabled: parts.append(f"EAS disabled: {len(disabled)} channel(s)")
-        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:   parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _disable_all(self, params):
@@ -2421,8 +2449,8 @@ class Plugin:
 
         _save_mappings(mappings)
         parts = []
-        if disabled: parts.append(f"Disabled: {len(disabled)} channel(s)\n" + "\n".join(f"  • {n}" for n in disabled))
-        if failed:   parts.append("Failed:\n" + "\n".join(f"  • {f}" for f in failed))
+        if disabled: parts.append(f"Disabled: {len(disabled)} channel(s)\n" + "\n".join(f"  - {n}" for n in disabled))
+        if failed:   parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _migrate_eas(self, params):
@@ -2433,7 +2461,7 @@ class Plugin:
         old_eas = {cid: m for cid, m in mappings.items()
                    if m and m.get("type") == "eas" and m.get("ticker_profile_id")}
         if not old_eas:
-            return {"success": True, "message": "No old static EAS profiles found — all EAS channels are already in dynamic mode."}
+            return {"success": True, "message": "No old static EAS profiles found - all EAS channels are already in dynamic mode."}
 
         migrated, failed = [], []
         for cid, mapping in old_eas.items():
@@ -2464,10 +2492,10 @@ class Plugin:
 
         parts = []
         if migrated:
-            parts.append(f"Migrated {len(migrated)} channel(s) to dynamic EAS:\n" + "\n".join(f"  • {n}" for n in migrated))
+            parts.append(f"Migrated {len(migrated)} channel(s) to dynamic EAS:\n" + "\n".join(f"  - {n}" for n in migrated))
             parts.append("Channels restored to passthrough profiles. Re-encoding only occurs when a real NWS alert fires.")
         if failed:
-            parts.append("Failed:\n" + "\n".join(f"  • {f}" for f in failed))
+            parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _view_active(self, params):
@@ -2488,7 +2516,7 @@ class Plugin:
         if np_channels:
             with_deeplink = [(cid, m) for cid, m in np_channels if m.get("xm_deeplink")]
             no_deeplink   = [(cid, m) for cid, m in np_channels if not m.get("xm_deeplink")]
-            lines.append(f"── Now Playing ({len(np_channels)}, {len(with_deeplink)} matched to tickarr.com) ──")
+            lines.append(f"-- Now Playing ({len(np_channels)}, {len(with_deeplink)} matched to tickarr.com) --")
             for cid, mapping in with_deeplink[:25]:
                 name = mapping.get("channel_name", f"Channel {cid}")
                 deeplink = mapping.get("xm_deeplink")
@@ -2500,17 +2528,17 @@ class Plugin:
                 except Exception:
                     artist = song = ""
                 if artist or song:
-                    lines.append(f"  [{deeplink}] {name}: {artist} — {song}")
+                    lines.append(f"  [{deeplink}] {name}: {artist} - {song}")
                 else:
                     lines.append(f"  [{deeplink}] {name}: (no data yet)")
             if no_deeplink:
-                lines.append(f"  No tickarr.com match ({len(no_deeplink)} — run Refresh Channel Data):")
+                lines.append(f"  No tickarr.com match ({len(no_deeplink)} - run Refresh Channel Data):")
                 for cid, m in no_deeplink[:5]:
-                    lines.append(f"    • {m.get('channel_name', cid)}")
+                    lines.append(f"    - {m.get('channel_name', cid)}")
             lines.append("")
 
         if custom_channels:
-            lines.append(f"── Custom Text ({len(custom_channels)}) ──")
+            lines.append(f"-- Custom Text ({len(custom_channels)}) --")
             for cid, mapping in custom_channels[:20]:
                 name  = mapping.get("channel_name", f"Channel {cid}")
                 style = mapping.get("custom_style", "static")
@@ -2519,7 +2547,7 @@ class Plugin:
             lines.append("")
 
         if sports_channels:
-            lines.append(f"── Sports Ticker ({len(sports_channels)}) ──")
+            lines.append(f"-- Sports Ticker ({len(sports_channels)}) --")
             for cid, mapping in sports_channels[:20]:
                 name = mapping.get("channel_name", f"Channel {cid}")
                 sl   = mapping.get("sports_list", [])
@@ -2543,7 +2571,7 @@ class Plugin:
             channels, aliases = _get_channel_data(force=True)
             stations = _get_stations(force=True)
             if not stations:
-                return {"success": False, "message": "tickarr.com channel list came back empty — try again in a moment."}
+                return {"success": False, "message": "tickarr.com channel list came back empty - try again in a moment."}
             mappings = _get_mappings()
             deeplinks_fixed = 0
             descs_fixed = 0
@@ -2657,8 +2685,8 @@ class Plugin:
                 failed.append(ch.name)
         parts = []
         if filled:  parts.append(f"Filled EPG TVG IDs: {len(filled)} channel(s)")
-        if skipped: parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:  parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _sort_channels(self, params):
@@ -2676,7 +2704,7 @@ class Plugin:
             try:
                 start_number = int(start_raw)
             except (ValueError, TypeError):
-                return {"success": False, "message": f"Invalid Sort Start Number: {start_raw!r} — enter a whole number or leave blank to auto-detect."}
+                return {"success": False, "message": f"Invalid Sort Start Number: {start_raw!r} - enter a whole number or leave blank to auto-detect."}
         else:
             auto_detected = True
             nums = [ch.channel_number for ch in dispatch_channels if ch.channel_number is not None]
@@ -2715,7 +2743,7 @@ class Plugin:
         start_note = " (auto-detected)" if auto_detected else ""
         parts = [f"Sort complete — {updated} channel(s) renumbered from {start_number}{start_note}"]
         if unmatched: parts.append(f"No SXM match (placed at end): {', '.join(c.name for c in unmatched[:10])}")
-        if failed:    parts.append("Failed:\n" + "\n".join(f"  • {f}" for f in failed))
+        if failed:    parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts)}
 
     def _assign_logos(self, params):
@@ -2738,8 +2766,8 @@ class Plugin:
                 failed.append(ch.name)
         parts = []
         if assigned: parts.append(f"Assigned logos: {len(assigned)} channel(s)")
-        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:   parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _fill_sxm_epg(self, params):
@@ -2933,7 +2961,7 @@ class Plugin:
                 deleted.append(profile.name)
             except Exception as e:
                 logger.warning(f"tickarr: could not delete profile {profile.name}: {e}")
-        return {"success": True, "message": f"Deleted {len(deleted)} orphaned profile(s):\n" + "\n".join(f"  • {n}" for n in deleted)}
+        return {"success": True, "message": f"Deleted {len(deleted)} orphaned profile(s):\n" + "\n".join(f"  - {n}" for n in deleted)}
 
     def _redis_diag(self, params):
         rc = _get_redis_client()
@@ -2969,7 +2997,7 @@ class Plugin:
                 if len(ts_keys) > 40:
                     lines.append(f"  ... and {len(ts_keys) - 40} more")
             else:
-                lines.append("No stream keys found — scanning ALL keys to find active stream pattern:\n")
+                lines.append("No stream keys found - scanning ALL keys to find active stream pattern:\n")
                 try:
                     all_keys = list(rc.scan_iter("*", count=500))
                     if all_keys:
@@ -2991,7 +3019,7 @@ class Plugin:
                         if len(all_keys) > 60:
                             lines.append(f"  ... and {len(all_keys) - 60} more")
                     else:
-                        lines.append("  Redis is empty — no keys at all.")
+                        lines.append("  Redis is empty - no keys at all.")
                 except Exception as e2:
                     lines.append(f"  Full scan error: {e2}")
         except Exception as e:
@@ -3011,7 +3039,7 @@ class Plugin:
             if matched:
                 id_to_name = {c[0]: c[2] for c in ch_list}
                 for cid in sorted(matched):
-                    lines.append(f"  • [{cid}] {id_to_name.get(cid, '?')}")
+                    lines.append(f"  - [{cid}] {id_to_name.get(cid, '?')}")
 
         return {"success": True, "message": "\n".join(lines)}
 
@@ -3061,6 +3089,10 @@ class Plugin:
     def _resolve_channels(self, params, prefix=""):
         from apps.channels.models import Channel, ChannelGroup
         target_type = params.get(f"{prefix}target_type", "group")
+
+        if target_type == "all":
+            return list(Channel.objects.all().order_by("name"))
+
         if target_type == "group":
             group_id = params.get(f"{prefix}channel_group_id")
             if not group_id:
@@ -3070,11 +3102,30 @@ class Plugin:
                 return list(Channel.objects.filter(channel_group=group).order_by("name"))
             except ChannelGroup.DoesNotExist:
                 return []
-        else:
-            channel_id = params.get(f"{prefix}channel_id")
-            if not channel_id:
+
+        if target_type == "groups":
+            raw = params.get(f"{prefix}channel_group_names", "")
+            names = [n.strip() for n in raw.split(",") if n.strip()]
+            if not names:
                 return []
-            try:
-                return [Channel.objects.get(id=int(channel_id))]
-            except Channel.DoesNotExist:
-                return []
+            channels = []
+            seen = set()
+            for name in names:
+                try:
+                    group = ChannelGroup.objects.get(name__iexact=name)
+                    for ch in Channel.objects.filter(channel_group=group).order_by("name"):
+                        if ch.id not in seen:
+                            seen.add(ch.id)
+                            channels.append(ch)
+                except ChannelGroup.DoesNotExist:
+                    pass
+            return channels
+
+        # single channel
+        channel_id = params.get(f"{prefix}channel_id")
+        if not channel_id:
+            return []
+        try:
+            return [Channel.objects.get(id=int(channel_id))]
+        except Channel.DoesNotExist:
+            return []
