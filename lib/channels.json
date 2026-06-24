@@ -8699,5 +8699,104 @@
     "sxm_logo_src": "",
     "sxm_entity_id": "9348",
     "lookaround_channel_id": null
+  },
+  "the weather channel": {
+    "name": "The Weather Channel",
+    "description": "Weather forecasts, severe weather alerts, and meteorological coverage from The Weather Channel.",
+    "genre": "News/Public Radio",
+    "sxm_number": 122,
+    "seasonal": null,
+    "logo_url": "",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "",
+    "lookaround_channel_id": null
+  },
+  "limited edition 8": {
+    "name": "Limited Edition 8",
+    "description": "An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.",
+    "genre": "Pop",
+    "sxm_number": 508,
+    "seasonal": null,
+    "logo_url": "https://jstevenscl.github.io/epgeditarr/logos/limitededition8.png",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "",
+    "lookaround_channel_id": null
+  },
+  "limited edition 9": {
+    "name": "Limited Edition 9",
+    "description": "An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.",
+    "genre": "Pop",
+    "sxm_number": 509,
+    "seasonal": null,
+    "logo_url": "https://jstevenscl.github.io/epgeditarr/logos/limitededition9.png",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "",
+    "lookaround_channel_id": null
+  },
+  "limited edition 10": {
+    "name": "Limited Edition 10",
+    "description": "An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.",
+    "genre": "Pop",
+    "sxm_number": 510,
+    "seasonal": null,
+    "logo_url": "https://jstevenscl.github.io/epgeditarr/logos/limitededition10.png",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "",
+    "lookaround_channel_id": null
+  },
+  "crime junkie radio": {
+    "name": "Crime Junkie Radio",
+    "description": "True crime stories and investigations from the popular Crime Junkie podcast, now on SiriusXM.",
+    "genre": "Talk/Spoken Word",
+    "sxm_number": null,
+    "seasonal": null,
+    "logo_url": "",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "",
+    "lookaround_channel_id": null
+  },
+  "billboard 2025 #1s": {
+    "name": "Billboard 2025 #1s",
+    "description": "The biggest Billboard #1 hits of 2025, curated by SiriusXM.",
+    "genre": "Pop",
+    "sxm_number": null,
+    "seasonal": true,
+    "logo_url": "",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "",
+    "lookaround_channel_id": null
+  },
+  "fallon holiday seasoning": {
+    "name": "Fallon Holiday Seasoning",
+    "description": "Jimmy Fallon's holiday music channel on SiriusXM, featuring festive songs and seasonal favorites.",
+    "genre": "Holiday",
+    "sxm_number": null,
+    "seasonal": true,
+    "logo_url": "",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "",
+    "lookaround_channel_id": null
+  },
+  "country christmas": {
+    "name": "Country Christmas",
+    "description": "Country holiday music and Christmas favorites on SiriusXM.",
+    "genre": "Holiday",
+    "sxm_number": null,
+    "seasonal": true,
+    "logo_url": "",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "",
+    "lookaround_channel_id": null
+  },
+  "christmas spirit": {
+    "name": "Christmas Spirit",
+    "description": "Traditional and contemporary Christmas music on SiriusXM.",
+    "genre": "Holiday",
+    "sxm_number": null,
+    "seasonal": true,
+    "logo_url": "",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "",
+    "lookaround_channel_id": null
   }
 }
