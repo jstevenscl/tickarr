@@ -1,45 +1,6 @@
 {
-  "generated_at": "2026-06-24T17:49:33Z",
+  "generated_at": "2026-06-24T21:18:51Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Miami Marlins @ Texas Rangers",
-      "description": "MLB · Miami Marlins @ Texas Rangers",
-      "start_utc": "2026-06-24T16:10:00Z",
-      "end_utc": "2026-06-24T19:10:00Z",
-      "channels": [
-        "Texas Rangers",
-        "Miami Marlins",
-        "MLB Play-by-Play 175",
-        "MLB en Español 870",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Mets @ Chicago Cubs",
-      "description": "MLB · New York Mets @ Chicago Cubs",
-      "start_utc": "2026-06-24T17:10:00Z",
-      "end_utc": "2026-06-24T20:10:00Z",
-      "channels": [
-        "Chicago Cubs",
-        "New York Mets",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago White Sox @ Cleveland Guardians",
-      "description": "MLB · Chicago White Sox @ Cleveland Guardians",
-      "start_utc": "2026-06-24T18:10:00Z",
-      "end_utc": "2026-06-24T21:10:00Z",
-      "channels": [
-        "Cleveland Guardians",
-        "Chicago White Sox",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "soccer",
       "title": "Switzerland @ Canada",
@@ -118,14 +79,14 @@
     },
     {
       "slug": "mlb",
-      "title": "Detroit Tigers @ New York Yankees",
-      "description": "MLB · Detroit Tigers @ New York Yankees",
+      "title": "Tampa Bay Rays @ Kansas City Royals",
+      "description": "MLB · Tampa Bay Rays @ Kansas City Royals",
       "start_utc": "2026-06-24T22:40:00Z",
       "end_utc": "2026-06-25T01:40:00Z",
       "channels": [
-        "New York Yankees",
-        "Detroit Tigers",
-        "MLB Play-by-Play 180",
+        "Kansas City Royals",
+        "Tampa Bay Rays",
+        "MLB Play-by-Play 179",
         "MLB Network Radio"
       ]
     },
@@ -144,14 +105,14 @@
     },
     {
       "slug": "mlb",
-      "title": "Tampa Bay Rays @ Kansas City Royals",
-      "description": "MLB · Tampa Bay Rays @ Kansas City Royals",
+      "title": "Detroit Tigers @ New York Yankees",
+      "description": "MLB · Detroit Tigers @ New York Yankees",
       "start_utc": "2026-06-24T22:40:00Z",
       "end_utc": "2026-06-25T01:40:00Z",
       "channels": [
-        "Kansas City Royals",
-        "Tampa Bay Rays",
-        "MLB Play-by-Play 179",
+        "New York Yankees",
+        "Detroit Tigers",
+        "MLB Play-by-Play 180",
         "MLB Network Radio"
       ]
     },
