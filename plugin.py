@@ -1575,12 +1575,12 @@ class Plugin:
         try:
             from apps.channels.models import ChannelGroup, Channel
             managed_group_ids = set(
-                Channel.objects.exclude(group=None).values_list("group_id", flat=True)
+                Channel.objects.exclude(channel_group=None).values_list("channel_group_id", flat=True)
             )
             groups   = [{"value": str(g.id), "label": g.name}
                         for g in ChannelGroup.objects.filter(id__in=managed_group_ids).order_by("name")]
             channels = [{"value": str(c.id), "label": c.name}
-                        for c in Channel.objects.exclude(group=None).order_by("name")]
+                        for c in Channel.objects.exclude(channel_group=None).order_by("name")]
         except Exception:
             groups = []
             channels = []
