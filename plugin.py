@@ -1620,15 +1620,12 @@ class Plugin:
         active_label = (f"{len(mappings)} active ticker(s):\n" + "\n".join(ticker_lines)) if mappings else "No active tickers."
 
         return [
-            # ── Channel Selection (shared by Now Playing + Channel Setup) ──
+            # ── Now Playing ───────────────────────────────────────────────
             {"id": "_np_section",       "type": "info",   "label": "━━━━━━━━━━  NOW PLAYING  ━━━━━━━━━━"},
-            {"id": "_np_selector_note", "type": "info",   "label": "Channel selection below is also used by Channel Setup actions (Fill EPG, Sort, Logos)."},
             {"id": "np_target_type",    "type": "select", "label": "Apply To",
              "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
             {"id": "np_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
             {"id": "np_channel_id",       "type": "select", "label": "Channel",       "options": channels},
-            {"id": "sort_start_number",   "type": "text",   "label": "Sort Start Number",
-             "placeholder": "Leave blank to auto-detect from current channel numbers"},
             # ── Custom Text ───────────────────────────────────────────────
             {"id": "_custom_section",      "type": "info",   "label": "━━━━━━━━━━  CUSTOM TEXT  ━━━━━━━━━━"},
             {"id": "custom_target_type",   "type": "select", "label": "Apply To",
@@ -2391,11 +2388,11 @@ class Plugin:
         channels_data, aliases = _get_channel_data()
         if not channels_data:
             raise ValueError("Channel data not available — run Refresh Channel Data first.")
-        target_type = params.get("np_target_type", "group")
+        target_type = params.get("ch_target_type", "group")
         if target_type == "group":
-            group_id = params.get("np_channel_group_id")
+            group_id = params.get("ch_channel_group_id")
             if not group_id:
-                raise ValueError("Select a channel group in Settings before running this action.")
+                raise ValueError("Select a channel group in the Channel Setup section of Settings before running this action.")
             try:
                 group = ChannelGroup.objects.get(id=int(group_id))
                 return channels_data, aliases, list(
@@ -2404,9 +2401,9 @@ class Plugin:
             except ChannelGroup.DoesNotExist:
                 raise ValueError("Channel group not found.")
         else:
-            channel_id = params.get("np_channel_id")
+            channel_id = params.get("ch_channel_id")
             if not channel_id:
-                raise ValueError("Select a channel in Settings before running this action.")
+                raise ValueError("Select a channel in the Channel Setup section of Settings before running this action.")
             try:
                 return channels_data, aliases, [Channel.objects.get(id=int(channel_id))], None
             except Channel.DoesNotExist:
