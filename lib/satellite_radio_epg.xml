@@ -416,6 +416,9 @@
     <display-name>Bill Gaither's enLighten</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/billgaithersenlighten.png" />
   </channel>
+  <channel id="Billboard 2025 #1s">
+    <display-name>Billboard 2025 #1s</display-name>
+  </channel>
   <channel id="Billboard Top 500">
     <display-name>Billboard Top 500</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/billboardtop500.png" />
@@ -604,6 +607,9 @@
     <display-name>Chris Stapleton Radio</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/chrisstapletonradio.png" />
   </channel>
+  <channel id="Christmas Spirit">
+    <display-name>Christmas Spirit</display-name>
+  </channel>
   <channel id="Chucho's Cuba &amp; Beyond">
     <display-name>Chucho's Cuba &amp; Beyond</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/chuchoscubabeyond.png" />
@@ -769,6 +775,9 @@
     <display-name>Country &amp; Pop Party</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/countrypopparty.png" />
   </channel>
+  <channel id="Country Christmas">
+    <display-name>Country Christmas</display-name>
+  </channel>
   <channel id="Country Classics Mix">
     <display-name>Country Classics Mix</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/countryclassicsmix.png" />
@@ -783,6 +792,9 @@
   <channel id="Country n Chill">
     <display-name>Country n Chill</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/countrynchill.png" />
+  </channel>
+  <channel id="Crime Junkie Radio">
+    <display-name>Crime Junkie Radio</display-name>
   </channel>
   <channel id="Croatia">
     <display-name>Croatia</display-name>
@@ -981,6 +993,9 @@
   <channel id="Faction Talk">
     <display-name>Faction Talk</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/factiontalk.png" />
+  </channel>
+  <channel id="Fallon Holiday Seasoning">
+    <display-name>Fallon Holiday Seasoning</display-name>
   </channel>
   <channel id="Family Talk">
     <display-name>Family Talk</display-name>
@@ -1397,6 +1412,10 @@
     <display-name>Limited Edition 1</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/limitededition1.png" />
   </channel>
+  <channel id="Limited Edition 10">
+    <display-name>Limited Edition 10</display-name>
+    <icon src="https://jstevenscl.github.io/epgeditarr/logos/limitededition10.png" />
+  </channel>
   <channel id="Limited Edition 11">
     <display-name>Limited Edition 11</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/limitededition11.png" />
@@ -1424,6 +1443,14 @@
   <channel id="Limited Edition 7">
     <display-name>Limited Edition 7</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/limitededition7.png" />
+  </channel>
+  <channel id="Limited Edition 8">
+    <display-name>Limited Edition 8</display-name>
+    <icon src="https://jstevenscl.github.io/epgeditarr/logos/limitededition8.png" />
+  </channel>
+  <channel id="Limited Edition 9">
+    <display-name>Limited Edition 9</display-name>
+    <icon src="https://jstevenscl.github.io/epgeditarr/logos/limitededition9.png" />
   </channel>
   <channel id="Line Dance">
     <display-name>Line Dance</display-name>
@@ -2997,6 +3024,9 @@
     <display-name>The Village</display-name>
     <icon src="https://jstevenscl.github.io/epgeditarr/logos/thevillage.png" />
   </channel>
+  <channel id="The Weather Channel">
+    <display-name>The Weather Channel</display-name>
+  </channel>
   <channel id="To Be Determined">
     <display-name>To Be Determined</display-name>
   </channel>
@@ -4162,6 +4192,10 @@
     <title lang="en">Bill Gaither's enLighten</title>
     <desc lang="en">Uplifting, harmony-driven Gospel music with stories, inspiration and hope from iconic singer/songwriter Bill Gaither. Plus music from The GVB, Booth Brothers, Jeff &amp; Sheri Easter, Karen Peck &amp; New River, Greater Vision &amp; more.</desc>
   </programme>
+  <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Billboard 2025 #1s">
+    <title lang="en">Billboard 2025 #1s</title>
+    <desc lang="en">The biggest Billboard #1 hits of 2025, curated by SiriusXM.</desc>
+  </programme>
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Billboard Top 500">
     <title lang="en">Billboard Top 500</title>
     <desc lang="en">It's a countdown of the Top 500 Summer Hits according to Billboard including songs by Mariah Carey, The Police, Lil Nas X, Bee Gees, Katy Perry and The Beatles. Eight decades of Summertime songs that bring back memories of long days and warm nights!!!</desc>
@@ -4731,6 +4765,10 @@
     <title lang="en">Chris Stapleton Radio</title>
     <desc lang="en">Get closer to one of the most original and authentic artists today - singer, songwriter, and musician, Chris Stapleton. Listen as he shares music spanning his entire career, and the stories behind those songs. Chris Stapleton Radio is the home to the kings and queens of country, rock, soul, and more - handpicked by Chris and his band, The Honchos.</desc>
   </programme>
+  <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Christmas Spirit">
+    <title lang="en">Christmas Spirit</title>
+    <desc lang="en">Traditional and contemporary Christmas music on SiriusXM.</desc>
+  </programme>
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Chucho's Cuba &amp; Beyond">
     <title lang="en">Chucho's Cuba &amp; Beyond</title>
     <desc lang="en">Legendary Cuban pianist, bandleader and composer, Chucho Valdés invites you on a timeless musical journey to explore the cultural richness of Cuban music, past and present. From Afro-Cuban jazz to rumba, mambo to salsa, timba to Cuban hip-hop, embark on a sonic tour of this remarkable island where music has no boundaries and is simply a way of life.</desc>
@@ -5175,6 +5213,10 @@
     <title lang="en">Country &amp; Pop Party</title>
     <desc lang="en">New country &amp; pop hit party music</desc>
   </programme>
+  <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Country Christmas">
+    <title lang="en">Country Christmas</title>
+    <desc lang="en">Country holiday music and Christmas favorites on SiriusXM.</desc>
+  </programme>
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Country Classics Mix">
     <title lang="en">Country Classics Mix</title>
     <desc lang="en">60s, 70s &amp; 80s country music mash-up</desc>
@@ -5190,6 +5232,10 @@
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Country n Chill">
     <title lang="en">Country n Chill</title>
     <desc lang="en">Slow dance country</desc>
+  </programme>
+  <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Crime Junkie Radio">
+    <title lang="en">Crime Junkie Radio</title>
+    <desc lang="en">True crime stories and investigations from the popular Crime Junkie podcast, now on SiriusXM.</desc>
   </programme>
   <programme start="20260624060000 +0000" stop="20260625060000 +0000" channel="Croatia">
     <title lang="en">Croatia</title>
@@ -5957,6 +6003,10 @@
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Faction Talk">
     <title lang="en">Faction Talk</title>
     <desc lang="en">Funny, fast and unfiltered talk with Sam Roberts' show every morning, The Bonfire with comedians Big Jay Oakerson &amp; Robert Kelly at night and the only father daughter radio show in the world, The Bennington Show, in the middle of your day. Add Eddie Trunk daily for a celebration of all things hard rock &amp; heavy metal, and you've got Faction Talk.</desc>
+  </programme>
+  <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Fallon Holiday Seasoning">
+    <title lang="en">Fallon Holiday Seasoning</title>
+    <desc lang="en">Jimmy Fallon's holiday music channel on SiriusXM, featuring festive songs and seasonal favorites.</desc>
   </programme>
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Family Talk">
     <title lang="en">Family Talk</title>
@@ -6959,6 +7009,10 @@
     <title lang="en">Limited Edition 1</title>
     <desc lang="en">An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.</desc>
   </programme>
+  <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Limited Edition 10">
+    <title lang="en">Limited Edition 10</title>
+    <desc lang="en">An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.</desc>
+  </programme>
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Limited Edition 11">
     <title lang="en">Limited Edition 11</title>
     <desc lang="en">An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.</desc>
@@ -6985,6 +7039,14 @@
   </programme>
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Limited Edition 7">
     <title lang="en">Limited Edition 7</title>
+    <desc lang="en">An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.</desc>
+  </programme>
+  <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Limited Edition 8">
+    <title lang="en">Limited Edition 8</title>
+    <desc lang="en">An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.</desc>
+  </programme>
+  <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Limited Edition 9">
+    <title lang="en">Limited Edition 9</title>
     <desc lang="en">An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.</desc>
   </programme>
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="Line Dance">
@@ -11814,6 +11876,10 @@
   <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="The Village">
     <title lang="en">The Village</title>
     <desc lang="en">Traditional, contemporary and indie-folk music from the past to today. Hear songs and ballads from songwriters like Bob Dylan, Ellis Paul, Joan Baez, Iron &amp; Wine, Peter Paul &amp; Mary, Dar Williams, Judy Collins, Carolina Chocolate Drops, Pete Seeger, Jesse Welles and more.</desc>
+  </programme>
+  <programme start="20260624060000 +0000" stop="20260708060000 +0000" channel="The Weather Channel">
+    <title lang="en">The Weather Channel</title>
+    <desc lang="en">Weather forecasts, severe weather alerts, and meteorological coverage from The Weather Channel.</desc>
   </programme>
   <programme start="20260624060000 +0000" stop="20260625060000 +0000" channel="To Be Determined">
     <title lang="en">To Be Determined</title>
