@@ -518,7 +518,7 @@ def _fetch_nws_alerts(zones, severity_threshold="Moderate"):
     zone_str = ",".join(z.upper() for z in zones if z.strip())
     if not zone_str:
         return []
-    url = f"{NWS_ALERTS_URL}?zone={zone_str}&status=Actual"
+    url = f"{NWS_ALERTS_URL}?zone={zone_str}"
     req = urllib.request.Request(url, headers={
         "User-Agent": NWS_UA,
         "Accept": "application/geo+json",
