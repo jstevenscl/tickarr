@@ -545,6 +545,10 @@ def _fetch_nws_alerts(zones, severity_threshold="Moderate"):
     return alerts
 
 
+_EAS_REDIS_KEY  = f"tickarr:{_PLUGIN_KEY}:eas_result"
+_EAS_REDIS_LOCK = f"tickarr:{_PLUGIN_KEY}:eas_poll_lock"
+_EAS_CACHE_TTL  = 50   # seconds — one worker polls, all others read from Redis
+
 def _eas_sweep():
     settings = _get_settings()
     zones_raw = (settings.get("eas_zones") or "").strip()
@@ -556,11 +560,32 @@ def _eas_sweep():
     eas_cids = [cid for cid, m in mappings.items() if m and m.get("type") == "eas"]
     if not eas_cids:
         return
+
+    # Use Redis so only one worker polls NWS; all others use the cached result.
+    alerts = None
     try:
-        alerts = _fetch_nws_alerts(zones, severity_threshold)
+        rc = _get_redis_client()
+        if rc:
+            cached = rc.get(_EAS_REDIS_KEY)
+            if cached:
+                alerts = json.loads(cached)
+            else:
+                lock_acquired = rc.set(_EAS_REDIS_LOCK, "1", nx=True, ex=30)
+                if lock_acquired:
+                    try:
+                        alerts = _fetch_nws_alerts(zones, severity_threshold)
+                        rc.setex(_EAS_REDIS_KEY, _EAS_CACHE_TTL, json.dumps(alerts))
+                    except Exception as e:
+                        logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
+                        return
+                else:
+                    return  # another worker is currently fetching; skip this cycle
+        else:
+            alerts = _fetch_nws_alerts(zones, severity_threshold)
     except Exception as e:
         logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
         return
+
     worst = (max(alerts, key=lambda a: _EAS_SEV.get(a["severity"], 0)) if alerts else None)
     with _eas_lock:
         for cid in eas_cids:
