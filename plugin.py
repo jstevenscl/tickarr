@@ -165,23 +165,23 @@ _SPORTS_LABELS_LAYER = (
 # whose passion for keeping people informed inspired this feature.
 # Rest easy.
 # ---------------------------------------------------------------------------
-# Alert type: red box, flashing at 1 Hz — centered on screen
+# Alert type: red bar at bottom, flashing at 1 Hz
 _EAS_TYPE_LAYER = (
     "drawtext="
     "fontfile={font}"
     ":textfile={ticker_dir}/eas_{channel_id}_type.txt:reload=1"
     ":fontsize=28:fontcolor=white"
-    ":x=(w-text_w)/2:y=(h/2)-38"
+    ":x=(w-text_w)/2:y=h-90"
     ":box=1:boxcolor=0xFF0000@0.92:boxborderw=14"
     ":enable='lt(mod(t\\,1)\\,0.5)'"
 )
-# Area description: yellow text, black box, static
+# Area description: yellow text, black box, bottom bar
 _EAS_AREA_LAYER = (
     "drawtext="
     "fontfile={font}"
     ":textfile={ticker_dir}/eas_{channel_id}_area.txt:reload=1"
     ":fontsize=18:fontcolor=yellow@0.95"
-    ":x=(w-text_w)/2:y=(h/2)+12"
+    ":x=(w-text_w)/2:y=h-48"
     ":box=1:boxcolor=black@0.82:boxborderw=8"
 )
 
@@ -327,7 +327,29 @@ def _clone_and_inject(channel_id, original_profile, channel_name=""):
     return profile, removed_flags
 
 
-def _clone_and_inject_eas(channel_id, original_profile, channel_name=""):
+def _inject_eas_tone(params, interval_secs=300):
+    """Add a periodic EAS attention tone (1050 Hz) to the audio stream."""
+    if "-vn" in params or "aeval" in params:
+        return params  # audio-only or tone already injected
+    tone = (
+        f"aeval="
+        f"'val(0)+if(lt(mod(t\\,{interval_secs})\\,2)\\,0.25*sin(6.2832*1050*t)\\,0)"
+        f"|val(1)+if(lt(mod(t\\,{interval_secs})\\,2)\\,0.25*sin(6.2832*1050*t)\\,0)'"
+        f":c=same"
+    )
+    params = re.sub(r'\s*-c:a\s+copy\b', '', params)
+    params = re.sub(r'\s*-acodec\s+copy\b', '', params)
+    af_clause = f'-af "{tone}"'
+    if "-f mpegts" in params:
+        params = params.replace("-f mpegts", f"{af_clause} -f mpegts")
+    elif "pipe:1" in params:
+        params = params.replace("pipe:1", f"{af_clause} pipe:1")
+    else:
+        params = f"{params} {af_clause}"
+    return params
+
+
+def _clone_and_inject_eas(channel_id, original_profile, channel_name="", tone_interval=0):
     from core.models import StreamProfile
     raw_params = original_profile.parameters or ""
     cleaned_params, removed_flags = _strip_dangerous_flags(
@@ -339,6 +361,8 @@ def _clone_and_inject_eas(channel_id, original_profile, channel_name=""):
         + _EAS_AREA_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=channel_id)
     )
     params = _inject_drawtext(cleaned_params, eas_filter)
+    if tone_interval > 0:
+        params = _inject_eas_tone(params, tone_interval)
     profile = StreamProfile(
         name=f"{PROFILE_PREFIX}EAS [{original_profile.name}] [ch{channel_id}]",
         command=original_profile.command,
@@ -514,6 +538,19 @@ def _eas_clear(channel_id):
     _atomic_write(f"eas_{channel_id}_area.txt", "")
 
 
+def _eas_restart_channel(channel_uuid):
+    """Stop an active channel via Dispatcharr's live_proxy so clients reconnect with the updated profile."""
+    try:
+        from apps.proxy.live_proxy.services.channel_service import ChannelService
+        result = ChannelService.stop_channel(channel_uuid)
+        if result.get("status") == "success":
+            logger.info(f"[Tickarr] EAS: channel {channel_uuid} restarted for profile switch")
+    except ImportError:
+        logger.warning("[Tickarr] EAS: live_proxy unavailable — profile will apply on next client connect")
+    except Exception as e:
+        logger.debug(f"[Tickarr] EAS: restart {channel_uuid}: {e}")
+
+
 def _fetch_nws_alerts(zones, severity_threshold="Moderate"):
     zone_str = ",".join(z.upper() for z in zones if z.strip())
     if not zone_str:
@@ -547,6 +584,8 @@ def _fetch_nws_alerts(zones, severity_threshold="Moderate"):
 
 _EAS_REDIS_KEY  = f"tickarr:{_PLUGIN_KEY}:eas_result"
 _EAS_REDIS_LOCK = f"tickarr:{_PLUGIN_KEY}:eas_poll_lock"
+_EAS_STATE_KEY  = f"tickarr:{_PLUGIN_KEY}:eas_state"   # JSON {cid: event_name or null}
+_EAS_OWNER_KEY  = f"tickarr:{_PLUGIN_KEY}:eas_owner"   # nx lock — one worker applies transitions
 _EAS_CACHE_TTL  = 50   # seconds — one worker polls, all others read from Redis
 
 def _eas_sweep():
@@ -556,15 +595,19 @@ def _eas_sweep():
         return
     zones = [z.strip() for z in zones_raw.split(",") if z.strip()]
     severity_threshold = settings.get("eas_severity_filter") or "Moderate"
+    try:
+        tone_interval = max(30, int(settings.get("eas_tone_interval") or 300))
+    except Exception:
+        tone_interval = 300
     mappings = _get_mappings()
     eas_cids = [cid for cid, m in mappings.items() if m and m.get("type") == "eas"]
     if not eas_cids:
         return
 
-    # Use Redis so only one worker polls NWS; all others use the cached result.
+    # One worker polls NWS; all others read from Redis cache.
     alerts = None
+    rc = _get_redis_client()
     try:
-        rc = _get_redis_client()
         if rc:
             cached = rc.get(_EAS_REDIS_KEY)
             if cached:
@@ -579,7 +622,7 @@ def _eas_sweep():
                         logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
                         return
                 else:
-                    return  # another worker is currently fetching; skip this cycle
+                    return  # another worker is fetching right now
         else:
             alerts = _fetch_nws_alerts(zones, severity_threshold)
     except Exception as e:
@@ -587,20 +630,111 @@ def _eas_sweep():
         return
 
     worst = (max(alerts, key=lambda a: _EAS_SEV.get(a["severity"], 0)) if alerts else None)
-    with _eas_lock:
-        for cid in eas_cids:
-            active = _eas_active.get(cid)
-            if worst:
-                if active != worst["event"]:
-                    _eas_write_alert(cid, worst)
-                    _eas_active[cid] = worst["event"]
-                    if not active:
-                        logger.info(f"[Tickarr] EAS ALERT: {worst['event']} — {worst['area'][:60]} (ch {cid})")
+
+    # Read persisted alert state (shared across all workers via Redis).
+    current_state = {}
+    if rc:
+        try:
+            raw = rc.get(_EAS_STATE_KEY)
+            if raw:
+                current_state = json.loads(raw)
+        except Exception:
+            pass
+
+    # Determine which channels need a state transition.
+    transitions = {}
+    for cid in eas_cids:
+        old_event = current_state.get(cid)
+        new_event = worst["event"] if worst else None
+        if old_event != new_event:
+            transitions[cid] = (old_event, new_event)
+
+    if not transitions:
+        return
+
+    # Only one worker applies transitions — others skip this cycle.
+    if rc and not rc.set(_EAS_OWNER_KEY, "1", nx=True, ex=120):
+        return
+
+    from apps.channels.models import Channel
+    from core.models import StreamProfile
+
+    new_state = dict(current_state)
+    changed = False
+
+    for cid, (old_event, new_event) in transitions.items():
+        mapping = mappings.get(cid, {})
+        try:
+            channel = Channel.objects.filter(id=int(cid)).first()
+            if not channel:
+                continue
+
+            if new_event:
+                # Alert firing — migrate old static format if present, then clone fresh EAS profile.
+                if mapping.get("ticker_profile_id"):
+                    _restore_profile(channel, mapping["original_profile_id"])
+                    _delete_cloned_profile(mapping["ticker_profile_id"])
+                    mapping.pop("ticker_profile_id", None)
+
+                if mapping.get("eas_profile_id"):
+                    _delete_cloned_profile(mapping["eas_profile_id"])
+                    mapping.pop("eas_profile_id", None)
+
+                orig = StreamProfile.objects.filter(id=mapping["original_profile_id"]).first()
+                if not orig:
+                    logger.warning(f"[Tickarr] EAS: original profile missing for ch {cid}")
+                    continue
+
+                eas_profile, _ = _clone_and_inject_eas(channel.id, orig, channel.name, tone_interval)
+                _assign_profile(channel, eas_profile)
+                _eas_write_alert(cid, worst)
+                mapping["eas_profile_id"] = eas_profile.id
+                mappings[cid] = mapping
+                new_state[cid] = new_event
+
+                if not old_event:
+                    logger.info(f"[Tickarr] EAS ALERT: {new_event} — {worst['area'][:60]} (ch {cid})")
+
+                _eas_restart_channel(str(channel.uuid))
+
             else:
-                if active:
-                    _eas_clear(cid)
+                # Alert cleared — restore original passthrough profile.
+                eas_pid = mapping.get("eas_profile_id") or mapping.get("ticker_profile_id")
+                _restore_profile(channel, mapping["original_profile_id"])
+                if eas_pid:
+                    _delete_cloned_profile(eas_pid)
+                mapping.pop("eas_profile_id", None)
+                mapping.pop("ticker_profile_id", None)
+                mappings[cid] = mapping
+                _eas_clear(cid)
+                new_state[cid] = None
+                logger.info(f"[Tickarr] EAS: alert cleared — ch {cid}")
+                _eas_restart_channel(str(channel.uuid))
+
+            with _eas_lock:
+                if new_event:
+                    _eas_active[cid] = new_event
+                else:
                     _eas_active.pop(cid, None)
-                    logger.info(f"[Tickarr] EAS: alert cleared — ch {cid}")
+
+            changed = True
+
+        except Exception as e:
+            logger.error(f"[Tickarr] EAS: transition failed ch {cid}: {e}", exc_info=True)
+
+    if changed:
+        _save_mappings(mappings)
+        if rc:
+            try:
+                rc.setex(_EAS_STATE_KEY, 3600, json.dumps(new_state))
+            except Exception:
+                pass
+
+    if rc:
+        try:
+            rc.delete(_EAS_OWNER_KEY)
+        except Exception:
+            pass
 
 
 def _eas_sweep_loop(stop_event):
@@ -1632,6 +1766,9 @@ class Plugin:
                 labels_str = ", ".join(LABELS.get(s, s) for s in sl[:5])
                 fav = m.get("sports_favorites", "")
                 now_playing = f"[sports: {labels_str}]" + (f" favs: {fav}" if fav else "")
+            elif ticker_type == "eas":
+                event = _eas_active.get(cid)
+                now_playing = f"[EAS] ⚠ ALERT: {event}" if event else "[EAS] monitoring — no active alert"
             else:
                 artist_file = os.path.join(TICKER_DIR, f"channel_{cid}_artist.txt")
                 song_file   = os.path.join(TICKER_DIR, f"channel_{cid}_song.txt")
@@ -1652,6 +1789,34 @@ class Plugin:
              "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
             {"id": "np_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
             {"id": "np_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+            # ── Satellite Radio Channel Setup ─────────────────────────────
+            {"id": "_ch_section", "type": "info", "label": "━━━━━━━━━━  SATELLITE RADIO CHANNEL SETUP  ━━━━━━━━━━"},
+            {"id": "_ch_about",   "type": "info",
+             "label": "Select a group or channel below, then use the Channel Setup actions to fill EPG, sort, or assign logos."},
+            {"id": "ch_target_type", "type": "select", "label": "Apply To",
+             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "ch_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
+            {"id": "ch_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+            {"id": "sort_start_number",   "type": "text",   "label": "Sort Start Number",
+             "placeholder": "Leave blank to auto-detect from current channel numbers"},
+            # ── EAS ───────────────────────────────────────────────────────
+            {"id": "_eas_section",  "type": "info", "label": "━━━━━━━━━━  EAS WEATHER ALERTS  ━━━━━━━━━━"},
+            {"id": "_eas_about",    "type": "info",
+             "label": "Monitors NWS alerts for configured zones. When an alert fires, affected channels automatically switch to an EAS overlay profile (red flashing banner + siren tone) and restart. Channels return to normal passthrough when the alert clears."},
+            {"id": "eas_zones",     "type": "text",   "label": "NWS Zone / County Codes",
+             "placeholder": "e.g. TXC113,TXC121  (comma-separated — find yours at alerts.weather.gov)"},
+            {"id": "eas_severity_filter", "type": "select", "label": "Minimum Severity",
+             "options": [
+                 {"value": "Moderate", "label": "Watch (Moderate and above)"},
+                 {"value": "Severe",   "label": "Warning (Severe and above)"},
+                 {"value": "Extreme",  "label": "Emergency (Extreme only)"},
+             ]},
+            {"id": "eas_poll_interval",   "type": "number", "label": "Poll Interval (seconds)", "min": 15},
+            {"id": "eas_tone_interval",   "type": "number", "label": "Siren Tone Interval (seconds) — how often the attention tone repeats during an active alert", "min": 30},
+            {"id": "eas_target_type",   "type": "select", "label": "Apply To",
+             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "eas_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
+            {"id": "eas_channel_id",       "type": "select", "label": "Channel",       "options": channels},
             # ── Custom Text ───────────────────────────────────────────────
             {"id": "_custom_section",      "type": "info",   "label": "━━━━━━━━━━  CUSTOM TEXT  ━━━━━━━━━━"},
             {"id": "custom_target_type",   "type": "select", "label": "Apply To",
@@ -1735,33 +1900,6 @@ class Plugin:
              "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
             {"id": "sports_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
             {"id": "sports_channel_id",       "type": "select", "label": "Channel",       "options": channels},
-            # ── Channel Setup ─────────────────────────────────────────────
-            {"id": "_ch_section", "type": "info", "label": "━━━━━━━━━━  SATELLITE RADIO CHANNEL SETUP  ━━━━━━━━━━"},
-            {"id": "_ch_about",   "type": "info",
-             "label": "Select a group or channel below, then use the Channel Setup actions to fill EPG, sort, or assign logos."},
-            {"id": "ch_target_type", "type": "select", "label": "Apply To",
-             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "ch_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
-            {"id": "ch_channel_id",       "type": "select", "label": "Channel",       "options": channels},
-            {"id": "sort_start_number",   "type": "text",   "label": "Sort Start Number",
-             "placeholder": "Leave blank to auto-detect from current channel numbers"},
-            # ── EAS ───────────────────────────────────────────────────────
-            {"id": "_eas_section",  "type": "info", "label": "━━━━━━━━━━  EAS WEATHER ALERTS  ━━━━━━━━━━"},
-            {"id": "_eas_about",    "type": "info",
-             "label": "Monitors NWS alerts for configured zones. Overlay is invisible until an alert fires, then shows alert type and affected area. Clears automatically when the alert expires."},
-            {"id": "eas_zones",     "type": "text",   "label": "NWS Zone / County Codes",
-             "placeholder": "e.g. TXC113,TXC121  (comma-separated — find yours at alerts.weather.gov)"},
-            {"id": "eas_severity_filter", "type": "select", "label": "Minimum Severity",
-             "options": [
-                 {"value": "Moderate", "label": "Watch (Moderate and above)"},
-                 {"value": "Severe",   "label": "Warning (Severe and above)"},
-                 {"value": "Extreme",  "label": "Emergency (Extreme only)"},
-             ]},
-            {"id": "eas_poll_interval", "type": "number", "label": "Poll Interval (seconds)", "min": 15},
-            {"id": "eas_target_type",   "type": "select", "label": "Apply To",
-             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "eas_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
-            {"id": "eas_channel_id",       "type": "select", "label": "Channel",       "options": channels},
             # ── Active Tickers ────────────────────────────────────────────
             {"id": "_active_section", "type": "info", "label": "━━━━━━━━━━  ACTIVE TICKERS  ━━━━━━━━━━"},
             {"id": "_ticker_list",    "type": "info", "label": active_label},
@@ -1784,6 +1922,7 @@ class Plugin:
             "disable_sports":       self._disable_sports_ticker,
             "enable_eas":           self._enable_eas,
             "disable_eas":          self._disable_eas,
+            "migrate_eas":          self._migrate_eas,
             "disable_all":          self._disable_all,
             "view_active":          self._view_active,
             "refresh_channels":     self._refresh_channels,
@@ -2171,8 +2310,6 @@ class Plugin:
         return self._do_disable(channels, type_filter="sports")
 
     def _enable_eas(self, params):
-        from apps.channels.models import Channel
-
         zones = (params.get("eas_zones") or "").strip()
         if not zones:
             return {"success": False, "message": "No NWS zone codes configured. Enter at least one zone code in EAS Weather Alerts → NWS Zone / County Codes above."}
@@ -2198,17 +2335,13 @@ class Plugin:
                 if original_profile.name.startswith(PROFILE_PREFIX):
                     skipped.append(f"{channel.name} (already has a Tickarr profile — disable first)")
                     continue
-                cloned, removed_flags = _clone_and_inject_eas(channel.id, original_profile, channel.name)
-                _assign_profile(channel, cloned)
                 _eas_clear(channel.id)
                 mappings[cid] = {
                     "original_profile_id": original_profile.id,
-                    "ticker_profile_id":   cloned.id,
                     "channel_name":        channel.name,
                     "type":                "eas",
                 }
-                note = (f" [auto-removed: {', '.join(removed_flags)}]" if removed_flags else "")
-                enabled.append(f"{channel.name}{note}")
+                enabled.append(channel.name)
             except Exception as e:
                 logger.error(f"tickarr: enable EAS failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} ({e})")
@@ -2216,8 +2349,8 @@ class Plugin:
         _save_mappings(mappings)
         parts = []
         if enabled:
-            parts.append(f"EAS enabled: {len(enabled)} channel(s)\n" + "\n".join(f"  • {e}" for e in enabled))
-            parts.append(f"Monitoring zones: {zones}\nThe overlay is silent until a qualifying NWS alert fires.")
+            parts.append(f"EAS registered: {len(enabled)} channel(s)\n" + "\n".join(f"  • {e}" for e in enabled))
+            parts.append(f"Monitoring zones: {zones}\nChannels continue using their normal profile. When a qualifying NWS alert fires, they automatically switch to the EAS overlay and restart. No re-encoding overhead until an actual alert occurs.")
         if skipped: parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
         if failed:  parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
@@ -2236,7 +2369,9 @@ class Plugin:
                 continue
             try:
                 _restore_profile(channel, mapping["original_profile_id"])
-                _delete_cloned_profile(mapping["ticker_profile_id"])
+                for pid_key in ("eas_profile_id", "ticker_profile_id"):
+                    if mapping.get(pid_key):
+                        _delete_cloned_profile(mapping[pid_key])
                 _eas_clear(channel.id)
                 with _eas_lock:
                     _eas_active.pop(cid, None)
@@ -2265,13 +2400,19 @@ class Plugin:
             try:
                 channel = Channel.objects.get(id=int(cid))
                 _restore_profile(channel, mapping["original_profile_id"])
-                _delete_cloned_profile(mapping["ticker_profile_id"])
+                for pid_key in ("ticker_profile_id", "eas_profile_id"):
+                    if mapping.get(pid_key):
+                        _delete_cloned_profile(mapping[pid_key])
                 ticker_type = mapping.get("type", "nowplaying")
                 _remove_channel_files(channel.id)
                 if ticker_type == "custom":
                     _remove_custom_file(channel.id)
                 elif ticker_type == "sports":
                     _remove_sports_file(channel.id)
+                elif ticker_type == "eas":
+                    _eas_clear(channel.id)
+                    with _eas_lock:
+                        _eas_active.pop(cid, None)
                 del mappings[cid]
                 disabled.append(name)
             except Exception as e:
@@ -2282,6 +2423,51 @@ class Plugin:
         parts = []
         if disabled: parts.append(f"Disabled: {len(disabled)} channel(s)\n" + "\n".join(f"  • {n}" for n in disabled))
         if failed:   parts.append("Failed:\n" + "\n".join(f"  • {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _migrate_eas(self, params):
+        """Migrate old always-on EAS profiles (ticker_profile_id) to dynamic mode."""
+        from apps.channels.models import Channel
+
+        mappings = _get_mappings()
+        old_eas = {cid: m for cid, m in mappings.items()
+                   if m and m.get("type") == "eas" and m.get("ticker_profile_id")}
+        if not old_eas:
+            return {"success": True, "message": "No old static EAS profiles found — all EAS channels are already in dynamic mode."}
+
+        migrated, failed = [], []
+        for cid, mapping in old_eas.items():
+            name = mapping.get("channel_name", f"Channel {cid}")
+            try:
+                channel = Channel.objects.filter(id=int(cid)).first()
+                if channel:
+                    _restore_profile(channel, mapping["original_profile_id"])
+                    _eas_restart_channel(str(channel.uuid))
+                _delete_cloned_profile(mapping["ticker_profile_id"])
+                mapping.pop("ticker_profile_id", None)
+                mapping.pop("eas_profile_id", None)
+                mappings[cid] = mapping
+                with _eas_lock:
+                    _eas_active.pop(cid, None)
+                migrated.append(name)
+            except Exception as e:
+                logger.error(f"tickarr: migrate EAS failed for {name}: {e}", exc_info=True)
+                failed.append(f"{name} ({e})")
+
+        _save_mappings(mappings)
+        rc = _get_redis_client()
+        if rc:
+            try:
+                rc.delete(_EAS_STATE_KEY, _EAS_OWNER_KEY)
+            except Exception:
+                pass
+
+        parts = []
+        if migrated:
+            parts.append(f"Migrated {len(migrated)} channel(s) to dynamic EAS:\n" + "\n".join(f"  • {n}" for n in migrated))
+            parts.append("Channels restored to passthrough profiles. Re-encoding only occurs when a real NWS alert fires.")
+        if failed:
+            parts.append("Failed:\n" + "\n".join(f"  • {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _view_active(self, params):

@@ -1,17 +1,15 @@
 {
   "name": "Tickarr",
-  "version": "0.2.00-dev.20260623.1159",
+  "version": "0.2.00-dev.20260623.1160",
   "logo": "logo.png",
-  "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
+  "description": "Dynamic text overlays for IPTV channels \u00e2\u20ac\u201d Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
   "actions": [
-
     {
       "id": "_header_siriusxm",
       "type": "info",
-      "label": "── Satellite Radio ──"
+      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac Satellite Radio \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
     },
-
     {
       "id": "_header_nowplaying",
       "type": "info",
@@ -31,7 +29,6 @@
         "message": "This will restore the original stream profile and remove ticker data for the selected Now Playing channel(s). Continue?"
       }
     },
-
     {
       "id": "_header_sxm_setup",
       "type": "info",
@@ -44,14 +41,14 @@
     },
     {
       "id": "fill_sxm_epg",
-      "label": "Fill EPG — Full Satellite Radio Guide",
+      "label": "Fill EPG \u00e2\u20ac\u201d Full Satellite Radio Guide",
       "confirm": {
         "message": "Downloads Tickarr's satellite radio EPG (sports schedules + channel guide data) and assigns it to the selected channels. Continue?"
       }
     },
     {
       "id": "fill_epg",
-      "label": "Fill EPG — TVG ID Only",
+      "label": "Fill EPG \u00e2\u20ac\u201d TVG ID Only",
       "confirm": {
         "message": "Sets the TVG ID on selected channels so they can match an EPG source you already have loaded. Does not download any guide data. Continue?"
       }
@@ -89,11 +86,10 @@
         "message": "Runs Full Satellite Radio EPG fill, Sort Channels, and Assign Logos together on the selected channels. Continue?"
       }
     },
-
     {
       "id": "_header_custom",
       "type": "info",
-      "label": "── Custom Text ──"
+      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac Custom Text \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
     },
     {
       "id": "enable_custom",
@@ -113,11 +109,10 @@
         "message": "This will restore the original stream profile and remove ticker data for the selected Custom Text channel(s). Continue?"
       }
     },
-
     {
       "id": "_header_sports",
       "type": "info",
-      "label": "── Sports Ticker ──"
+      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac Sports Ticker \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
     },
     {
       "id": "enable_sports",
@@ -133,11 +128,10 @@
         "message": "This will restore the original stream profile and remove ticker data for the selected Sports Ticker channel(s). Continue?"
       }
     },
-
     {
       "id": "_header_eas",
       "type": "info",
-      "label": "── EAS Weather Alerts ──"
+      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac EAS Weather Alerts \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
     },
     {
       "id": "enable_eas",
@@ -153,11 +147,17 @@
         "message": "This will restore the original stream profile and remove the EAS overlay for the selected channel(s). Continue?"
       }
     },
-
+    {
+      "id": "migrate_eas",
+      "label": "Migrate EAS to Dynamic Mode",
+      "confirm": {
+        "message": "This restores all EAS channels to their original passthrough profiles and removes the old always-on re-encode profiles. Channels will automatically switch to EAS overlay only when a real NWS alert fires. Continue?"
+      }
+    },
     {
       "id": "_header_manage",
       "type": "info",
-      "label": "── Manage ──"
+      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac Manage \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
     },
     {
       "id": "view_active",
@@ -196,9 +196,9 @@
       "id": "restart_dispatcharr",
       "label": "Restart Dispatcharr",
       "confirm": {
-        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly — refresh in about 15 seconds. Continue?"
+        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly \u00e2\u20ac\u201d refresh in about 15 seconds. Continue?"
       }
     }
-
-  ]
+  ],
+  "checksum": "1d617ac35d53267c93a1a405facdafd62e663d3d30b5330264092ba4fe544410"
 }
