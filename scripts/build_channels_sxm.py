@@ -15,6 +15,7 @@ Called automatically by .github/workflows/update-channels.yml on a weekly schedu
 import csv
 import io
 import json
+import os
 import re
 import unicodedata
 import urllib.request
@@ -24,7 +25,8 @@ ROOT        = Path(__file__).parent.parent
 OUT_PATH    = ROOT / "lib" / "channels.json"
 ALIASES_PATH = ROOT / "lib" / "channel_aliases.json"
 
-STL_CHANNELS_URL  = "https://stellartunerlog.com/channels.json"
+STL_API_URL       = "https://api.stellartunerlog.com/v1/channels"
+STL_CHANNELS_URL  = "https://stellartunerlog.com/channels.json"  # public fallback (437 channels)
 REBROWSER_CSV_URL = "https://raw.githubusercontent.com/rebrowser/siriusxm-dataset/main/channels/data.csv"
 UA = "Tickarr/1.0 (github.com/jstevenscl/tickarr)"
 
@@ -59,17 +61,36 @@ def _clean_name(name: str) -> str:
 
 
 def fetch_stl():
-    """Fetch channel list from StellarTunerLog (primary source — live SiriusXM API data)."""
+    """Fetch full channel catalog from STL API (720 channels) or public fallback (437 channels)."""
+    api_key = os.environ.get("STL_API_KEY", "").strip()
+
+    # Authenticated: full 720-channel catalog including Xtra streaming-only channels
+    if api_key:
+        try:
+            req = urllib.request.Request(
+                STL_API_URL,
+                headers={"User-Agent": UA, "X-API-Key": api_key},
+            )
+            with urllib.request.urlopen(req, timeout=20) as r:
+                data = json.loads(r.read())
+            channels = data.get("channels", {})
+            if isinstance(channels, dict) and channels:
+                print(f"  STL API: {len(channels)} channels (updated {data.get('updated_utc', 'unknown')})")
+                return channels
+        except Exception as e:
+            print(f"  STL API fetch failed: {e} — trying public fallback")
+
+    # Unauthenticated: music channels only (437)
     try:
         req = urllib.request.Request(STL_CHANNELS_URL, headers={"User-Agent": UA})
         with urllib.request.urlopen(req, timeout=20) as r:
             data = json.loads(r.read())
         channels = data.get("channels", {})
         if isinstance(channels, dict) and channels:
-            print(f"  STL: {len(channels)} channels (updated {data.get('updated_utc', 'unknown')})")
+            print(f"  STL public: {len(channels)} channels (updated {data.get('updated_utc', 'unknown')})")
             return channels
     except Exception as e:
-        print(f"  STL fetch failed: {e}")
+        print(f"  STL public fetch failed: {e}")
     return None
 
 
@@ -202,24 +223,33 @@ def main() -> None:
 
     print("Building channels.json...")
 
+    # Phase 1: STL — authoritative for all music/live channels (live SiriusXM API data)
     stl = fetch_stl()
-    if stl:
-        channels = build_from_stl(stl, existing, aliases)
-        source = "STL (SiriusXM API via StellarTunerLog)"
-    else:
-        print("  Falling back to Rebrowser dataset...")
-        rows = fetch_rebrowser()
-        if not rows:
-            print("ERROR: both STL and Rebrowser failed — channels.json unchanged")
-            return
-        channels = build_from_rebrowser(rows, existing, aliases)
-        source = "Rebrowser CSV (fallback)"
+    channels = build_from_stl(stl, existing, aliases) if stl else {}
+
+    # Phase 2: Rebrowser — supplements sports, talk, news, and any channels STL doesn't cover
+    # Always runs — not a fallback. STL omits channels with no live song data.
+    rows = fetch_rebrowser()
+    if rows:
+        rebrowser_channels = build_from_rebrowser(rows, existing, aliases)
+        # Merge: add Rebrowser entries that aren't already covered by STL
+        stl_numbers = {v["sxm_number"] for v in channels.values() if v.get("sxm_number")}
+        added = 0
+        for key, entry in rebrowser_channels.items():
+            if entry.get("sxm_number") in stl_numbers:
+                continue  # STL already has this channel number with better data
+            if key not in channels:
+                channels[key] = entry
+                added += 1
+        print(f"  Rebrowser added {added} additional channels (sports, talk, news)")
+    elif not channels:
+        print("ERROR: both STL and Rebrowser failed — channels.json unchanged")
+        return
 
     with_nums = sum(1 for v in channels.values() if v.get("sxm_number") is not None)
     with_logo = sum(1 for v in channels.values() if v.get("logo_url"))
     seasonal  = sum(1 for v in channels.values() if v.get("seasonal"))
-    print(f"  {len(channels)} channels, {with_nums} with numbers, {with_logo} with logos, {seasonal} seasonal")
-    print(f"  Source: {source}")
+    print(f"  {len(channels)} total channels, {with_nums} with numbers, {with_logo} with logos, {seasonal} seasonal")
 
     OUT_PATH.write_text(json.dumps(channels, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Written: {OUT_PATH}")
