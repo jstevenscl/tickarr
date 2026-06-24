@@ -21,6 +21,8 @@ jobs:
           python-version: '3.12'
 
       - name: Build channel cache
+        env:
+          STL_API_KEY: ${{ secrets.STL_API_KEY }}
         run: python scripts/build_channels_sxm.py
 
       - name: Commit and push if changed
