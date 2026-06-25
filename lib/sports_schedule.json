@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T10:37:45Z",
+  "generated_at": "2026-06-25T14:12:12Z",
   "events": [
     {
       "slug": "pga",
@@ -465,13 +465,13 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "SOCCER · To Be Determined @ To Be Determined",
+      "title": "South Africa @ Canada",
+      "description": "SOCCER · South Africa @ Canada",
       "start_utc": "2026-06-28T19:00:00Z",
       "end_utc": "2026-06-28T21:00:00Z",
       "channels": [
-        "To Be Determined",
-        "To Be Determined",
+        "Canada",
+        "South Africa",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
