@@ -8,22 +8,24 @@ Tickarr is a plugin for [Dispatcharr](http://dispatcharr.local) that injects liv
 
 1. [Overview](#overview)
 2. [Installation and First Run](#installation-and-first-run)
-3. [SiriusXM Now Playing](#sirixusxm-now-playing)
-4. [Custom Text](#custom-text)
-5. [Sports Ticker](#sports-ticker)
-6. [Settings Reference](#settings-reference)
-7. [Actions Reference](#actions-reference)
-8. [Troubleshooting](#troubleshooting)
+3. [Satellite Radio Now Playing](#satellite-radio-now-playing)
+4. [EAS/JAS Weather Alerts](#easjas-weather-alerts)
+5. [Custom Text](#custom-text)
+6. [Sports Ticker](#sports-ticker)
+7. [Settings Reference](#settings-reference)
+8. [Actions Reference](#actions-reference)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
 ## Overview
 
-Tickarr adds three types of overlays to channels managed by Dispatcharr:
+Tickarr adds four types of overlays to channels managed by Dispatcharr:
 
-- **SiriusXM Now Playing** — shows the current artist and track for SiriusXM radio channels.
+- **Satellite Radio Now Playing** — shows the current artist and track for satellite radio channels.
 - **Custom Text** — displays any text you choose, either static or scrolling, on a schedule you control.
 - **Sports Ticker** — shows live scores from the ESPN API for 23 leagues and NASCAR.
+- **EAS Weather Alerts** — monitors NOAA/NWS and automatically activates a broadcast-style alert bar with scrolling crawl and attention tone when an active weather alert fires for your zones.
 
 When you enable an overlay, Tickarr clones the channel's existing FFmpeg stream profile, adds a `drawtext` filter to the cloned copy, and assigns that copy to the channel. Your original stream profile is never changed. When you disable an overlay, the original profile is restored and the cloned profile is deleted.
 
@@ -49,11 +51,11 @@ Text content is written to files on disk (`/data/plugins/tickarr_data/tickers/`)
 
 ---
 
-## SiriusXM Now Playing
+## Satellite Radio Now Playing
 
 ### What it does
 
-Tickarr polls xmplaylist.com at regular intervals to find the currently playing track for each SiriusXM station. It displays the artist name, song title, and the Dispatcharr channel name in a centered overlay box on a black background. For channels that carry audio only (no video signal), Tickarr injects a 1280x720 black video frame so the overlay has somewhere to render.
+Tickarr polls stellartunerlog.com at regular intervals to find the currently playing track for each satellite radio station. It displays the artist name, song title, and the Dispatcharr channel name in a centered overlay box on a black background. For channels that carry audio only (no video signal), Tickarr injects a 1280x720 black video frame so the overlay has somewhere to render.
 
 ### Setup
 
@@ -68,9 +70,9 @@ Tickarr polls xmplaylist.com at regular intervals to find the currently playing 
 
 ### Channel mapping
 
-Tickarr matches Dispatcharr channel names to SiriusXM station names automatically. The match is fuzzy — for example, a channel named "SiriusXM Hits 1" will match the xmplaylist station "Hits 1". You do not need to configure any mapping manually.
+Tickarr matches Dispatcharr channel names to satellite radio station names automatically. The match is fuzzy — for example, a channel named "Hits 1" will match the station by that name without needing manual configuration.
 
-> **Note on stream profiles:** Tickarr currently clones a stream profile for every SiriusXM channel in the selected scope. This is a limitation of how Dispatcharr identifies active viewers — the plugin does not yet have access to individual channel IDs at query time. Dispatcharr is actively implementing per-channel token data (expected in an upcoming release), which will allow Tickarr to target only channels with active viewers and eliminate unnecessary profile clones. Until then, enabling Now Playing on a large channel group or "All Channels" will create one cloned profile per SiriusXM channel in that scope.
+> **Note on stream profiles:** Tickarr currently clones a stream profile for every satellite radio channel in the selected scope. This is a limitation of how Dispatcharr identifies active viewers — the plugin does not yet have access to individual channel IDs at query time. Dispatcharr is actively implementing per-channel token data (expected in an upcoming release), which will allow Tickarr to target only channels with active viewers and eliminate unnecessary profile clones. Until then, enabling Now Playing on a large channel group or "All Channels" will create one cloned profile per channel in that scope.
 
 ### What to expect
 
@@ -81,6 +83,58 @@ Tickarr matches Dispatcharr channel names to SiriusXM station names automaticall
 ### Disabling
 
 Run **Actions → Disable Now Playing**. The original stream profile is restored and the cloned profile is deleted.
+
+---
+
+## EAS/JAS Weather Alerts
+
+> **JAS — jesmannstl Alert System.**
+> Dedicated to jesmannstl, a weather fanatic and beloved member of the Dispatcharr community.
+> Every alert that fires is a reminder of him. Rest in peace.
+
+---
+
+Tickarr monitors NOAA/NWS for active weather alerts in your configured zones. When an alert fires, it automatically switches affected channels to a broadcast-style EAS overlay profile — a full-width alert bar with a scrolling crawl and colored severity label. When the alert clears, channels silently switch back to their normal passthrough profiles with no action required.
+
+### Prerequisites
+
+- Your NWS zone code(s) — find yours at [alerts.weather.gov](https://alerts.weather.gov) (e.g. `OHZ001`)
+- At least one channel enabled for EAS via **Actions → Enable EAS Silent Ticker**
+
+### Setup
+
+1. In Tickarr Settings under **EAS Weather Alerts**, enter your NWS zone code(s) in **Zone IDs** (comma-separated for multiple zones, e.g. `OHZ001,OHZ002`).
+2. Configure your remaining EAS settings (see the [EAS Settings Reference](#eas-settings) below).
+3. Select the channels or channel group you want EAS to cover.
+4. Run **Actions → Enable EAS Silent Ticker**.
+
+That's it. Channels stream exactly as normal until an alert fires. No re-encoding, no overlay, no CPU cost — until there's something to show.
+
+### What the overlay looks like
+
+The **broadcast** style (recommended) places a dark bar across the bottom of the screen with:
+- A colored severity label on the left (`TORNADO WARNING`, `FLOOD WATCH`, `WEATHER ALERT`, etc.)
+- A white scrolling crawl to the right listing the alert details and affected areas
+
+When multiple alert types are active simultaneously the label shows `WEATHER ALERT` and the crawl lists all active events.
+
+Label color follows the highest-severity active alert and can be customized with the **Alert Label Color** setting.
+
+### Attention tone
+
+When **Siren Tone Interval** is greater than 0, Tickarr mixes a real EAS attention tone — 853 Hz + 960 Hz dual tone, 8 seconds — into the audio stream. The tone repeats at your configured interval for the life of the alert. Setting it to 60 means viewers hear the tone once per minute; 300 is less intrusive for long-duration events.
+
+The tone is generated mathematically inside FFmpeg — no external audio file needed, and it works on any channel regardless of source audio codec.
+
+### How profile switching works
+
+- **Alert fires:** Tickarr clones the channel's current stream profile, injects the EAS overlay (and tone if configured), and assigns the clone. The original profile is never modified.
+- **Alert clears:** The EAS clone is deleted and the original profile is restored. The switch happens within one poll interval (default 60 seconds).
+- **Mid-alert settings change:** Profile changes don't apply to an already-running alert. To apply new settings immediately, disable your zones and re-enable them to force a fresh clone.
+
+### Disabling
+
+Run **Actions → Disable EAS Ticker**. The original profile is restored on all EAS-enabled channels.
 
 ---
 
@@ -199,6 +253,19 @@ Run **Actions → Disable Sports Ticker**.
 | Label Color | Color | Color of the sport/league label — Multi-Color only (default gold, #ffd700) |
 | Abbrev Color | Color | Color of team abbreviations — Multi-Color only (default #00d4ff) |
 
+### EAS Settings
+
+| Field | Description |
+|---|---|
+| Zone IDs | Comma-separated NWS zone codes to monitor (e.g. `OHZ001,OHZ002`). Find yours at [alerts.weather.gov](https://alerts.weather.gov). |
+| Poll Interval (seconds) | How often Tickarr checks NWS for new or cleared alerts. Minimum 15s, default 60s. |
+| Overlay Style | `broadcast` — TV-station-style bar at the bottom of the screen (recommended). `tickarr` — simpler two-line text overlay. |
+| Alert Label Color | Hex color for the severity label box (e.g. `0xCC0000` for red). |
+| Severity Filter | Minimum severity to trigger the overlay: Minor, Moderate, Severe, or Extreme. Default: Moderate. |
+| Siren Tone Interval (seconds) | How often the EAS attention tone (853+960 Hz dual tone) repeats during an active alert. Set to 0 to disable. Minimum 30s when enabled. |
+| EAS Transcode Quality | Output resolution while an alert is active: `full` (source resolution), `1080p30`, `720p`, or `720p30`. Lower quality reduces encoder CPU load. |
+| Apply To | Scope of channels to enable EAS on: All Channels, Channel Group, Multiple Groups, or Single Channel. |
+
 ---
 
 ## Actions Reference
@@ -207,11 +274,11 @@ Run **Actions → Disable Sports Ticker**.
 
 ![Actions tab — Manage section](screenshots/actions-bottom.png)
 
-### SiriusXM Now Playing
+### Satellite Radio Now Playing
 
 | Action | Description |
 |---|---|
-| Enable Now Playing | Clones stream profiles for targeted channels and injects the Now Playing overlay. Starts the xmplaylist poller. |
+| Enable Now Playing | Clones stream profiles for targeted channels and injects the Now Playing overlay. Starts the stellartunerlog.com poller. |
 | Disable Now Playing | Restores original stream profiles on all Now Playing channels and removes the cloned profiles. |
 
 ### Custom Text
@@ -228,6 +295,14 @@ Run **Actions → Disable Sports Ticker**.
 |---|---|
 | Enable Sports Ticker | Clones stream profiles and injects the sports ticker overlay. Starts the ESPN score poller. |
 | Disable Sports Ticker | Restores original stream profiles on Sports Ticker channels and removes the cloned profiles. |
+
+### EAS/JAS Weather Alerts
+
+| Action | Description |
+|---|---|
+| Enable EAS Silent Ticker | Arms the EAS monitor on selected channels. Channels stream normally until an NWS alert fires for your zones, then switch automatically to the EAS overlay profile. |
+| Disable EAS Ticker | Restores original stream profiles on all EAS-enabled channels and disarms the monitor. |
+| Migrate EAS to Dynamic Mode | One-time migration for users upgrading from the old always-on EAS profile. Restores all EAS channels to passthrough and switches them to dynamic mode. |
 
 ### Manage
 
@@ -277,6 +352,25 @@ If you delete a Dispatcharr channel while a Tickarr overlay is active, the clone
 ### Redis errors or zero active channels in diagnostics
 
 Run **Actions → Redis Diagnostics** to check the connection status. If Redis is unreachable, no channels will be detected as active and Tickarr will not apply overlays. Verify that the Redis service is running inside Dispatcharr and that no network configuration is blocking the connection. Restarting Dispatcharr via **Actions → Restart Dispatcharr** will also restart Redis.
+
+### EAS/JAS alert not activating
+
+- Confirm your zone codes at [alerts.weather.gov](https://alerts.weather.gov) — codes are case-sensitive (e.g. `OHZ001` not `ohz001`).
+- Confirm the active alert's severity meets or exceeds your **Severity Filter** setting.
+- Check the Dispatcharr container logs for any Tickarr EAS errors.
+
+### EAS channel not restoring after alert clears
+
+If Dispatcharr was restarted while an EAS alert was active, the plugin may lose track of the original profile mapping. Run **Actions → Clean Orphaned Profiles** to remove any stuck EAS clone profiles, then manually restore the channel's profile in Dispatcharr if needed.
+
+### Siren tone not playing
+
+- Confirm **Siren Tone Interval** is set to a value greater than 0.
+- The tone only applies to profiles cloned after the setting is saved. If an alert was already active when you changed the setting, disable your zones and re-add them to force a fresh profile clone.
+
+### Stream buffering during an EAS alert
+
+EAS re-encodes video to apply the overlay — this uses more CPU than normal passthrough. If buffering persists, try lowering **EAS Transcode Quality** to `720p` or `720p30` to reduce encoder load.
 
 ### Plugin changes not taking effect after update
 

@@ -1,3 +1,4 @@
+credentials.env
 _workshop/
 .claude/
 __pycache__/
@@ -10,4 +11,5 @@ emoji-preview.png
 emoji_test.png
 docs/screenshots/_mask.py
 /tickarr-*.zip
+zips/tickarr/*dev*.zip
 *.log

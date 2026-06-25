@@ -1,55 +1,67 @@
 # Tickarr
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-0.2.00-blue)
 
-A [Dispatcharr](http://dispatcharr.local) plugin that injects dynamic text overlays into IPTV channels via the FFmpeg `drawtext` filter. Tickarr clones the channel's existing stream profile, injects overlay parameters, and restores the original profile on disable — the source profile is never modified.
-
-<!-- screenshots: docs/screenshots/ -->
+A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects dynamic text overlays into IPTV channels via FFmpeg. Tickarr clones the channel's existing stream profile, injects overlay parameters, and restores the original profile on disable — the source profile is never modified.
 
 ---
 
 ## Features
 
-**SiriusXM Now Playing**
-- Auto-maps Dispatcharr channels to SiriusXM stations via xmplaylist.com
-- Displays artist, song title, and channel name in a centered overlay box
+**Satellite Radio Now Playing**
+- Auto-maps Dispatcharr channels to satellite radio stations
+- Displays artist, song title, and channel name as a live-updating overlay
 - Audio-only channels receive an injected 1280x720 black video background
-- Note: currently clones one stream profile per channel in the selected scope; per-channel targeting is coming in an upcoming Dispatcharr release — see the [User Guide](docs/USERGUIDE.md#channel-mapping)
+
+**EAS/JAS Weather Alerts**
+- Monitors NOAA/NWS for active weather alerts in your configured zones
+- Automatically activates a full-width broadcast-style alert bar when an alert fires
+- Scrolling crawl with alert details, colored severity label, and optional attention tone
+- Profile switches back to normal passthrough the moment the alert clears
+- Attention tone (853+960 Hz EAS dual tone) repeats at a configurable interval
+
+> **JAS — jesmannstl Alert System.**
+> Dedicated to jesmannstl, a weather fanatic and beloved member of the Dispatcharr community.
+> Every alert that fires is a reminder of him. Rest in peace.
 
 **Custom Text**
 - User-defined static or scrolling text overlay on any channel
-- Supports always-on or timed display (appears for N seconds every X seconds)
-- Configurable position (top or bottom of screen)
+- Configurable position (top or bottom), display timing, and style
 
 **Sports Ticker**
 - Live scores from the ESPN API across 23 leagues and NASCAR
 - Scrolling three-color ticker at the top or bottom of the screen
-- Live games shown first; favorites filter to display only selected teams
-- [ESPN team abbreviations reference](docs/TEAMS.md)
+- Live games shown first; team filter available
 
 ---
 
 ## Requirements
 
-- Dispatcharr v0.25.0 or later
-- Redis (used by Dispatcharr for active-viewer detection)
-- FFmpeg available in the Dispatcharr container (standard in all Dispatcharr installs)
+- Dispatcharr v0.26.0 or later
+- Redis (used by Dispatcharr — standard in all installs)
+- FFmpeg in the Dispatcharr container (standard in all installs)
 
 ---
 
 ## Installation
 
-1. Open Dispatcharr and navigate to **Plugins → Find Plugins**.
-2. Paste the Tickarr registry URL into the plugin source field and install Tickarr.
-3. After installation completes, go to **Tickarr → Actions → Restart Dispatcharr**.
+1. Open Dispatcharr → **Plugins → Find Plugins**
+2. Search for **Tickarr** and install
+3. After installation, go to **Tickarr → Actions → Restart Dispatcharr**
 
-   > Restarting Dispatcharr is required after every install or update. Django caches module code at startup; without a restart, new plugin code will not be loaded.
+   > A restart is required after every install or update. Django caches plugin code at startup — without a restart, new code will not load.
 
-4. Return to the Tickarr plugin page and configure your settings.
-5. Run the appropriate enable action for the overlay type you want to use.
+4. Configure your settings on the Tickarr plugin page
+5. Run the appropriate enable action for the overlay type you want
 
 ---
 
 ## Quick Start
 
 See the [User Guide](docs/USERGUIDE.md) for full setup instructions, settings reference, and troubleshooting.
+
+---
+
+## ESP Team Reference
+
+See [TEAMS.md](docs/TEAMS.md) for ESPN team abbreviations used by the Sports Ticker.

@@ -1,20 +1,25 @@
 {
   "name": "Tickarr",
-  "version": "0.1.02",
+  "version": "0.2.00",
   "logo": "logo.png",
-  "description": "Dynamic text overlays for IPTV channels — SiriusXM Now Playing, Sports Ticker, Custom Text",
+  "description": "Dynamic text overlays for IPTV channels â€” Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
   "actions": [
     {
+      "id": "_header_siriusxm",
+      "type": "info",
+      "label": "-- Satellite Radio --"
+    },
+    {
       "id": "_header_nowplaying",
       "type": "info",
-      "label": "── SiriusXM Now Playing ──"
+      "label": "Now Playing Ticker"
     },
     {
       "id": "enable_nowplaying",
       "label": "Enable Now Playing",
       "confirm": {
-        "message": "This will clone a stream profile for each selected channel. Channels already enabled will be skipped. Continue?"
+        "message": "This will clone a stream profile for each selected channel and start showing live satellite radio now-playing data on the overlay. Channels already enabled will be skipped. Continue?"
       }
     },
     {
@@ -25,9 +30,66 @@
       }
     },
     {
+      "id": "_header_sxm_setup",
+      "type": "info",
+      "label": "Channel Setup"
+    },
+    {
+      "id": "_sxm_setup_note",
+      "type": "info",
+      "label": "Uses the channel group / channel selected in Settings above."
+    },
+    {
+      "id": "fill_sxm_epg",
+      "label": "Fill EPG - Full Satellite Radio Guide",
+      "confirm": {
+        "message": "Downloads Tickarr's satellite radio EPG (sports schedules + channel guide data) and assigns it to the selected channels. Continue?"
+      }
+    },
+    {
+      "id": "fill_epg",
+      "label": "Fill EPG - TVG ID Only",
+      "confirm": {
+        "message": "Sets the TVG ID on selected channels so they can match an EPG source you already have loaded. Does not download any guide data. Continue?"
+      }
+    },
+    {
+      "id": "sort_channels",
+      "label": "Sort Channels",
+      "confirm": {
+        "message": "Renumbers selected channels by satellite radio lineup order, starting from Sort Start Number (or auto-detected if blank). Continue?"
+      }
+    },
+    {
+      "id": "assign_logos",
+      "label": "Assign Logos",
+      "confirm": {
+        "message": "Sets logos on selected channels using Tickarr's built-in satellite radio logo library. Channels with no match are skipped. Continue?"
+      }
+    },
+    {
+      "id": "_header_sxm_combined",
+      "type": "info",
+      "label": "Run Everything Together"
+    },
+    {
+      "id": "fill_and_sort",
+      "label": "Fill EPG + Sort",
+      "confirm": {
+        "message": "Runs Full Satellite Radio EPG fill and Sort Channels together on the selected channels. Continue?"
+      }
+    },
+    {
+      "id": "fill_sort_logos",
+      "label": "Fill EPG + Sort + Logos",
+      "confirm": {
+        "message": "Runs Full Satellite Radio EPG fill, Sort Channels, and Assign Logos together on the selected channels. Continue?"
+      }
+    },
+    {
       "id": "_header_custom",
       "type": "info",
-      "label": "── Custom Text ──"
+      "label": "-- Custom Text --"
     },
     {
       "id": "enable_custom",
@@ -50,7 +112,7 @@
     {
       "id": "_header_sports",
       "type": "info",
-      "label": "── Sports Ticker ──"
+      "label": "-- Sports Ticker --"
     },
     {
       "id": "enable_sports",
@@ -67,9 +129,35 @@
       }
     },
     {
+      "id": "_header_eas",
+      "type": "info",
+      "label": "-- EAS Weather Alerts --"
+    },
+    {
+      "id": "enable_eas",
+      "label": "Enable EAS Silent Ticker",
+      "confirm": {
+        "message": "This will clone a stream profile for each selected channel with a silent EAS overlay. The overlay is invisible under normal conditions and activates automatically when an NWS alert fires for your configured zones. Continue?"
+      }
+    },
+    {
+      "id": "disable_eas",
+      "label": "Disable EAS Ticker",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove the EAS overlay for the selected channel(s). Continue?"
+      }
+    },
+    {
+      "id": "migrate_eas",
+      "label": "Migrate EAS to Dynamic Mode",
+      "confirm": {
+        "message": "This restores all EAS channels to their original passthrough profiles and removes the old always-on re-encode profiles. Channels will automatically switch to EAS overlay only when a real NWS alert fires. Continue?"
+      }
+    },
+    {
       "id": "_header_manage",
       "type": "info",
-      "label": "── Manage ──"
+      "label": "-- Manage --"
     },
     {
       "id": "view_active",
@@ -108,8 +196,9 @@
       "id": "restart_dispatcharr",
       "label": "Restart Dispatcharr",
       "confirm": {
-        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly — refresh in about 15 seconds. Continue?"
+        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly â€” refresh in about 15 seconds. Continue?"
       }
     }
-  ]
+  ],
+  "checksum": "a4cb1cc2834d7ae1ade29b14b776dff10e480554028326ea4f45bd2bae9be707"
 }

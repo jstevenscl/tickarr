@@ -14,8 +14,10 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _PLUGIN_DIR        = os.path.dirname(os.path.abspath(__file__))
-# Store runtime data in a sibling directory so plugin updates never wipe it
-_DATA_DIR          = _PLUGIN_DIR + "_data"   # /data/plugins/tickarr_data/
+_PLUGIN_KEY        = os.path.basename(_PLUGIN_DIR)   # e.g. "tickarr" or "tickarr_0_2_00_dev"
+# Always use a fixed data directory name regardless of versioned install dir
+_PLUGINS_DIR       = os.path.dirname(_PLUGIN_DIR)
+_DATA_DIR          = os.path.join(_PLUGINS_DIR, "tickarr_data")
 TICKER_DIR         = os.path.join(_DATA_DIR, "tickers")
 MAPPINGS_FILE      = os.path.join(_DATA_DIR, "mappings.json")
 CHANNEL_CACHE_FILE = os.path.join(_DATA_DIR, "channel_cache.json")
@@ -30,24 +32,24 @@ DRAWTEXT_FILTER_TEMPLATE = (
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_header.txt:reload=1"
-    ":fontsize=36:fontcolor=white"
-    ":x=(w-text_w)/2:y=(h/2-100)"
-    ":box=1:boxcolor=black@0.85:boxborderw=5,"
+    ":fontsize=24:fontcolor=white"
+    ":x=(w-text_w)/2:y=(h/2-66)"
+    ":box=1:boxcolor=black@0.85:boxborderw=4,"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_artist.txt:reload=1"
-    ":fontsize=56:fontcolor=#00d4ff"
-    ":x=(w-text_w)/2:y=(h/2-20),"
+    ":fontsize=37:fontcolor=#00d4ff"
+    ":x=(w-text_w)/2:y=(h/2-13),"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_song.txt:reload=1"
-    ":fontsize=48:fontcolor=white"
-    ":x=(w-text_w)/2:y=(h/2+60),"
+    ":fontsize=32:fontcolor=white"
+    ":x=(w-text_w)/2:y=(h/2+40),"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_channel.txt:reload=1"
-    ":fontsize=32:fontcolor=#888888"
-    ":x=(w-text_w)/2:y=(h/2+130)"
+    ":fontsize=21:fontcolor=#888888"
+    ":x=(w-text_w)/2:y=(h/2+86)"
 )
 
 # ---------------------------------------------------------------------------
@@ -155,6 +157,64 @@ _SPORTS_LABELS_LAYER = (
     ":box=0"
 )
 
+# ---------------------------------------------------------------------------
+# EAS — Emergency Alert System overlay filter templates
+# ---------------------------------------------------------------------------
+# EAS Weather Alert — dedicated to jesmannstl
+# A Dispatcharr community member and severe weather enthusiast
+# whose passion for keeping people informed inspired this feature.
+# Rest easy.
+# ---------------------------------------------------------------------------
+# ── Tickarr Custom style (2 layers: flashing header + yellow scroll) ──────────
+_EAS_TYPE_LAYER = (
+    "drawtext="
+    "fontfile={font}"
+    ":textfile={ticker_dir}/eas_{channel_id}_type.txt:reload=1"
+    ":fontsize=28:fontcolor=white"
+    ":x=(w-text_w)/2:y=h-90"
+    ":box=1:boxcolor=0xFF0000@0.92:boxborderw=14"
+    ":enable='lt(mod(t\\,1)\\,0.5)'"
+)
+_EAS_AREA_LAYER = (
+    "drawtext="
+    "fontfile={font}"
+    ":textfile={ticker_dir}/eas_{channel_id}_area.txt:reload=1"
+    ":fontsize=18:fontcolor=yellow@0.95"
+    ":x=if(gt(text_w\\,w-40)\\,w-mod(t*60\\,w+text_w+40)\\,(w-text_w)/2)"
+    ":y=h-48"
+    ":box=1:boxcolor=black@0.82:boxborderw=8"
+)
+
+# ── Severity → label box color for broadcast style ────────────────────────────
+_EAS_BROADCAST_COLORS = {
+    "Extreme":  "0x990000",
+    "Severe":   "0xCC0000",
+    "Moderate": "0xCC6600",
+    "Minor":    "0xCC9900",
+}
+
+
+def _build_eas_broadcast_filter(channel_id, label_color="0xCC0000"):
+    """TV-station-style EAS: full-width bottom bar, colored label box on left, crawl on right."""
+    return (
+        # Full-width dark background bar
+        f"drawbox=x=0:y=ih-52:w=iw:h=52:color=black@0.90:t=fill,"
+        # Scrolling crawl drawn first so label box covers it on the left
+        f"drawtext=fontfile={_FONT_BOLD}"
+        f":textfile={TICKER_DIR}/eas_{channel_id}_area.txt:reload=1"
+        f":fontsize=20:fontcolor=white"
+        f":x=w-mod(t*75\\,w+text_w+20):y=h-36,"
+        # Colored severity label box drawn on top of scroll
+        f"drawbox=x=0:y=ih-52:w=215:h=52:color={label_color}:t=fill,"
+        # White separator line
+        f"drawbox=x=215:y=ih-52:w=2:h=52:color=white@0.80:t=fill,"
+        # Alert type text on top of label box
+        f"drawtext=fontfile={_FONT_BOLD}"
+        f":textfile={TICKER_DIR}/eas_{channel_id}_type.txt:reload=1"
+        f":fontsize=16:fontcolor=white"
+        f":x=10:y=h-34"
+    )
+
 
 def _inject_drawtext(params, drawtext_filter):
     is_audio_only = "-vn" in params or (
@@ -168,7 +228,7 @@ def _inject_drawtext(params, drawtext_filter):
         params = re.sub(r"\s*-vn\b", "", params)
         params = re.sub(r"\s*-map\s+\S+", "", params)
         # Add lavfi black background as second input after the stream URL input
-        lavfi = '-f lavfi -i "color=c=black:s=1280x720:r=25"'
+        lavfi = '-f lavfi -i "color=c=black:s=854x480:r=15"'
         params = re.sub(r"(-i\s+\S+)", rf"\1 {lavfi}", params, count=1)
         _fc_graph = f'[1:v]{drawtext_filter}[vout]'
         fc = (
@@ -228,10 +288,62 @@ def _inject_drawtext(params, drawtext_filter):
 
 
 
-def _clone_and_inject(channel_id, original_profile):
+# Flags that must never appear in a Tickarr-cloned profile.
+# These cause audio gaps or stream instability on burst-delivered streams (e.g. SiriusXM).
+# Only the cloned profile is modified — the original base profile is never touched.
+_DANGEROUS_FLAGS = {
+    "nobuffer":  "+nobuffer in -fflags causes audio gaps on burst-delivered streams (e.g. SiriusXM via best-streams.tv). FFmpeg passes burst gaps directly to the client with no internal buffering.",
+    "low_delay": "-flags low_delay disables decoder delay compensation, causing the same burst-gap disconnects.",
+}
+
+
+def _strip_dangerous_flags(channel_name, params):
+    """Strip known problematic FFmpeg flags from cloned profile parameters.
+    Logs a clear notification for every flag removed.
+    The original base profile is never modified — only the Tickarr clone is cleaned.
+    """
+    removed = []
+
+    # Strip +nobuffer from -fflags value (e.g. -fflags +discardcorrupt+nobuffer)
+    if "nobuffer" in params:
+        def _remove_nobuffer(m):
+            value = re.sub(r'\+?nobuffer', '', m.group(2))
+            value = re.sub(r'\++', '+', value).strip('+')
+            if not value:
+                return ''
+            return m.group(1) + value
+        new_params = re.sub(r'(-fflags\s+)(\S+)', _remove_nobuffer, params)
+        if new_params != params:
+            removed.append("+nobuffer")
+            params = new_params
+
+    # Strip -flags low_delay
+    if "low_delay" in params:
+        new_params = re.sub(r'\s*-flags\s+low_delay\b', '', params)
+        if new_params != params:
+            removed.append("-flags low_delay")
+            params = new_params
+
+    for flag in removed:
+        key = flag.lstrip('+-').split()[0]
+        reason = _DANGEROUS_FLAGS.get(key, "known to cause stream issues")
+        logger.warning(
+            f"[Tickarr] Auto-removed {flag} from cloned profile for \"{channel_name}\" "
+            f"— {reason} "
+            f"Your original base profile is unchanged."
+        )
+
+    return params, removed
+
+
+def _clone_and_inject(channel_id, original_profile, channel_name=""):
     from core.models import StreamProfile
+    raw_params = original_profile.parameters or ""
+    cleaned_params, removed_flags = _strip_dangerous_flags(
+        channel_name or f"channel {channel_id}", raw_params
+    )
     drawtext = DRAWTEXT_FILTER_TEMPLATE.format(ticker_dir=TICKER_DIR, channel_id=channel_id)
-    params = _inject_drawtext(original_profile.parameters or "", drawtext)
+    params = _inject_drawtext(cleaned_params, drawtext)
     profile = StreamProfile(
         name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel_id}]",
         command=original_profile.command,
@@ -240,8 +352,102 @@ def _clone_and_inject(channel_id, original_profile):
         is_active=True,
     )
     profile.save()
-    logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}")
-    return profile
+    logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
+                + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
+    return profile, removed_flags
+
+
+def _inject_eas_tone(params, channel_id, interval_secs=300):
+    """Mix a periodic EAS attention tone (853+960 Hz) into the audio stream.
+
+    Uses aevalsrc to generate the tone mathematically inside FFmpeg — no external
+    file required, and tone repeats every interval_secs for the life of the alert.
+    Each burst is 8 seconds with a smooth sin² bell-curve envelope (no clicks).
+    Converts the existing -vf into a filter_complex so video overlay and audio
+    mixing share one pass.
+    """
+    vf_match = re.search(r'-vf\s+"([^"]+)"', params)
+    if not vf_match:
+        logger.warning("[Tickarr] EAS: no -vf in params — siren skipped")
+        return params
+
+    vf_filter = vf_match.group(1)
+
+    # sin² bell curve over 8 s, zero outside — commas escaped for filter_complex
+    # FFmpeg expressions use ^ for power, not **
+    gate = f"if(lt(mod(t\\,{interval_secs})\\,8)\\,sin(3.14159*mod(t\\,{interval_secs})/8)^2\\,0)"
+    expr = f"0.4*(sin(6.2832*853*t)+sin(6.2832*960*t))*{gate}"
+    # Same expression for both stereo channels (| separator)
+    aevalsrc = f"aevalsrc={expr}|{expr}:s=48000:c=stereo[tone]"
+
+    fc_graph = (
+        f"[0:v]{vf_filter}[vout];"
+        f"{aevalsrc};"
+        f"[0:a][tone]amix=inputs=2:duration=first:weights=1 0.5:normalize=0[aout]"
+    )
+    fc_clause = f'-filter_complex "{fc_graph}" -map "[vout]" -map "[aout]"'
+
+    # Swap -vf for filter_complex
+    params = params[:vf_match.start()] + fc_clause + params[vf_match.end():]
+
+    # Remove bare -map 0 — filter_complex provides explicit stream maps
+    params = re.sub(r'\s*-map\s+0(?!:)', '', params)
+
+    # Audio must be re-encoded when mixing
+    params = re.sub(r'\s*-c:a\s+copy\b', ' -c:a aac -b:a 192k', params)
+    params = re.sub(r'\s*-acodec\s+copy\b', ' -c:a aac -b:a 192k', params)
+
+    # Collapse any duplicate -c:a flags — can occur when the base profile has
+    # both -c:v copy and -c:a copy and _inject_drawtext's _VID_ENCODE adds a
+    # second -c:a copy, causing two replacements above
+    params = re.sub(r'(\s+-c:a\s+aac\s+-b:a\s+192k){2,}', ' -c:a aac -b:a 192k', params)
+
+    return params
+
+
+_EAS_TRANSCODE_PREFIXES = {
+    # Filter prefix prepended to the EAS overlay filter chain.
+    # Applied at clone time; removed automatically when the alert clears and the
+    # original profile is restored.  "full" = no prefix (transcode at source quality).
+    "full":    "",
+    "1080p30": "fps=fps=30,",
+    "720p":    "scale=1280:720:flags=fast_bilinear,",
+    "720p30":  "scale=1280:720:flags=fast_bilinear,fps=fps=30,",
+}
+
+
+def _clone_and_inject_eas(channel_id, original_profile, channel_name="", tone_interval=0,
+                          overlay_style="tickarr", label_color="0xCC0000",
+                          transcode_mode="full"):
+    from core.models import StreamProfile
+    raw_params = original_profile.parameters or ""
+    cleaned_params, removed_flags = _strip_dangerous_flags(
+        channel_name or f"channel {channel_id}", raw_params
+    )
+    transcode_prefix = _EAS_TRANSCODE_PREFIXES.get(transcode_mode, "")
+    if overlay_style == "broadcast":
+        eas_filter = transcode_prefix + _build_eas_broadcast_filter(channel_id, label_color)
+    else:
+        eas_filter = (
+            transcode_prefix
+            + _EAS_TYPE_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=channel_id)
+            + ","
+            + _EAS_AREA_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=channel_id)
+        )
+    params = _inject_drawtext(cleaned_params, eas_filter)
+    if tone_interval > 0:
+        params = _inject_eas_tone(params, channel_id, tone_interval)
+    profile = StreamProfile(
+        name=f"{PROFILE_PREFIX}EAS [{original_profile.name}] [ch{channel_id}]",
+        command=original_profile.command,
+        parameters=params,
+        locked=False,
+        is_active=True,
+    )
+    profile.save()
+    logger.info(f"tickarr: EAS profile cloned {original_profile.id} → {profile.id} for channel {channel_id}"
+                + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
+    return profile, removed_flags
 
 
 def _assign_profile(channel, profile):
@@ -251,6 +457,21 @@ def _assign_profile(channel, profile):
         channel.update_stream_profile(profile.id)
     except Exception:
         pass
+
+
+def _assign_logo(channel, logo_url, channel_display_name):
+    from apps.channels.models import Logo
+    try:
+        logo, created = Logo.objects.get_or_create(
+            url=logo_url,
+            defaults={"name": channel_display_name},
+        )
+        channel.logo = logo
+        channel.save(update_fields=["logo"])
+        return True, created
+    except Exception as e:
+        logger.warning(f"tickarr: logo assign failed for {channel_display_name}: {e}")
+        return False, False
 
 
 def _restore_profile(channel, original_profile_id):
@@ -378,6 +599,384 @@ def _write_sports_text(channel_id, labels_text, abbrevs_text, scores_text, full_
     _atomic_write(f"channel_{channel_id}_sports_full.txt",    full_text    or "")
 
 
+def _eas_write_alert(channel_id, unique_alerts, overlay_style="tickarr"):
+    """Write EAS overlay text files for the active style."""
+    _ensure_dirs()
+    if not unique_alerts:
+        return
+
+    def _area(a):
+        return (a.get("area") or "").replace("; ", "  ·  ").strip()
+
+    if overlay_style == "broadcast":
+        # Clean label text (no ⚠ — the colored box carries that urgency)
+        if len(unique_alerts) == 1:
+            type_text = unique_alerts[0]["event"].upper()
+            area_text = _area(unique_alerts[0])
+        else:
+            type_text = "WEATHER ALERT"
+            parts = [f"{a['event'].upper()} — {_area(a)}" if _area(a) else a["event"].upper()
+                     for a in unique_alerts]
+            area_text = "     |     ".join(parts)
+    else:
+        # Tickarr custom style
+        if len(unique_alerts) == 1:
+            type_text = f"⚠  {unique_alerts[0]['event'].upper()}  ⚠"
+            area_text = _area(unique_alerts[0])
+        else:
+            type_text = "⚠  ACTIVE WEATHER ALERTS  ⚠"
+            parts = [f"{a['event'].upper()} — {_area(a)}" if _area(a) else a["event"].upper()
+                     for a in unique_alerts]
+            area_text = "     ◆     ".join(parts)
+
+    _atomic_write(f"eas_{channel_id}_type.txt", type_text)
+    _atomic_write(f"eas_{channel_id}_area.txt", area_text)
+    _atomic_write(f"eas_{channel_id}_events.txt", "")
+
+
+def _eas_clear(channel_id):
+    _ensure_dirs()
+    _atomic_write(f"eas_{channel_id}_type.txt",   "")
+    _atomic_write(f"eas_{channel_id}_events.txt", "")
+    _atomic_write(f"eas_{channel_id}_area.txt",   "")
+
+
+def _eas_restart_channel(channel_uuid):
+    """Stop an active channel so clients reconnect with the updated EAS profile.
+
+    stop_channel() sets a Redis 'channel_stopping' key with a 60-second TTL.
+    While that key exists, is_channel_teardown_active() returns True and Dispatcharr
+    rejects ALL reconnect attempts before FFmpeg even starts — causing the 10-second
+    stall loop. We delete the key after ~2s (enough for FFmpeg teardown to finish)
+    so clients can reconnect immediately.
+    """
+    import time as _time
+    try:
+        from apps.proxy.live_proxy.services.channel_service import ChannelService
+        from apps.proxy.live_proxy.redis_keys import RedisKeys
+        from apps.channels.models import RedisClient
+        result = ChannelService.stop_channel(channel_uuid)
+        if result.get("status") != "success":
+            return
+        logger.info(f"[Tickarr] EAS: channel {channel_uuid} stop sent — clearing reconnect gate in 2s")
+        _time.sleep(2.0)
+        rc = RedisClient.get_client()
+        rc.delete(RedisKeys.channel_stopping(channel_uuid))
+        # Safety: if metadata state is still STOPPING, clear it so teardown check passes
+        meta_key = RedisKeys.channel_metadata(channel_uuid)
+        state = rc.hget(meta_key, "state")
+        if state and (state.decode() if isinstance(state, bytes) else state) == "stopping":
+            rc.hdel(meta_key, "state")
+        logger.info(f"[Tickarr] EAS: reconnect gate cleared for {channel_uuid}")
+    except ImportError:
+        logger.warning("[Tickarr] EAS: live_proxy unavailable — profile will apply on next client connect")
+    except Exception as e:
+        logger.debug(f"[Tickarr] EAS: restart {channel_uuid}: {e}")
+
+
+def _fetch_nws_alerts(zones, severity_threshold="Moderate"):
+    zone_str = ",".join(z.upper() for z in zones if z.strip())
+    if not zone_str:
+        return []
+    url = f"{NWS_ALERTS_URL}?zone={zone_str}"
+    req = urllib.request.Request(url, headers={
+        "User-Agent": NWS_UA,
+        "Accept": "application/geo+json",
+    })
+    with urllib.request.urlopen(req, timeout=15) as r:
+        data = json.loads(r.read())
+    min_sev = _EAS_SEV.get(severity_threshold, 2)
+    alerts = []
+    for feature in data.get("features", []):
+        props = feature.get("properties", {})
+        if props.get("status") != "Actual":
+            continue
+        if props.get("urgency") in ("Past", "Unknown"):
+            continue
+        if _EAS_SEV.get(props.get("severity", "Unknown"), 0) < min_sev:
+            continue
+        alerts.append({
+            "id":       props.get("id", ""),
+            "event":    props.get("event", "Weather Alert"),
+            "area":     props.get("areaDesc", ""),
+            "severity": props.get("severity", "Unknown"),
+            "expires":  props.get("expires", ""),
+        })
+    return alerts
+
+
+_EAS_REDIS_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_result"
+_EAS_REDIS_LOCK   = f"tickarr:{_PLUGIN_KEY}:eas_poll_lock"
+_EAS_STATE_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_state"     # JSON {cid: event_name or null}
+_EAS_OWNER_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_owner"     # nx lock — one worker applies transitions
+_EAS_ALERTS_KEY   = f"tickarr:{_PLUGIN_KEY}:eas_alerts"    # fingerprint of current alert set
+_EAS_ROTATION_KEY = f"tickarr:{_PLUGIN_KEY}:eas_rotation"  # current rotation index
+_EAS_CACHE_TTL    = 50   # seconds — one worker polls, all others read from Redis
+
+def _eas_sweep():
+    settings = _get_settings()
+    zones_raw = (settings.get("eas_zones") or "").strip()
+    zones = [z.strip() for z in zones_raw.split(",") if z.strip()]
+    # No zones configured — still need to clear any channels left in active EAS state
+    # (handles zones being removed while an alert was active)
+    if not zones:
+        rc = _get_redis_client()
+        current_state = {}
+        if rc:
+            try:
+                raw = rc.get(_EAS_STATE_KEY)
+                if raw:
+                    current_state = json.loads(raw)
+            except Exception:
+                pass
+        if not any(v for v in current_state.values()):
+            return  # nothing active, nothing to clear
+        mappings = _get_mappings()
+        from apps.channels.models import Channel
+        from core.models import StreamProfile
+        for cid, event in list(current_state.items()):
+            if not event:
+                continue
+            try:
+                mapping = mappings.get(cid, {}) or {}
+                channel = Channel.objects.filter(id=int(cid)).first()
+                if channel:
+                    _restore_profile(channel, mapping.get("original_profile_id"))
+                    eas_pid = mapping.get("eas_profile_id") or mapping.get("ticker_profile_id")
+                    if eas_pid:
+                        _delete_cloned_profile(eas_pid)
+                    mapping.pop("eas_profile_id", None)
+                    mapping.pop("ticker_profile_id", None)
+                    mappings[cid] = mapping
+                    _eas_clear(cid)
+                    _eas_restart_channel(str(channel.uuid))
+                    logger.info(f"[Tickarr] EAS: cleared ch {cid} — no zones configured")
+            except Exception as e:
+                logger.error(f"[Tickarr] EAS: clear failed ch {cid}: {e}")
+        _save_mappings(mappings)
+        if rc:
+            try:
+                rc.delete(_EAS_STATE_KEY)
+            except Exception:
+                pass
+        return
+    severity_threshold = settings.get("eas_severity_filter") or "Moderate"
+    try:
+        tone_interval = max(30, int(settings.get("eas_tone_interval") or 300))
+    except Exception:
+        tone_interval = 300
+    overlay_style = settings.get("eas_overlay_style") or "tickarr"
+    mappings = _get_mappings()
+    eas_cids = [cid for cid, m in mappings.items() if m and m.get("type") == "eas"]
+    if not eas_cids:
+        return
+
+    # One worker polls NWS; all others read from Redis cache.
+    alerts = None
+    rc = _get_redis_client()
+    try:
+        if rc:
+            cached = rc.get(_EAS_REDIS_KEY)
+            if cached:
+                alerts = json.loads(cached)
+            else:
+                lock_acquired = rc.set(_EAS_REDIS_LOCK, "1", nx=True, ex=30)
+                if lock_acquired:
+                    try:
+                        alerts = _fetch_nws_alerts(zones, severity_threshold)
+                        rc.setex(_EAS_REDIS_KEY, _EAS_CACHE_TTL, json.dumps(alerts))
+                    except Exception as e:
+                        logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
+                        return
+                else:
+                    return  # another worker is fetching right now
+        else:
+            alerts = _fetch_nws_alerts(zones, severity_threshold)
+    except Exception as e:
+        logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
+        return
+
+    # Sort all active alerts worst-first; rotation cycles through them each sweep
+    all_alerts = sorted(alerts or [], key=lambda a: _EAS_SEV.get(a["severity"], 0), reverse=True)
+    worst = all_alerts[0] if all_alerts else None
+
+    # Deduplicate by event type so each alert TYPE gets equal screen time.
+    # Multiple counties under the same event are merged into one combined area string.
+    event_groups = {}
+    for a in all_alerts:
+        ev = a["event"]
+        if ev not in event_groups:
+            event_groups[ev] = {"event": ev, "severity": a["severity"], "areas": []}
+        area = (a.get("area") or "").strip()
+        if area and area not in event_groups[ev]["areas"]:
+            event_groups[ev]["areas"].append(area)
+    unique_alerts = sorted(
+        [{"event": d["event"], "severity": d["severity"],
+          "area": "; ".join(d["areas"])} for d in event_groups.values()],
+        key=lambda a: _EAS_SEV.get(a["severity"], 0), reverse=True,
+    )
+
+    # No rotation — all alerts are written into one combined scroll text each sweep.
+
+    # Read persisted alert state (shared across all workers via Redis).
+    current_state = {}
+    if rc:
+        try:
+            raw = rc.get(_EAS_STATE_KEY)
+            if raw:
+                current_state = json.loads(raw)
+        except Exception:
+            pass
+
+    # Channels currently being streamed (Redis channel_stream:{id} key exists).
+    # EAS only activates on channels with an active viewer; clears always run so
+    # profiles are restored even if the viewer stopped watching mid-alert.
+    streaming_ids = set()
+    if rc:
+        try:
+            for k in rc.keys("channel_stream:*"):
+                streaming_ids.add((k if isinstance(k, str) else k.decode()).split(":")[-1])
+        except Exception:
+            pass
+
+    # Determine which channels need a state transition.
+    # State is boolean (active/inactive) — not the event name — so rotating alerts
+    # between sweeps never triggers a spurious re-clone.
+    transitions = {}
+    for cid in eas_cids:
+        was_active = bool(current_state.get(cid))
+        now_active = bool(worst)
+        if was_active == now_active:
+            continue
+        # Skip activation for channels nobody is watching right now.
+        # Clears always run so profiles are restored even after a viewer leaves.
+        if now_active and not was_active and cid not in streaming_ids:
+            continue
+        transitions[cid] = (was_active, now_active)
+
+    label_color = _EAS_BROADCAST_COLORS.get(worst["severity"] if worst else "Severe", "0xCC0000")
+
+    if not transitions:
+        # No profile changes — refresh banner text on already-active EAS channels
+        if worst:
+            for cid in eas_cids:
+                if current_state.get(cid):
+                    try:
+                        _eas_write_alert(cid, unique_alerts, overlay_style)
+                    except Exception:
+                        pass
+        return
+
+    # Only one worker applies transitions — others skip this cycle.
+    if rc and not rc.set(_EAS_OWNER_KEY, "1", nx=True, ex=120):
+        return
+
+    from apps.channels.models import Channel
+    from core.models import StreamProfile
+
+    new_state = dict(current_state)
+    changed = False
+
+    for cid, (was_active, now_active) in transitions.items():
+        mapping = mappings.get(cid, {})
+        try:
+            channel = Channel.objects.filter(id=int(cid)).first()
+            if not channel:
+                continue
+
+            if now_active:
+                # Alert firing — migrate old static format if present, then clone fresh EAS profile.
+                if mapping.get("ticker_profile_id"):
+                    _restore_profile(channel, mapping["original_profile_id"])
+                    _delete_cloned_profile(mapping["ticker_profile_id"])
+                    mapping.pop("ticker_profile_id", None)
+
+                if mapping.get("eas_profile_id"):
+                    _delete_cloned_profile(mapping["eas_profile_id"])
+                    mapping.pop("eas_profile_id", None)
+
+                orig = StreamProfile.objects.filter(id=mapping["original_profile_id"]).first()
+                if not orig:
+                    logger.warning(f"[Tickarr] EAS: original profile missing for ch {cid}")
+                    continue
+
+                transcode_mode = settings.get("eas_transcode_mode") or "full"
+                eas_profile, _ = _clone_and_inject_eas(channel.id, orig, channel.name,
+                                                       tone_interval, overlay_style, label_color,
+                                                       transcode_mode)
+                _assign_profile(channel, eas_profile)
+                _eas_write_alert(cid, unique_alerts, overlay_style)
+                mapping["eas_profile_id"] = eas_profile.id
+                mappings[cid] = mapping
+                new_state[cid] = True
+                logger.info(f"[Tickarr] EAS ALERT: {worst['event']} — {worst['area'][:60]} (ch {cid})")
+                _eas_restart_channel(str(channel.uuid))
+
+            else:
+                # Alert cleared — restore original passthrough profile.
+                eas_pid = mapping.get("eas_profile_id") or mapping.get("ticker_profile_id")
+                _restore_profile(channel, mapping["original_profile_id"])
+                if eas_pid:
+                    _delete_cloned_profile(eas_pid)
+                mapping.pop("eas_profile_id", None)
+                mapping.pop("ticker_profile_id", None)
+                mappings[cid] = mapping
+                _eas_clear(cid)
+                new_state[cid] = False
+                logger.info(f"[Tickarr] EAS: alert cleared — ch {cid}")
+                _eas_restart_channel(str(channel.uuid))
+
+            with _eas_lock:
+                if now_active:
+                    _eas_active[cid] = worst["event"] if worst else "EAS"
+                else:
+                    _eas_active.pop(cid, None)
+
+            changed = True
+
+        except Exception as e:
+            logger.error(f"[Tickarr] EAS: transition failed ch {cid}: {e}", exc_info=True)
+
+    if changed:
+        _save_mappings(mappings)
+        if rc:
+            try:
+                rc.setex(_EAS_STATE_KEY, 3600, json.dumps(new_state))
+            except Exception:
+                pass
+
+    if rc:
+        try:
+            rc.delete(_EAS_OWNER_KEY)
+        except Exception:
+            pass
+
+
+def _eas_sweep_loop(stop_event):
+    # EAS Weather Alert — dedicated to jesmannstl
+    # A Dispatcharr community member and severe weather enthusiast
+    # whose passion for keeping people informed inspired this feature.
+    # Rest easy.
+    logger.info("[Tickarr] EAS module initialized — for jesmannstl, who understood why this matters.")
+    while not stop_event.is_set():
+        interval = 60
+        try:
+            try:
+                interval = max(15, int((_get_settings().get("eas_poll_interval") or 60)))
+            except Exception:
+                pass
+            _eas_sweep()
+        except Exception as e:
+            logger.error(f"[Tickarr] EAS loop error: {e}", exc_info=True)
+        finally:
+            try:
+                from django.db import connection
+                connection.close()
+            except Exception:
+                pass
+        stop_event.wait(timeout=interval)
+
+
 def _remove_sports_file(channel_id):
     for fname in (f"channel_{channel_id}_sports_labels.txt",
                   f"channel_{channel_id}_sports_abbrevs.txt",
@@ -398,9 +997,12 @@ def _remove_sports_file(channel_id):
 # Channel cache helpers
 # ---------------------------------------------------------------------------
 
-CHANNELS_URL = "https://jstevenscl.github.io/epgeditarr/channels.json"
-ALIASES_URL  = "https://jstevenscl.github.io/epgeditarr/channel_aliases.json"
-CACHE_TTL    = 7 * 24 * 3600
+CACHE_TTL = 7 * 24 * 3600
+
+# Bundled channel data ships inside the plugin directory alongside plugin.py.
+# No EPGeditARR dependency at runtime — data updates with each Tickarr release.
+_BUNDLED_CHANNELS = os.path.join(_PLUGIN_DIR, "channels.json")
+_BUNDLED_ALIASES  = os.path.join(_PLUGIN_DIR, "channel_aliases.json")
 
 
 def _get_channel_data(force=False):
@@ -413,23 +1015,38 @@ def _get_channel_data(force=False):
         except Exception:
             pass
 
-    try:
-        req = urllib.request.Request(CHANNELS_URL, headers={"User-Agent": "Tickarr/0.1"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            channels = json.loads(r.read())
-        req = urllib.request.Request(ALIASES_URL, headers={"User-Agent": "Tickarr/0.1"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            aliases = json.loads(r.read())
+    channels, aliases = {}, {}
+
+    # Load channels — bundled file is authoritative
+    if os.path.exists(_BUNDLED_CHANNELS):
+        try:
+            with open(_BUNDLED_CHANNELS, encoding="utf-8") as f:
+                channels = json.load(f)
+            logger.info(f"tickarr: loaded {len(channels)} channels from bundled channels.json")
+        except Exception as e:
+            logger.error(f"tickarr: failed to load bundled channels.json: {e}")
+    else:
+        logger.warning("tickarr: bundled channels.json not found — channel matching unavailable")
+
+    # Load aliases — bundled file, flat dict format
+    if os.path.exists(_BUNDLED_ALIASES):
+        try:
+            with open(_BUNDLED_ALIASES, encoding="utf-8") as f:
+                raw = json.load(f)
+            # Support both flat dict and wrapped {"aliases": {...}} format
+            aliases = raw.get("aliases", raw) if isinstance(raw, dict) and "aliases" in raw else raw
+            logger.info(f"tickarr: loaded {len(aliases)} aliases from bundled channel_aliases.json")
+        except Exception as e:
+            logger.error(f"tickarr: failed to load bundled channel_aliases.json: {e}")
+
+    if channels:
         os.makedirs(_DATA_DIR, exist_ok=True)
         tmp = CHANNEL_CACHE_FILE + ".tmp"
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump({"fetched_at": time.time(), "channels": channels, "aliases": aliases}, f)
         os.replace(tmp, CHANNEL_CACHE_FILE)
-        logger.info(f"tickarr: fetched {len(channels)} channels, {len(aliases)} aliases")
-        return channels, aliases
-    except Exception as e:
-        logger.error(f"tickarr: channel cache fetch failed: {e}")
-        return {}, {}
+
+    return channels, aliases
 
 
 def _match_channel(dispatcharr_name, channels, aliases):
@@ -478,7 +1095,7 @@ def _save_mappings(mappings):
 
 def _get_settings():
     from apps.plugins.models import PluginConfig
-    config = PluginConfig.objects.filter(key="tickarr").first()
+    config = PluginConfig.objects.filter(key=_PLUGIN_KEY).first()
     if not config or not config.settings:
         return {}
     settings = dict(config.settings)
@@ -530,6 +1147,13 @@ KNOWN_SPORTS = list(ESPN_PATHS.keys()) + ['nascar']
 
 _sports_text_cache = {"key": None, "labels": "", "abbrevs": "", "scores": "", "full": "", "fetched_at": 0.0}
 SPORTS_CACHE_TTL = 30  # seconds
+
+# EAS globals
+NWS_ALERTS_URL  = "https://api.weather.gov/alerts/active"
+NWS_UA          = "Tickarr/0.2 (github.com/jstevenscl/tickarr)"
+_EAS_SEV        = {"Unknown": 0, "Minor": 1, "Moderate": 2, "Severe": 3, "Extreme": 4}
+_eas_active     = {}   # channel_id → alert event string when alert is active
+_eas_lock       = threading.Lock()
 _TICKER_FIXED_LEN = 600  # all ticker strings are always exactly this many chars
 # Fixed length keeps text_w constant across reloads — prevents scroll position jumping
 # when game count changes between ESPN polls. Content beyond 600 chars is truncated
@@ -747,6 +1371,8 @@ def _fetch_sports_text(sports_list, favorites=""):
 
 TICKARR_NOWPLAYING_URL = "https://stellartunerlog.com/nowplaying.json"
 TICKARR_CHANNEL_URL    = "https://stellartunerlog.com/channels.json"
+TICKARR_SXM_EPG_URL    = "https://jstevenscl.github.io/tickarr/lib/satellite_radio_epg.xml"
+TICKARR_SXM_SOURCE     = "Tickarr: Satellite Radio"
 STATION_CACHE_TTL      = 24 * 3600
 STATION_CACHE_FILE     = os.path.join(_DATA_DIR, "station_cache.json")
 NOWPLAYING_CACHE_TTL   = 30   # seconds — matches stellartunerlog.com update interval
@@ -1082,18 +1708,25 @@ def _build_channel_list(channel_mappings):
     return ch
 
 
-def _write_on_air(channel_id, channel_name, title=""):
-    """Write 'On Air' overlay for non-song content (talk, spots, promos, etc.).
-    Shows program title when available from stellartunerlog."""
+def _write_on_air(channel_id, channel_name, title="", subtitle=""):
+    """Write 'On Air' overlay for non-song content.
+    title   → artist slot (show/match name)
+    subtitle → song slot  (live score line, segment title, etc.)
+    SiriusXM sports channels send match + score as artist + title fields."""
     _ensure_dirs()
     _atomic_write(f"channel_{channel_id}_header.txt",  "On Air")
     _atomic_write(f"channel_{channel_id}_artist.txt",  _truncate(title or "", 38))
-    _atomic_write(f"channel_{channel_id}_song.txt",    "")
+    sub = (subtitle or "").strip()
+    _atomic_write(f"channel_{channel_id}_song.txt",    _truncate(sub, 45) if sub else "")
     _atomic_write(f"channel_{channel_id}_channel.txt", channel_name or "")
 
 
 def _fetch_and_write(args):
     channel_id, deeplink, channel_name, channel_description = args
+    # EAS alert is active — preserve alert content, skip now-playing update
+    with _eas_lock:
+        if _eas_active.get(str(channel_id)):
+            return
     try:
         rc = _get_redis_client()
         if rc is not None:
@@ -1105,9 +1738,13 @@ def _fetch_and_write(args):
             cut_type = station.get("cut_type", "")
             if (cut_type or "").lower() in _NON_SONG_CUT_TYPES:
                 if (cut_type or "").lower() in _PROGRAM_CUT_TYPES:
-                    # talk/pgm_segment: artist = stable program/show name
-                    program = station.get("artist", "") or ""
-                    _write_on_air(channel_id, channel_name, title=program.strip())
+                    # talk/pgm_segment: artist = show/match name, title = score or segment
+                    # SiriusXM sports channels send e.g. artist="Norway v Senegal",
+                    # title="NOR 3 - SEN 1 • 2H" — both fields are meaningful
+                    program  = station.get("artist", "") or ""
+                    score    = station.get("title",  "") or ""
+                    _write_on_air(channel_id, channel_name,
+                                  title=program.strip(), subtitle=score.strip())
                 else:
                     # spot/promo/exp/etc: artist = ad or promo copy, not useful
                     _write_on_air(channel_id, channel_name, title="")
@@ -1283,6 +1920,9 @@ def _poll_loop(stop_event):
     # Sports sweep runs independently — 30s interval, ESPN scoreboard polling
     sports_t = threading.Thread(target=_sports_sweep_loop, args=(stop_event,), daemon=True)
     sports_t.start()
+    # EAS sweep — NWS alert polling, interval configurable (default 60s)
+    eas_t = threading.Thread(target=_eas_sweep_loop, args=(stop_event,), daemon=True)
+    eas_t.start()
     # Now-playing sweep loop — one bulk fetch from tickarr.com per cycle
     _sweep_loop(stop_event)
 
@@ -1316,8 +1956,13 @@ class Plugin:
     def _build_fields(self):
         try:
             from apps.channels.models import ChannelGroup, Channel
-            groups   = [{"value": str(g.id), "label": g.name} for g in ChannelGroup.objects.all().order_by("name")]
-            channels = [{"value": str(c.id), "label": c.name} for c in Channel.objects.all().order_by("name")]
+            managed_group_ids = set(
+                Channel.objects.exclude(channel_group=None).values_list("channel_group_id", flat=True)
+            )
+            groups   = [{"value": str(g.id), "label": g.name}
+                        for g in ChannelGroup.objects.filter(id__in=managed_group_ids).order_by("name")]
+            channels = [{"value": str(c.id), "label": c.name}
+                        for c in Channel.objects.exclude(channel_group=None).order_by("name")]
         except Exception:
             groups = []
             channels = []
@@ -1343,6 +1988,9 @@ class Plugin:
                 labels_str = ", ".join(LABELS.get(s, s) for s in sl[:5])
                 fav = m.get("sports_favorites", "")
                 now_playing = f"[sports: {labels_str}]" + (f" favs: {fav}" if fav else "")
+            elif ticker_type == "eas":
+                event = _eas_active.get(cid)
+                now_playing = f"[EAS] ALERT: {event}" if event else "[EAS] monitoring - no active alert"
             else:
                 artist_file = os.path.join(TICKER_DIR, f"channel_{cid}_artist.txt")
                 song_file   = os.path.join(TICKER_DIR, f"channel_{cid}_song.txt")
@@ -1351,24 +1999,82 @@ class Plugin:
                     with open(song_file,   encoding="utf-8") as f: song   = f.read().strip()
                 except Exception:
                     artist = song = ""
-                now_playing = f"{artist} — {song}".strip(" —") if (artist or song) else "(no data yet)"
-            ticker_lines.append(f"• {name}: {now_playing}")
+                now_playing = f"{artist} - {song}".strip(" -") if (artist or song) else "(no data yet)"
+            ticker_lines.append(f"- {name}: {now_playing}")
 
         active_label = (f"{len(mappings)} active ticker(s):\n" + "\n".join(ticker_lines)) if mappings else "No active tickers."
 
         return [
-            # ── Now Playing ──────────────────────────────────────────────
-            {"id": "_np_section",       "type": "info",   "label": "━━━━━━━━━━  NOW PLAYING (SiriusXM)  ━━━━━━━━━━"},
+            # ── Now Playing ───────────────────────────────────────────────
+            {"id": "_np_section",       "type": "info",   "label": "==========  NOW PLAYING  =========="},
             {"id": "np_target_type",    "type": "select", "label": "Apply To",
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_np_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
+            {"id": "np_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
+            {"id": "np_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
+            {"id": "np_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
+            # ── Satellite Radio Channel Setup ─────────────────────────────
+            {"id": "_ch_section", "type": "info", "label": "==========  SATELLITE RADIO CHANNEL SETUP  =========="},
+            {"id": "_ch_about",   "type": "info",
+             "label": "Select a group or channel below, then use the Channel Setup actions to fill EPG, sort, or assign logos."},
+            {"id": "ch_target_type", "type": "select", "label": "Apply To",
              "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "np_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
-            {"id": "np_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+            {"id": "ch_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
+            {"id": "ch_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+            {"id": "sort_start_number",   "type": "text",   "label": "Sort Start Number",
+             "placeholder": "Leave blank to auto-detect from current channel numbers"},
+            # ── EAS ───────────────────────────────────────────────────────
+            {"id": "_eas_section",  "type": "info", "label": "==========  EAS/JAS WEATHER ALERTS  =========="},
+            {"id": "_eas_tribute",  "type": "info",
+             "label": "JAS = jesmannstl Alert System. Dedicated to jesmannstl -- a weather fanatic and beloved member of the Dispatcharr community. Every alert that fires is a reminder of him. Rest in peace."},
+            {"id": "_eas_about",    "type": "info",
+             "label": "Monitors NWS alerts for configured zones. When an alert fires, affected channels automatically switch to an EAS overlay profile (red flashing banner + siren tone) and restart. Channels return to normal passthrough when the alert clears."},
+            {"id": "_eas_transcode_note", "type": "info",
+             "label": "⚠ TRANSCODING NOTE (active alerts only): EAS overlays require FFmpeg to decode and re-encode video while an alert is active. Channels return to their original profile automatically when the alert clears — transcoding only occurs during the alert itself. If you experience buffering or stuttering during an alert, lower the Transcode Quality setting below. High-framerate sources (59.94fps) use approximately twice the CPU of standard sources (29.97fps)."},
+            {"id": "eas_transcode_mode", "type": "select", "label": "EAS Transcode Quality",
+             "options": [
+                 {"value": "full",    "label": "Full quality — source resolution and framerate (default; best for capable CPUs or GPU-accelerated systems)"},
+                 {"value": "1080p30", "label": "1080p 30fps — full resolution, framerate capped at 30fps (moderate CPU reduction; try this first if you see buffering)"},
+                 {"value": "720p",    "label": "720p — scaled to 720p at source framerate (significant CPU reduction; resolution restores when alert clears)"},
+                 {"value": "720p30",  "label": "720p 30fps — scaled to 720p, capped at 30fps (maximum CPU reduction; use if other options still cause buffering)"},
+             ]},
+            {"id": "_eas_zone_help", "type": "info",
+             "label": "To find your zone or county code: visit alerts.weather.gov, select your state, then click your county. The code appears in the URL and alert details (e.g. TXC113 = Texas, County 113). You can enter multiple codes separated by commas to cover multiple counties."},
+            {"id": "eas_zones",     "type": "text",   "label": "NWS Zone / County Codes (Active -- triggers alerts)",
+             "placeholder": "e.g. TXC113,TXC121"},
+            {"id": "_eas_saved_help", "type": "info",
+             "label": "Saved Codes (reference only -- paste your commonly-used codes here so you don't have to look them up each time; not monitored):"},
+            {"id": "eas_saved_codes", "type": "text",   "label": "Saved / Favorite Codes",
+             "placeholder": "e.g. OKC111,OKC037,WAZ702"},
+            {"id": "eas_severity_filter", "type": "select", "label": "Minimum Severity",
+             "options": [
+                 {"value": "Moderate", "label": "Watch (Moderate and above)"},
+                 {"value": "Severe",   "label": "Warning (Severe and above)"},
+                 {"value": "Extreme",  "label": "Emergency (Extreme only)"},
+             ]},
+            {"id": "eas_overlay_style", "type": "select", "label": "Alert Overlay Style",
+             "options": [
+                 {"value": "broadcast", "label": "TV Broadcast (news ticker bar — label box + scrolling crawl)"},
+                 {"value": "tickarr",   "label": "Tickarr Custom (flashing overlay boxes)"},
+             ]},
+            {"id": "eas_poll_interval",   "type": "number", "label": "Poll Interval (seconds)", "min": 15},
+            {"id": "eas_tone_interval",   "type": "number", "label": "Siren Tone Interval (seconds) - how often the attention tone repeats during an active alert", "min": 30},
+            {"id": "eas_target_type",   "type": "select", "label": "Apply To",
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_eas_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
+            {"id": "eas_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
+            {"id": "eas_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
+            {"id": "eas_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             # ── Custom Text ───────────────────────────────────────────────
-            {"id": "_custom_section",      "type": "info",   "label": "━━━━━━━━━━  CUSTOM TEXT  ━━━━━━━━━━"},
+            {"id": "_custom_section",      "type": "info",   "label": "==========  CUSTOM TEXT  =========="},
+            {"id": "_custom_transcode_note", "type": "info",
+             "label": "⚠ TRANSCODING NOTE (ticker active only): Custom text overlays require FFmpeg to decode and re-encode video while the ticker is running. Channels on stream-copy profiles will transcode only while the custom ticker is active — they return to their original profile when the ticker is disabled. If you experience buffering or stuttering, your system may not have sufficient CPU headroom for transcoding at your source resolution and framerate."},
             {"id": "custom_target_type",   "type": "select", "label": "Apply To",
-             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "custom_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
-            {"id": "custom_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_custom_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
+            {"id": "custom_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
+            {"id": "custom_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
+            {"id": "custom_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             {"id": "custom_text",      "type": "text",   "label": "Custom Text"},
             {"id": "custom_style",     "type": "select", "label": "Style",
              "options": [{"value": "static", "label": "Static"}, {"value": "scrolling", "label": "Scrolling"}]},
@@ -1380,25 +2086,27 @@ class Plugin:
              ]},
             {"id": "custom_schedule",  "type": "select", "label": "Schedule",
              "options": [{"value": "always", "label": "Always On"}, {"value": "timed", "label": "Timed"}]},
-            {"id": "custom_duration",  "type": "number", "label": "Display Duration (seconds) — Timed only"},
-            {"id": "custom_interval",  "type": "number", "label": "Repeat Interval (minutes) — Timed only"},
+            {"id": "custom_duration",  "type": "number", "label": "Display Duration (seconds) - Timed only"},
+            {"id": "custom_interval",  "type": "number", "label": "Repeat Interval (minutes) - Timed only"},
             # ── Sports Ticker ─────────────────────────────────────────────
-            {"id": "_sports_section",       "type": "info",    "label": "━━━━━━━━━━  SPORTS TICKER  ━━━━━━━━━━"},
-            {"id": "_sports_football",      "type": "info",    "label": "── Football ──"},
+            {"id": "_sports_section",       "type": "info",    "label": "==========  SPORTS TICKER  =========="},
+            {"id": "_sports_transcode_note", "type": "info",
+             "label": "⚠ TRANSCODING NOTE (ticker active only): Sports score overlays require FFmpeg to decode and re-encode video while the ticker is running. Channels on stream-copy profiles will transcode only while the sports ticker is active — they return to their original profile when the ticker is disabled. If you experience buffering or stuttering, your system may not have sufficient CPU headroom for transcoding at your source resolution and framerate."},
+            {"id": "_sports_football",      "type": "info",    "label": "-- Football --"},
             {"id": "sports_nfl",            "type": "boolean", "label": "NFL"},
             {"id": "sports_ncaafb",         "type": "boolean", "label": "College Football (NCAAF)"},
             {"id": "sports_cfl",            "type": "boolean", "label": "CFL"},
-            {"id": "_sports_basketball",    "type": "info",    "label": "── Basketball ──"},
+            {"id": "_sports_basketball",    "type": "info",    "label": "-- Basketball --"},
             {"id": "sports_nba",            "type": "boolean", "label": "NBA"},
             {"id": "sports_wnba",           "type": "boolean", "label": "WNBA"},
             {"id": "sports_ncaamb",         "type": "boolean", "label": "College Basketball (NCAAB)"},
-            {"id": "_sports_baseball",      "type": "info",    "label": "── Baseball / Softball ──"},
+            {"id": "_sports_baseball",      "type": "info",    "label": "-- Baseball / Softball --"},
             {"id": "sports_mlb",            "type": "boolean", "label": "MLB"},
             {"id": "sports_ncaabase",       "type": "boolean", "label": "NCAA Baseball"},
             {"id": "sports_ncaasb",         "type": "boolean", "label": "NCAA Softball"},
-            {"id": "_sports_hockey",        "type": "info",    "label": "── Hockey ──"},
+            {"id": "_sports_hockey",        "type": "info",    "label": "-- Hockey --"},
             {"id": "sports_nhl",            "type": "boolean", "label": "NHL"},
-            {"id": "_sports_soccer",        "type": "info",    "label": "── Soccer ──"},
+            {"id": "_sports_soccer",        "type": "info",    "label": "-- Soccer --"},
             {"id": "sports_mls",            "type": "boolean", "label": "MLS"},
             {"id": "sports_nwsl",           "type": "boolean", "label": "NWSL"},
             {"id": "sports_epl",            "type": "boolean", "label": "EPL (English Premier League)"},
@@ -1407,24 +2115,24 @@ class Plugin:
             {"id": "sports_bundesliga",     "type": "boolean", "label": "Bundesliga"},
             {"id": "sports_seriea",         "type": "boolean", "label": "Serie A"},
             {"id": "sports_ligue1",         "type": "boolean", "label": "Ligue 1"},
-            {"id": "_sports_tennis",        "type": "info",    "label": "── Tennis ──"},
+            {"id": "_sports_tennis",        "type": "info",    "label": "-- Tennis --"},
             {"id": "sports_atp",            "type": "boolean", "label": "ATP"},
             {"id": "sports_wta",            "type": "boolean", "label": "WTA"},
-            {"id": "_sports_motor",         "type": "info",    "label": "── Motor ──"},
+            {"id": "_sports_motor",         "type": "info",    "label": "-- Motor --"},
             {"id": "sports_nascar",         "type": "boolean", "label": "NASCAR (live races only)"},
-            {"id": "_sports_college_other", "type": "info",    "label": "── College Other ──"},
+            {"id": "_sports_college_other", "type": "info",    "label": "-- College Other --"},
             {"id": "sports_ncaavb",         "type": "boolean", "label": "NCAA Volleyball"},
             {"id": "sports_ncaalax",        "type": "boolean", "label": "NCAA Lacrosse"},
-            {"id": "sports_favorites",      "type": "text",    "label": "Favorite Teams (abbreviations, comma-separated — blank = all teams)"},
+            {"id": "sports_favorites",      "type": "text",    "label": "Favorite Teams (abbreviations, comma-separated - blank = all teams)"},
             {"id": "sports_color_mode",     "type": "select",  "label": "Color Mode",
              "options": [
-                 {"value": "single", "label": "Single Color — White (recommended, lower CPU)"},
-                 {"value": "multi",  "label": "Multi-Color — Sport labels + team abbreviations colored"},
+                 {"value": "single", "label": "Single Color - White (recommended, lower CPU)"},
+                 {"value": "multi",  "label": "Multi-Color - Sport labels + team abbreviations colored"},
              ]},
             {"id": "sports_position",       "type": "select",  "label": "Ticker Position",
              "options": [{"value": "bottom", "label": "Bottom"}, {"value": "top", "label": "Top"}]},
             {"id": "sports_fontsize",       "type": "number",  "label": "Font Size (default 36)", "min": 16},
-            {"id": "sports_labelcolor",     "type": "select",  "label": "Sport Label Color (NFL:, NBA:, etc.) — Multi-Color only",
+            {"id": "sports_labelcolor",     "type": "select",  "label": "Sport Label Color (NFL:, NBA:, etc.) - Multi-Color only",
              "options": [
                  {"value": "#ffd700", "label": "Gold (default)"},
                  {"value": "#00d4ff", "label": "Cyan"},
@@ -1433,7 +2141,7 @@ class Plugin:
                  {"value": "#ff4444", "label": "Red"},
                  {"value": "#ffffff", "label": "White (no distinction)"},
              ]},
-            {"id": "sports_abbrcolor",      "type": "select",  "label": "Team Abbreviation Color (KC, DEN, etc.) — Multi-Color only",
+            {"id": "sports_abbrcolor",      "type": "select",  "label": "Team Abbreviation Color (KC, DEN, etc.) - Multi-Color only",
              "options": [
                  {"value": "#00d4ff", "label": "Cyan (default)"},
                  {"value": "#ffd700", "label": "Gold"},
@@ -1443,18 +2151,22 @@ class Plugin:
                  {"value": "#ffffff", "label": "White (no distinction)"},
              ]},
             {"id": "sports_target_type",    "type": "select",  "label": "Apply To",
-             "options": [{"value": "group", "label": "Channel Group"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "sports_channel_group_id", "type": "select", "label": "Channel Group", "options": groups},
-            {"id": "sports_channel_id",       "type": "select", "label": "Channel",       "options": channels},
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_sports_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
+            {"id": "sports_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
+            {"id": "sports_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
+            {"id": "sports_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             # ── Active Tickers ────────────────────────────────────────────
-            {"id": "_active_section", "type": "info", "label": "━━━━━━━━━━  ACTIVE TICKERS  ━━━━━━━━━━"},
+            {"id": "_active_section", "type": "info", "label": "==========  ACTIVE TICKERS  =========="},
             {"id": "_ticker_list",    "type": "info", "label": active_label},
         ]
 
     def run(self, action, params, context):
-        if not params:
-            saved = _get_settings()
-            params = {k: v for k, v in saved.items() if k not in ("channel_mappings", "channel_cache")}
+        saved = _get_settings()
+        base = {k: v for k, v in saved.items() if k not in ("channel_mappings", "channel_cache")}
+        if params:
+            base.update(params)
+        params = base
 
         dispatch = {
             "enable_nowplaying":    self._enable_nowplaying,
@@ -1464,9 +2176,18 @@ class Plugin:
             "disable_custom":       self._disable_custom_ticker,
             "enable_sports":        self._enable_sports,
             "disable_sports":       self._disable_sports_ticker,
+            "enable_eas":           self._enable_eas,
+            "disable_eas":          self._disable_eas,
+            "migrate_eas":          self._migrate_eas,
             "disable_all":          self._disable_all,
             "view_active":          self._view_active,
             "refresh_channels":     self._refresh_channels,
+            "fill_sxm_epg":         self._fill_sxm_epg,
+            "fill_epg":             self._fill_epg,
+            "sort_channels":        self._sort_channels,
+            "assign_logos":         self._assign_logos,
+            "fill_and_sort":        self._fill_and_sort,
+            "fill_sort_logos":      self._fill_sort_logos,
             "clean_orphans":        self._clean_orphans,
             "redis_diag":           self._redis_diag,
             "reload_poller":        self._reload_poller,
@@ -1532,7 +2253,7 @@ class Plugin:
                 if station:
                     deeplink = station.get("id")  # tickarr.com uses "id" as the deeplink
 
-                cloned = _clone_and_inject(channel.id, original_profile)
+                cloned, removed_flags = _clone_and_inject(channel.id, original_profile, channel.name)
                 _assign_profile(channel, cloned)
 
                 mappings[cid] = {
@@ -1547,7 +2268,9 @@ class Plugin:
                 # Write fallback immediately — sweep loop fetches live data within 15s
                 _write_fallback(channel.id, channel.name, channel_description)
 
-                enabled.append(channel.name)
+                note = (f" [auto-removed from cloned profile: {', '.join(removed_flags)}]"
+                        if removed_flags else "")
+                enabled.append(f"{channel.name}{note}")
             except Exception as e:
                 logger.error(f"tickarr: enable failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
@@ -1556,8 +2279,8 @@ class Plugin:
 
         parts = []
         if enabled:  parts.append(f"Enabled: {len(enabled)} channel(s)")
-        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:   parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _enable_custom(self, params):
@@ -1583,7 +2306,7 @@ class Plugin:
             if interval <= 0:
                 return {"success": False, "message": "Repeat Interval must be greater than 0."}
             if duration >= interval * 60:
-                return {"success": False, "message": "Display Duration (seconds) must be less than Repeat Interval (minutes × 60)."}
+                return {"success": False, "message": "Display Duration (seconds) must be less than Repeat Interval (minutes x 60)."}
 
         channels = self._resolve_channels(params, prefix="custom_")
         if not channels:
@@ -1607,8 +2330,9 @@ class Plugin:
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
                     continue
 
+                raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
                 drawtext = _build_custom_filter(channel.id, style, position, schedule, duration, interval)
-                new_params = _inject_drawtext(original_profile.parameters or "", drawtext)
+                new_params = _inject_drawtext(raw_params, drawtext)
 
                 from core.models import StreamProfile
                 cloned = StreamProfile(
@@ -1634,7 +2358,8 @@ class Plugin:
                     "custom_interval":     interval,
                 }
                 _write_custom_text(channel.id, custom_text)
-                enabled.append(channel.name)
+                note = (f" [auto-removed: {', '.join(removed_flags)}]" if removed_flags else "")
+                enabled.append(f"{channel.name}{note}")
 
             except Exception as e:
                 logger.error(f"tickarr: enable_custom failed for {channel.name}: {e}", exc_info=True)
@@ -1644,8 +2369,8 @@ class Plugin:
 
         parts = []
         if enabled: parts.append(f"Enabled: {len(enabled)} channel(s)")
-        if skipped: parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:  parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _update_custom(self, params):
@@ -1677,8 +2402,8 @@ class Plugin:
             _save_mappings(mappings)
 
         parts = []
-        if updated: parts.append(f"Updated {len(updated)} channel(s) — text live immediately:\n" + "\n".join(f"  • {u}" for u in updated))
-        if skipped: parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
+        if updated: parts.append(f"Updated {len(updated)} channel(s) - text live immediately:\n" + "\n".join(f"  - {u}" for u in updated))
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
         return {"success": bool(updated), "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _enable_sports(self, params):
@@ -1715,9 +2440,10 @@ class Plugin:
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
                     continue
 
+                raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
                 drawtext   = _build_sports_filter(channel.id, position, fontsize,
                                                   labelcolor, abbrcolor, color_mode)
-                new_params = _inject_drawtext(original_profile.parameters or "", drawtext)
+                new_params = _inject_drawtext(raw_params, drawtext)
 
                 from core.models import StreamProfile
                 cloned = StreamProfile(
@@ -1750,7 +2476,8 @@ class Plugin:
                                    pad,
                                    placeholder,
                                    placeholder)
-                enabled.append(channel.name)
+                note = (f" [auto-removed: {', '.join(removed_flags)}]" if removed_flags else "")
+                enabled.append(f"{channel.name}{note}")
 
             except Exception as e:
                 logger.error(f"tickarr: enable_sports failed for {channel.name}: {e}", exc_info=True)
@@ -1759,7 +2486,7 @@ class Plugin:
         _save_mappings(mappings)
 
         if color_mode == "multi" and _FONT_MONO_BOLD:
-            color_note = f"Mode: Multi-Color — sport labels = {labelcolor}, team abbreviations = {abbrcolor}."
+            color_note = f"Mode: Multi-Color - sport labels = {labelcolor}, team abbreviations = {abbrcolor}."
         elif color_mode == "multi" and not _FONT_MONO_BOLD:
             color_note = "Mode: Multi-Color requested but monospace font not found — using Single Color white. Install fonts-dejavu or fonts-liberation to enable colors."
         else:
@@ -1772,12 +2499,12 @@ class Plugin:
                 f"Sports: {sports_label}\n"
                 f"Live scores will appear within 30 seconds.\n"
                 f"{color_note}\n"
-                + "\n".join(f"  • {n}" for n in enabled)
+                + "\n".join(f"  - {n}" for n in enabled)
             )
         if skipped:
-            parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
+            parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
         if failed:
-            parts.append("Failed:\n" + "\n".join(f"  • {f}" for f in failed))
+            parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     # ------------------------------------------------------------------ #
@@ -1816,27 +2543,105 @@ class Plugin:
         _save_mappings(mappings)
         parts = []
         if disabled: parts.append(f"Disabled: {len(disabled)} channel(s)")
-        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  • {s}" for s in skipped))
-        if failed:   parts.append("Failed:\n"  + "\n".join(f"  • {f}" for f in failed))
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _disable_nowplaying(self, params):
         channels = self._resolve_channels(params, prefix="np_")
         if not channels:
-            return {"success": False, "message": "No channels found. Set the Now Playing → Apply To / Channel selector above."}
+            return {"success": False, "message": "No channels found. Set the Now Playing > Apply To / Channel selector above."}
         return self._do_disable(channels, type_filter="nowplaying")
 
     def _disable_custom_ticker(self, params):
         channels = self._resolve_channels(params, prefix="custom_")
         if not channels:
-            return {"success": False, "message": "No channels found. Set the Custom Text → Apply To / Channel selector above."}
+            return {"success": False, "message": "No channels found. Set the Custom Text > Apply To / Channel selector above."}
         return self._do_disable(channels, type_filter="custom")
 
     def _disable_sports_ticker(self, params):
         channels = self._resolve_channels(params, prefix="sports_")
         if not channels:
-            return {"success": False, "message": "No channels found. Set the Sports Ticker → Apply To / Channel selector above."}
+            return {"success": False, "message": "No channels found. Set the Sports Ticker > Apply To / Channel selector above."}
         return self._do_disable(channels, type_filter="sports")
+
+    def _enable_eas(self, params):
+        zones = (params.get("eas_zones") or "").strip()
+        if not zones:
+            return {"success": False, "message": "No NWS zone codes configured. Enter at least one zone code in EAS Weather Alerts > NWS Zone / County Codes above."}
+
+        channels = self._resolve_channels(params, prefix="eas_")
+        if not channels:
+            return {"success": False, "message": "No channels found. Set the EAS Weather Alerts > Apply To / Channel selector above."}
+
+        mappings = _get_mappings()
+        enabled, skipped, failed = [], [], []
+
+        for channel in channels:
+            cid = str(channel.id)
+            if cid in mappings:
+                existing = mappings[cid].get("type", "nowplaying")
+                skipped.append(f"{channel.name} (already has {existing} ticker — disable first)")
+                continue
+            try:
+                original_profile = channel.stream_profile
+                if not original_profile:
+                    skipped.append(f"{channel.name} (no stream profile assigned — assign one in Channels first)")
+                    continue
+                if original_profile.name.startswith(PROFILE_PREFIX):
+                    skipped.append(f"{channel.name} (already has a Tickarr profile — disable first)")
+                    continue
+                _eas_clear(channel.id)
+                mappings[cid] = {
+                    "original_profile_id": original_profile.id,
+                    "channel_name":        channel.name,
+                    "type":                "eas",
+                }
+                enabled.append(channel.name)
+            except Exception as e:
+                logger.error(f"tickarr: enable EAS failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} ({e})")
+
+        _save_mappings(mappings)
+        parts = []
+        if enabled:
+            parts.append(f"EAS registered: {len(enabled)} channel(s)\n" + "\n".join(f"  - {e}" for e in enabled))
+            parts.append(f"Monitoring zones: {zones}\nChannels continue using their normal profile. When a qualifying NWS alert fires, they automatically switch to the EAS overlay and restart. No re-encoding overhead until an actual alert occurs.")
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _disable_eas(self, params):
+        channels = self._resolve_channels(params, prefix="eas_")
+        if not channels:
+            return {"success": False, "message": "No channels found. Set the EAS Weather Alerts > Apply To / Channel selector above."}
+        mappings = _get_mappings()
+        disabled, skipped, failed = [], [], []
+        for channel in channels:
+            cid = str(channel.id)
+            mapping = mappings.get(cid)
+            if not mapping or mapping.get("type") != "eas":
+                skipped.append(f"{channel.name} (no EAS ticker active)")
+                continue
+            try:
+                _restore_profile(channel, mapping["original_profile_id"])
+                for pid_key in ("eas_profile_id", "ticker_profile_id"):
+                    if mapping.get(pid_key):
+                        _delete_cloned_profile(mapping[pid_key])
+                _eas_clear(channel.id)
+                with _eas_lock:
+                    _eas_active.pop(cid, None)
+                del mappings[cid]
+                disabled.append(channel.name)
+            except Exception as e:
+                logger.error(f"tickarr: disable EAS failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} ({e})")
+        _save_mappings(mappings)
+        parts = []
+        if disabled: parts.append(f"EAS disabled: {len(disabled)} channel(s)")
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _disable_all(self, params):
         from apps.channels.models import Channel
@@ -1851,13 +2656,19 @@ class Plugin:
             try:
                 channel = Channel.objects.get(id=int(cid))
                 _restore_profile(channel, mapping["original_profile_id"])
-                _delete_cloned_profile(mapping["ticker_profile_id"])
+                for pid_key in ("ticker_profile_id", "eas_profile_id"):
+                    if mapping.get(pid_key):
+                        _delete_cloned_profile(mapping[pid_key])
                 ticker_type = mapping.get("type", "nowplaying")
                 _remove_channel_files(channel.id)
                 if ticker_type == "custom":
                     _remove_custom_file(channel.id)
                 elif ticker_type == "sports":
                     _remove_sports_file(channel.id)
+                elif ticker_type == "eas":
+                    _eas_clear(channel.id)
+                    with _eas_lock:
+                        _eas_active.pop(cid, None)
                 del mappings[cid]
                 disabled.append(name)
             except Exception as e:
@@ -1866,8 +2677,53 @@ class Plugin:
 
         _save_mappings(mappings)
         parts = []
-        if disabled: parts.append(f"Disabled: {len(disabled)} channel(s)\n" + "\n".join(f"  • {n}" for n in disabled))
-        if failed:   parts.append("Failed:\n" + "\n".join(f"  • {f}" for f in failed))
+        if disabled: parts.append(f"Disabled: {len(disabled)} channel(s)\n" + "\n".join(f"  - {n}" for n in disabled))
+        if failed:   parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _migrate_eas(self, params):
+        """Migrate old always-on EAS profiles (ticker_profile_id) to dynamic mode."""
+        from apps.channels.models import Channel
+
+        mappings = _get_mappings()
+        old_eas = {cid: m for cid, m in mappings.items()
+                   if m and m.get("type") == "eas" and m.get("ticker_profile_id")}
+        if not old_eas:
+            return {"success": True, "message": "No old static EAS profiles found - all EAS channels are already in dynamic mode."}
+
+        migrated, failed = [], []
+        for cid, mapping in old_eas.items():
+            name = mapping.get("channel_name", f"Channel {cid}")
+            try:
+                channel = Channel.objects.filter(id=int(cid)).first()
+                if channel:
+                    _restore_profile(channel, mapping["original_profile_id"])
+                    _eas_restart_channel(str(channel.uuid))
+                _delete_cloned_profile(mapping["ticker_profile_id"])
+                mapping.pop("ticker_profile_id", None)
+                mapping.pop("eas_profile_id", None)
+                mappings[cid] = mapping
+                with _eas_lock:
+                    _eas_active.pop(cid, None)
+                migrated.append(name)
+            except Exception as e:
+                logger.error(f"tickarr: migrate EAS failed for {name}: {e}", exc_info=True)
+                failed.append(f"{name} ({e})")
+
+        _save_mappings(mappings)
+        rc = _get_redis_client()
+        if rc:
+            try:
+                rc.delete(_EAS_STATE_KEY, _EAS_OWNER_KEY)
+            except Exception:
+                pass
+
+        parts = []
+        if migrated:
+            parts.append(f"Migrated {len(migrated)} channel(s) to dynamic EAS:\n" + "\n".join(f"  - {n}" for n in migrated))
+            parts.append("Channels restored to passthrough profiles. Re-encoding only occurs when a real NWS alert fires.")
+        if failed:
+            parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _view_active(self, params):
@@ -1888,7 +2744,7 @@ class Plugin:
         if np_channels:
             with_deeplink = [(cid, m) for cid, m in np_channels if m.get("xm_deeplink")]
             no_deeplink   = [(cid, m) for cid, m in np_channels if not m.get("xm_deeplink")]
-            lines.append(f"── Now Playing ({len(np_channels)}, {len(with_deeplink)} matched to tickarr.com) ──")
+            lines.append(f"-- Now Playing ({len(np_channels)}, {len(with_deeplink)} matched to tickarr.com) --")
             for cid, mapping in with_deeplink[:25]:
                 name = mapping.get("channel_name", f"Channel {cid}")
                 deeplink = mapping.get("xm_deeplink")
@@ -1900,17 +2756,17 @@ class Plugin:
                 except Exception:
                     artist = song = ""
                 if artist or song:
-                    lines.append(f"  [{deeplink}] {name}: {artist} — {song}")
+                    lines.append(f"  [{deeplink}] {name}: {artist} - {song}")
                 else:
                     lines.append(f"  [{deeplink}] {name}: (no data yet)")
             if no_deeplink:
-                lines.append(f"  No tickarr.com match ({len(no_deeplink)} — run Refresh Channel Data):")
+                lines.append(f"  No tickarr.com match ({len(no_deeplink)} - run Refresh Channel Data):")
                 for cid, m in no_deeplink[:5]:
-                    lines.append(f"    • {m.get('channel_name', cid)}")
+                    lines.append(f"    - {m.get('channel_name', cid)}")
             lines.append("")
 
         if custom_channels:
-            lines.append(f"── Custom Text ({len(custom_channels)}) ──")
+            lines.append(f"-- Custom Text ({len(custom_channels)}) --")
             for cid, mapping in custom_channels[:20]:
                 name  = mapping.get("channel_name", f"Channel {cid}")
                 style = mapping.get("custom_style", "static")
@@ -1919,7 +2775,7 @@ class Plugin:
             lines.append("")
 
         if sports_channels:
-            lines.append(f"── Sports Ticker ({len(sports_channels)}) ──")
+            lines.append(f"-- Sports Ticker ({len(sports_channels)}) --")
             for cid, mapping in sports_channels[:20]:
                 name = mapping.get("channel_name", f"Channel {cid}")
                 sl   = mapping.get("sports_list", [])
@@ -1943,7 +2799,7 @@ class Plugin:
             channels, aliases = _get_channel_data(force=True)
             stations = _get_stations(force=True)
             if not stations:
-                return {"success": False, "message": "tickarr.com channel list came back empty — try again in a moment."}
+                return {"success": False, "message": "tickarr.com channel list came back empty - try again in a moment."}
             mappings = _get_mappings()
             deeplinks_fixed = 0
             descs_fixed = 0
@@ -1991,6 +2847,321 @@ class Plugin:
         except Exception as e:
             return {"success": False, "message": f"Refresh failed: {e}"}
 
+    # ------------------------------------------------------------------ #
+    # Channel Management — Fill / Sort / Logos                           #
+    # Mirrors EPGeditARR's structure exactly (no separate Order action). #
+    # ------------------------------------------------------------------ #
+
+    def _ch_resolve(self, params):
+        """Return (channels_data, aliases, dispatch_channels, group_or_None) or raise ValueError."""
+        from apps.channels.models import Channel, ChannelGroup
+        channels_data, aliases = _get_channel_data()
+        if not channels_data:
+            raise ValueError("Channel data not available — run Refresh Channel Data first.")
+        target_type = params.get("ch_target_type", "group")
+        if target_type == "group":
+            group_id = params.get("ch_channel_group_id")
+            if not group_id:
+                raise ValueError("Select a channel group in the Channel Setup section of Settings before running this action.")
+            try:
+                group = ChannelGroup.objects.get(id=int(group_id))
+                return channels_data, aliases, list(
+                    Channel.objects.filter(channel_group=group).order_by("channel_number", "name")
+                ), group
+            except ChannelGroup.DoesNotExist:
+                raise ValueError("Channel group not found.")
+        else:
+            channel_id = params.get("ch_channel_id")
+            if not channel_id:
+                raise ValueError("Select a channel in the Channel Setup section of Settings before running this action.")
+            try:
+                return channels_data, aliases, [Channel.objects.get(id=int(channel_id))], None
+            except Channel.DoesNotExist:
+                raise ValueError("Channel not found.")
+
+    def _do_fill(self, channel, xm_entry):
+        """Set tvg_id to the official SiriusXM channel name for EPG source matching."""
+        try:
+            channel.tvg_id = xm_entry.get("name", channel.name)
+            channel.save(update_fields=["tvg_id"])
+            return True
+        except Exception as e:
+            logger.warning(f"tickarr: fill failed for {channel.name}: {e}")
+            return False
+
+    def _do_logos(self, channel, xm_entry):
+        """Assign logo from bundled data. Returns (ok, created)."""
+        logo_url = xm_entry.get("logo_url", "")
+        if not logo_url:
+            return False, False
+        return _assign_logo(channel, logo_url, xm_entry.get("name", channel.name))
+
+    def _fill_epg(self, params):
+        try:
+            channels_data, aliases, dispatch_channels, _ = self._ch_resolve(params)
+        except ValueError as e:
+            return {"success": False, "message": str(e)}
+        filled, skipped, failed = [], [], []
+        for ch in dispatch_channels:
+            xm = _match_channel(ch.name, channels_data, aliases)
+            if not xm:
+                skipped.append(f"{ch.name} (no SiriusXM match)")
+                continue
+            if self._do_fill(ch, xm):
+                filled.append(ch.name)
+            else:
+                failed.append(ch.name)
+        parts = []
+        if filled:  parts.append(f"Filled EPG TVG IDs: {len(filled)} channel(s)")
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _sort_channels(self, params):
+        """Renumber channels sequentially from sort_start_number, ordered by SXM channel number.
+        Auto-detects start number from the current minimum channel_number if not configured."""
+        from apps.channels.models import Channel
+        try:
+            channels_data, aliases, dispatch_channels, group = self._ch_resolve(params)
+        except ValueError as e:
+            return {"success": False, "message": str(e)}
+
+        start_raw = (params.get("sort_start_number") or "").strip()
+        auto_detected = False
+        if start_raw:
+            try:
+                start_number = int(start_raw)
+            except (ValueError, TypeError):
+                return {"success": False, "message": f"Invalid Sort Start Number: {start_raw!r} - enter a whole number or leave blank to auto-detect."}
+        else:
+            auto_detected = True
+            nums = [ch.channel_number for ch in dispatch_channels if ch.channel_number is not None]
+            start_number = int(min(nums)) if nums else 1
+
+        # Build ordered list: matched channels sorted by SXM number, unmatched at end
+        matched, unmatched = [], []
+        for ch in dispatch_channels:
+            xm = _match_channel(ch.name, channels_data, aliases)
+            if xm and xm.get("sxm_number"):
+                matched.append((xm["sxm_number"], ch))
+            else:
+                unmatched.append(ch)
+        matched.sort(key=lambda x: x[0])
+        ordered = [ch for _, ch in matched] + unmatched
+
+        # Null out all channel numbers first to avoid unique-within-group constraint conflicts
+        if group:
+            Channel.objects.filter(channel_group=group).update(channel_number=None)
+        else:
+            for ch in ordered:
+                ch.channel_number = None
+                ch.save(update_fields=["channel_number"])
+
+        updated, failed = 0, []
+        for i, ch in enumerate(ordered):
+            new_num = start_number + i
+            try:
+                ch.channel_number = new_num
+                ch.save(update_fields=["channel_number"])
+                updated += 1
+            except Exception as e:
+                logger.warning(f"tickarr: sort failed for {ch.name}: {e}")
+                failed.append(ch.name)
+
+        start_note = " (auto-detected)" if auto_detected else ""
+        parts = [f"Sort complete — {updated} channel(s) renumbered from {start_number}{start_note}"]
+        if unmatched: parts.append(f"No SXM match (placed at end): {', '.join(c.name for c in unmatched[:10])}")
+        if failed:    parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts)}
+
+    def _assign_logos(self, params):
+        try:
+            channels_data, aliases, dispatch_channels, _ = self._ch_resolve(params)
+        except ValueError as e:
+            return {"success": False, "message": str(e)}
+        assigned, skipped, failed = [], [], []
+        for ch in dispatch_channels:
+            xm = _match_channel(ch.name, channels_data, aliases)
+            if not xm:
+                skipped.append(f"{ch.name} (no SiriusXM match)")
+                continue
+            ok, created = self._do_logos(ch, xm)
+            if ok:
+                assigned.append(f"{ch.name}" + (" (new)" if created else ""))
+            elif not xm.get("logo_url"):
+                skipped.append(f"{ch.name} (no logo in channel data)")
+            else:
+                failed.append(ch.name)
+        parts = []
+        if assigned: parts.append(f"Assigned logos: {len(assigned)} channel(s)")
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _fill_sxm_epg(self, params):
+        """Download Tickarr's own SiriusXM XMLTV and import EPG data into Dispatcharr."""
+        import xml.etree.ElementTree as ET
+        import io
+        import gc
+        from datetime import datetime, timedelta, timezone
+        from apps.epg.models import EPGSource, EPGData, ProgramData
+        from django.db import transaction
+
+        try:
+            channels_data, aliases, dispatch_channels, _ = self._ch_resolve(params)
+        except ValueError as e:
+            return {"success": False, "message": str(e)}
+
+        # Download Tickarr's own hosted XMLTV
+        xml_bytes = None
+        last_err = None
+        for _attempt in range(2):
+            try:
+                req = urllib.request.Request(TICKARR_SXM_EPG_URL, headers={"User-Agent": "Tickarr/0.1"})
+                with urllib.request.urlopen(req, timeout=60) as r:
+                    xml_bytes = r.read()
+                break
+            except Exception as e:
+                last_err = e
+        if xml_bytes is None:
+            return {"success": False, "message": f"Failed to download SiriusXM EPG data: {last_err}"}
+
+        # Strip control characters invalid in XML 1.0
+        xml_bytes = re.sub(rb'[\x00-\x08\x0b\x0c\x0e-\x1f]', b'', xml_bytes)
+
+        sxm_src, _ = EPGSource.objects.get_or_create(
+            name=TICKARR_SXM_SOURCE,
+            defaults={"source_type": "xmltv", "url": TICKARR_SXM_EPG_URL},
+        )
+
+        now = datetime.now(timezone.utc)
+        purge_before = now - timedelta(days=1)
+
+        def _parse_dt(s):
+            s = s.strip()
+            dt = datetime.strptime(s[:14], "%Y%m%d%H%M%S")
+            tz_str = s[14:].strip()
+            if tz_str:
+                sign = 1 if tz_str[0] == '+' else -1
+                offset = timedelta(hours=int(tz_str[1:3]), minutes=int(tz_str[3:5])) * sign
+            else:
+                offset = timedelta(0)
+            return (dt - offset).replace(tzinfo=timezone.utc)
+
+        # Phase 1: create/update EPGData records from <channel> elements
+        existing_epg = {e.tvg_id: e for e in EPGData.objects.filter(epg_source=sxm_src)}
+        channel_map = {}
+        with transaction.atomic():
+            for _ev, elem in ET.iterparse(io.BytesIO(xml_bytes), events=('end',)):
+                if elem.tag == 'channel':
+                    ch_id = elem.get('id', '').strip()
+                    if ch_id:
+                        display = (elem.findtext('display-name') or ch_id).strip()
+                        icon_el = elem.find('icon')
+                        icon_url = (icon_el.get('src', '') if icon_el is not None else '').strip()
+                        if ch_id in existing_epg:
+                            entry = existing_epg[ch_id]
+                            changed = []
+                            if entry.name != display: entry.name = display; changed.append('name')
+                            if entry.icon_url != icon_url: entry.icon_url = icon_url; changed.append('icon_url')
+                            if changed: entry.save(update_fields=changed)
+                        else:
+                            entry = EPGData.objects.create(tvg_id=ch_id, name=display, icon_url=icon_url, epg_source=sxm_src)
+                        channel_map[ch_id] = entry
+                    elem.clear()
+                elif elem.tag == 'programme':
+                    elem.clear()
+
+        # Phase 2: import ProgramData from <programme> elements
+        total_programs = 0
+        with transaction.atomic():
+            ProgramData.objects.filter(epg__epg_source=sxm_src, end_time__lt=purge_before).delete()
+            ProgramData.objects.filter(epg__epg_source=sxm_src, start_time__gte=now).delete()
+            batch = []
+            for _ev, elem in ET.iterparse(io.BytesIO(xml_bytes), events=('end',)):
+                if elem.tag == 'channel':
+                    elem.clear(); continue
+                if elem.tag != 'programme':
+                    continue
+                ch_id = elem.get('channel', '').strip()
+                entry = channel_map.get(ch_id)
+                if entry:
+                    try:
+                        start = _parse_dt(elem.get('start', ''))
+                        end   = _parse_dt(elem.get('stop', ''))
+                    except Exception:
+                        elem.clear(); continue
+                    if end > purge_before:
+                        batch.append(ProgramData(
+                            epg=entry,
+                            start_time=start, end_time=end,
+                            title=(elem.findtext('title') or '').strip(),
+                            sub_title=(elem.findtext('sub-title') or '').strip() or None,
+                            description=(elem.findtext('desc') or '').strip(),
+                            tvg_id=ch_id, custom_properties={},
+                        ))
+                        if len(batch) >= 2000:
+                            ProgramData.objects.bulk_create(batch)
+                            total_programs += len(batch)
+                            batch = []
+                elem.clear()
+            if batch:
+                ProgramData.objects.bulk_create(batch)
+                total_programs += len(batch)
+
+        del xml_bytes
+
+        # Fuzzy-match dispatch channels to EPGData and assign channel.epg_data
+        epg_lookup = {}
+        for entry in channel_map.values():
+            norm = _normalize(entry.name)
+            epg_lookup[norm] = entry
+
+        matched, unmatched = 0, []
+        with transaction.atomic():
+            for ch in dispatch_channels:
+                key = _normalize(ch.name)
+                xm = _match_channel(ch.name, channels_data, aliases)
+                # Try alias-resolved name first, then direct
+                best = (epg_lookup.get(_normalize(xm["name"])) if xm else None) or epg_lookup.get(key)
+                if best:
+                    if ch.epg_data_id != best.id:
+                        ch.epg_data = best
+                        ch.save(update_fields=['epg_data'])
+                    matched += 1
+                else:
+                    unmatched.append(ch.name)
+
+        n_ch = len(channel_map)
+        del channel_map, epg_lookup
+        gc.collect()
+
+        sxm_src.status = "success"
+        sxm_src.last_message = f"Tickarr: {n_ch:,} channels, {total_programs:,} programs"
+        sxm_src.save(update_fields=["status", "last_message"])
+
+        lines = [
+            f"SiriusXM Fill EPG complete\n",
+            f"  Channels assigned : {matched:,} / {len(dispatch_channels):,}",
+            f"  Programs loaded   : {total_programs:,}  ({n_ch:,} XMLTV channels)",
+        ]
+        if unmatched:
+            lines.append(f"  No match ({len(unmatched)}): " + ", ".join(unmatched[:10]))
+        return {"success": True, "message": "\n".join(lines)}
+
+    def _fill_and_sort(self, params):
+        r1 = self._fill_sxm_epg(params)
+        r2 = self._sort_channels(params)
+        msg = "\n\n".join(filter(None, [r1["message"], r2["message"]]))
+        return {"success": r1["success"] and r2["success"], "message": msg}
+
+    def _fill_sort_logos(self, params):
+        r1 = self._fill_sxm_epg(params)
+        r2 = self._sort_channels(params)
+        r3 = self._assign_logos(params)
+        msg = "\n\n".join(filter(None, [r1["message"], r2["message"], r3["message"]]))
+        return {"success": all(r["success"] for r in [r1, r2, r3]), "message": msg}
+
     def _clean_orphans(self, params):
         from core.models import StreamProfile
         mappings = _get_mappings()
@@ -2018,7 +3189,7 @@ class Plugin:
                 deleted.append(profile.name)
             except Exception as e:
                 logger.warning(f"tickarr: could not delete profile {profile.name}: {e}")
-        return {"success": True, "message": f"Deleted {len(deleted)} orphaned profile(s):\n" + "\n".join(f"  • {n}" for n in deleted)}
+        return {"success": True, "message": f"Deleted {len(deleted)} orphaned profile(s):\n" + "\n".join(f"  - {n}" for n in deleted)}
 
     def _redis_diag(self, params):
         rc = _get_redis_client()
@@ -2054,7 +3225,7 @@ class Plugin:
                 if len(ts_keys) > 40:
                     lines.append(f"  ... and {len(ts_keys) - 40} more")
             else:
-                lines.append("No stream keys found — scanning ALL keys to find active stream pattern:\n")
+                lines.append("No stream keys found - scanning ALL keys to find active stream pattern:\n")
                 try:
                     all_keys = list(rc.scan_iter("*", count=500))
                     if all_keys:
@@ -2076,7 +3247,7 @@ class Plugin:
                         if len(all_keys) > 60:
                             lines.append(f"  ... and {len(all_keys) - 60} more")
                     else:
-                        lines.append("  Redis is empty — no keys at all.")
+                        lines.append("  Redis is empty - no keys at all.")
                 except Exception as e2:
                     lines.append(f"  Full scan error: {e2}")
         except Exception as e:
@@ -2096,7 +3267,7 @@ class Plugin:
             if matched:
                 id_to_name = {c[0]: c[2] for c in ch_list}
                 for cid in sorted(matched):
-                    lines.append(f"  • [{cid}] {id_to_name.get(cid, '?')}")
+                    lines.append(f"  - [{cid}] {id_to_name.get(cid, '?')}")
 
         return {"success": True, "message": "\n".join(lines)}
 
@@ -2146,6 +3317,10 @@ class Plugin:
     def _resolve_channels(self, params, prefix=""):
         from apps.channels.models import Channel, ChannelGroup
         target_type = params.get(f"{prefix}target_type", "group")
+
+        if target_type == "all":
+            return list(Channel.objects.all().order_by("name"))
+
         if target_type == "group":
             group_id = params.get(f"{prefix}channel_group_id")
             if not group_id:
@@ -2155,11 +3330,30 @@ class Plugin:
                 return list(Channel.objects.filter(channel_group=group).order_by("name"))
             except ChannelGroup.DoesNotExist:
                 return []
-        else:
-            channel_id = params.get(f"{prefix}channel_id")
-            if not channel_id:
+
+        if target_type == "groups":
+            raw = params.get(f"{prefix}channel_group_names", "")
+            names = [n.strip() for n in raw.split(",") if n.strip()]
+            if not names:
                 return []
-            try:
-                return [Channel.objects.get(id=int(channel_id))]
-            except Channel.DoesNotExist:
-                return []
+            channels = []
+            seen = set()
+            for name in names:
+                try:
+                    group = ChannelGroup.objects.get(name__iexact=name)
+                    for ch in Channel.objects.filter(channel_group=group).order_by("name"):
+                        if ch.id not in seen:
+                            seen.add(ch.id)
+                            channels.append(ch)
+                except ChannelGroup.DoesNotExist:
+                    pass
+            return channels
+
+        # single channel
+        channel_id = params.get(f"{prefix}channel_id")
+        if not channel_id:
+            return []
+        try:
+            return [Channel.objects.get(id=int(channel_id))]
+        except Channel.DoesNotExist:
+            return []
