@@ -1,14 +1,14 @@
 {
   "name": "Tickarr",
-  "version": "0.2.00-dev.20260623.1160",
+  "version": "0.2.00",
   "logo": "logo.png",
-  "description": "Dynamic text overlays for IPTV channels \u00e2\u20ac\u201d Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
+  "description": "Dynamic text overlays for IPTV channels â€” Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
   "actions": [
     {
       "id": "_header_siriusxm",
       "type": "info",
-      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac Satellite Radio \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
+      "label": "-- Satellite Radio --"
     },
     {
       "id": "_header_nowplaying",
@@ -41,14 +41,14 @@
     },
     {
       "id": "fill_sxm_epg",
-      "label": "Fill EPG \u00e2\u20ac\u201d Full Satellite Radio Guide",
+      "label": "Fill EPG - Full Satellite Radio Guide",
       "confirm": {
         "message": "Downloads Tickarr's satellite radio EPG (sports schedules + channel guide data) and assigns it to the selected channels. Continue?"
       }
     },
     {
       "id": "fill_epg",
-      "label": "Fill EPG \u00e2\u20ac\u201d TVG ID Only",
+      "label": "Fill EPG - TVG ID Only",
       "confirm": {
         "message": "Sets the TVG ID on selected channels so they can match an EPG source you already have loaded. Does not download any guide data. Continue?"
       }
@@ -89,7 +89,7 @@
     {
       "id": "_header_custom",
       "type": "info",
-      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac Custom Text \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
+      "label": "-- Custom Text --"
     },
     {
       "id": "enable_custom",
@@ -112,7 +112,7 @@
     {
       "id": "_header_sports",
       "type": "info",
-      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac Sports Ticker \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
+      "label": "-- Sports Ticker --"
     },
     {
       "id": "enable_sports",
@@ -131,7 +131,7 @@
     {
       "id": "_header_eas",
       "type": "info",
-      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac EAS Weather Alerts \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
+      "label": "-- EAS Weather Alerts --"
     },
     {
       "id": "enable_eas",
@@ -157,7 +157,7 @@
     {
       "id": "_header_manage",
       "type": "info",
-      "label": "\u00e2\u201d\u20ac\u00e2\u201d\u20ac Manage \u00e2\u201d\u20ac\u00e2\u201d\u20ac"
+      "label": "-- Manage --"
     },
     {
       "id": "view_active",
@@ -196,9 +196,9 @@
       "id": "restart_dispatcharr",
       "label": "Restart Dispatcharr",
       "confirm": {
-        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly \u00e2\u20ac\u201d refresh in about 15 seconds. Continue?"
+        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly â€” refresh in about 15 seconds. Continue?"
       }
     }
   ],
-  "checksum": "1d617ac35d53267c93a1a405facdafd62e663d3d30b5330264092ba4fe544410"
+  "checksum": "a4cb1cc2834d7ae1ade29b14b776dff10e480554028326ea4f45bd2bae9be707"
 }

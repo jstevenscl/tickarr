@@ -165,7 +165,7 @@ _SPORTS_LABELS_LAYER = (
 # whose passion for keeping people informed inspired this feature.
 # Rest easy.
 # ---------------------------------------------------------------------------
-# Alert type: red bar at bottom, flashing at 1 Hz
+# ── Tickarr Custom style (2 layers: flashing header + yellow scroll) ──────────
 _EAS_TYPE_LAYER = (
     "drawtext="
     "fontfile={font}"
@@ -175,15 +175,45 @@ _EAS_TYPE_LAYER = (
     ":box=1:boxcolor=0xFF0000@0.92:boxborderw=14"
     ":enable='lt(mod(t\\,1)\\,0.5)'"
 )
-# Area description: yellow text, black box, bottom bar
 _EAS_AREA_LAYER = (
     "drawtext="
     "fontfile={font}"
     ":textfile={ticker_dir}/eas_{channel_id}_area.txt:reload=1"
     ":fontsize=18:fontcolor=yellow@0.95"
-    ":x=(w-text_w)/2:y=h-48"
+    ":x=if(gt(text_w\\,w-40)\\,w-mod(t*60\\,w+text_w+40)\\,(w-text_w)/2)"
+    ":y=h-48"
     ":box=1:boxcolor=black@0.82:boxborderw=8"
 )
+
+# ── Severity → label box color for broadcast style ────────────────────────────
+_EAS_BROADCAST_COLORS = {
+    "Extreme":  "0x990000",
+    "Severe":   "0xCC0000",
+    "Moderate": "0xCC6600",
+    "Minor":    "0xCC9900",
+}
+
+
+def _build_eas_broadcast_filter(channel_id, label_color="0xCC0000"):
+    """TV-station-style EAS: full-width bottom bar, colored label box on left, crawl on right."""
+    return (
+        # Full-width dark background bar
+        f"drawbox=x=0:y=ih-52:w=iw:h=52:color=black@0.90:t=fill,"
+        # Scrolling crawl drawn first so label box covers it on the left
+        f"drawtext=fontfile={_FONT_BOLD}"
+        f":textfile={TICKER_DIR}/eas_{channel_id}_area.txt:reload=1"
+        f":fontsize=20:fontcolor=white"
+        f":x=w-mod(t*75\\,w+text_w+20):y=h-36,"
+        # Colored severity label box drawn on top of scroll
+        f"drawbox=x=0:y=ih-52:w=215:h=52:color={label_color}:t=fill,"
+        # White separator line
+        f"drawbox=x=215:y=ih-52:w=2:h=52:color=white@0.80:t=fill,"
+        # Alert type text on top of label box
+        f"drawtext=fontfile={_FONT_BOLD}"
+        f":textfile={TICKER_DIR}/eas_{channel_id}_type.txt:reload=1"
+        f":fontsize=16:fontcolor=white"
+        f":x=10:y=h-34"
+    )
 
 
 def _inject_drawtext(params, drawtext_filter):
@@ -327,42 +357,86 @@ def _clone_and_inject(channel_id, original_profile, channel_name=""):
     return profile, removed_flags
 
 
-def _inject_eas_tone(params, interval_secs=300):
-    """Add a periodic EAS attention tone (853+960 Hz dual tone) to the audio stream."""
-    if "-vn" in params or "aeval" in params:
-        return params  # audio-only or tone already injected
-    tone = (
-        f"aeval="
-        f"'val(0)+if(lt(mod(t\\,{interval_secs})\\,2)\\,0.3*sin(6.2832*853*t)+0.3*sin(6.2832*960*t)\\,0)"
-        f"|val(1)+if(lt(mod(t\\,{interval_secs})\\,2)\\,0.3*sin(6.2832*853*t)+0.3*sin(6.2832*960*t)\\,0)'"
-        f":c=same"
+def _inject_eas_tone(params, channel_id, interval_secs=300):
+    """Mix a periodic EAS attention tone (853+960 Hz) into the audio stream.
+
+    Uses aevalsrc to generate the tone mathematically inside FFmpeg — no external
+    file required, and tone repeats every interval_secs for the life of the alert.
+    Each burst is 8 seconds with a smooth sin² bell-curve envelope (no clicks).
+    Converts the existing -vf into a filter_complex so video overlay and audio
+    mixing share one pass.
+    """
+    vf_match = re.search(r'-vf\s+"([^"]+)"', params)
+    if not vf_match:
+        logger.warning("[Tickarr] EAS: no -vf in params — siren skipped")
+        return params
+
+    vf_filter = vf_match.group(1)
+
+    # sin² bell curve over 8 s, zero outside — commas escaped for filter_complex
+    # FFmpeg expressions use ^ for power, not **
+    gate = f"if(lt(mod(t\\,{interval_secs})\\,8)\\,sin(3.14159*mod(t\\,{interval_secs})/8)^2\\,0)"
+    expr = f"0.4*(sin(6.2832*853*t)+sin(6.2832*960*t))*{gate}"
+    # Same expression for both stereo channels (| separator)
+    aevalsrc = f"aevalsrc={expr}|{expr}:s=48000:c=stereo[tone]"
+
+    fc_graph = (
+        f"[0:v]{vf_filter}[vout];"
+        f"{aevalsrc};"
+        f"[0:a][tone]amix=inputs=2:duration=first:weights=1 0.5:normalize=0[aout]"
     )
-    params = re.sub(r'\s*-c:a\s+copy\b', '', params)
-    params = re.sub(r'\s*-acodec\s+copy\b', '', params)
-    af_clause = f'-af "{tone}"'
-    if "-f mpegts" in params:
-        params = params.replace("-f mpegts", f"{af_clause} -f mpegts")
-    elif "pipe:1" in params:
-        params = params.replace("pipe:1", f"{af_clause} pipe:1")
-    else:
-        params = f"{params} {af_clause}"
+    fc_clause = f'-filter_complex "{fc_graph}" -map "[vout]" -map "[aout]"'
+
+    # Swap -vf for filter_complex
+    params = params[:vf_match.start()] + fc_clause + params[vf_match.end():]
+
+    # Remove bare -map 0 — filter_complex provides explicit stream maps
+    params = re.sub(r'\s*-map\s+0(?!:)', '', params)
+
+    # Audio must be re-encoded when mixing
+    params = re.sub(r'\s*-c:a\s+copy\b', ' -c:a aac -b:a 192k', params)
+    params = re.sub(r'\s*-acodec\s+copy\b', ' -c:a aac -b:a 192k', params)
+
+    # Collapse any duplicate -c:a flags — can occur when the base profile has
+    # both -c:v copy and -c:a copy and _inject_drawtext's _VID_ENCODE adds a
+    # second -c:a copy, causing two replacements above
+    params = re.sub(r'(\s+-c:a\s+aac\s+-b:a\s+192k){2,}', ' -c:a aac -b:a 192k', params)
+
     return params
 
 
-def _clone_and_inject_eas(channel_id, original_profile, channel_name="", tone_interval=0):
+_EAS_TRANSCODE_PREFIXES = {
+    # Filter prefix prepended to the EAS overlay filter chain.
+    # Applied at clone time; removed automatically when the alert clears and the
+    # original profile is restored.  "full" = no prefix (transcode at source quality).
+    "full":    "",
+    "1080p30": "fps=fps=30,",
+    "720p":    "scale=1280:720:flags=fast_bilinear,",
+    "720p30":  "scale=1280:720:flags=fast_bilinear,fps=fps=30,",
+}
+
+
+def _clone_and_inject_eas(channel_id, original_profile, channel_name="", tone_interval=0,
+                          overlay_style="tickarr", label_color="0xCC0000",
+                          transcode_mode="full"):
     from core.models import StreamProfile
     raw_params = original_profile.parameters or ""
     cleaned_params, removed_flags = _strip_dangerous_flags(
         channel_name or f"channel {channel_id}", raw_params
     )
-    eas_filter = (
-        _EAS_TYPE_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=channel_id)
-        + ","
-        + _EAS_AREA_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=channel_id)
-    )
+    transcode_prefix = _EAS_TRANSCODE_PREFIXES.get(transcode_mode, "")
+    if overlay_style == "broadcast":
+        eas_filter = transcode_prefix + _build_eas_broadcast_filter(channel_id, label_color)
+    else:
+        eas_filter = (
+            transcode_prefix
+            + _EAS_TYPE_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=channel_id)
+            + ","
+            + _EAS_AREA_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=channel_id)
+        )
     params = _inject_drawtext(cleaned_params, eas_filter)
     if tone_interval > 0:
-        params = _inject_eas_tone(params, tone_interval)
+        params = _inject_eas_tone(params, channel_id, tone_interval)
     profile = StreamProfile(
         name=f"{PROFILE_PREFIX}EAS [{original_profile.name}] [ch{channel_id}]",
         command=original_profile.command,
@@ -525,26 +599,75 @@ def _write_sports_text(channel_id, labels_text, abbrevs_text, scores_text, full_
     _atomic_write(f"channel_{channel_id}_sports_full.txt",    full_text    or "")
 
 
-def _eas_write_alert(channel_id, alert):
+def _eas_write_alert(channel_id, unique_alerts, overlay_style="tickarr"):
+    """Write EAS overlay text files for the active style."""
     _ensure_dirs()
-    _atomic_write(f"eas_{channel_id}_type.txt", f"⚠  {alert['event'].upper()}  ⚠")
-    area = (alert.get("area") or "").replace("; ", " · ")
-    _atomic_write(f"eas_{channel_id}_area.txt", _truncate(area, 60))
+    if not unique_alerts:
+        return
+
+    def _area(a):
+        return (a.get("area") or "").replace("; ", "  ·  ").strip()
+
+    if overlay_style == "broadcast":
+        # Clean label text (no ⚠ — the colored box carries that urgency)
+        if len(unique_alerts) == 1:
+            type_text = unique_alerts[0]["event"].upper()
+            area_text = _area(unique_alerts[0])
+        else:
+            type_text = "WEATHER ALERT"
+            parts = [f"{a['event'].upper()} — {_area(a)}" if _area(a) else a["event"].upper()
+                     for a in unique_alerts]
+            area_text = "     |     ".join(parts)
+    else:
+        # Tickarr custom style
+        if len(unique_alerts) == 1:
+            type_text = f"⚠  {unique_alerts[0]['event'].upper()}  ⚠"
+            area_text = _area(unique_alerts[0])
+        else:
+            type_text = "⚠  ACTIVE WEATHER ALERTS  ⚠"
+            parts = [f"{a['event'].upper()} — {_area(a)}" if _area(a) else a["event"].upper()
+                     for a in unique_alerts]
+            area_text = "     ◆     ".join(parts)
+
+    _atomic_write(f"eas_{channel_id}_type.txt", type_text)
+    _atomic_write(f"eas_{channel_id}_area.txt", area_text)
+    _atomic_write(f"eas_{channel_id}_events.txt", "")
 
 
 def _eas_clear(channel_id):
     _ensure_dirs()
-    _atomic_write(f"eas_{channel_id}_type.txt", "")
-    _atomic_write(f"eas_{channel_id}_area.txt", "")
+    _atomic_write(f"eas_{channel_id}_type.txt",   "")
+    _atomic_write(f"eas_{channel_id}_events.txt", "")
+    _atomic_write(f"eas_{channel_id}_area.txt",   "")
 
 
 def _eas_restart_channel(channel_uuid):
-    """Stop an active channel via Dispatcharr's live_proxy so clients reconnect with the updated profile."""
+    """Stop an active channel so clients reconnect with the updated EAS profile.
+
+    stop_channel() sets a Redis 'channel_stopping' key with a 60-second TTL.
+    While that key exists, is_channel_teardown_active() returns True and Dispatcharr
+    rejects ALL reconnect attempts before FFmpeg even starts — causing the 10-second
+    stall loop. We delete the key after ~2s (enough for FFmpeg teardown to finish)
+    so clients can reconnect immediately.
+    """
+    import time as _time
     try:
         from apps.proxy.live_proxy.services.channel_service import ChannelService
+        from apps.proxy.live_proxy.redis_keys import RedisKeys
+        from apps.channels.models import RedisClient
         result = ChannelService.stop_channel(channel_uuid)
-        if result.get("status") == "success":
-            logger.info(f"[Tickarr] EAS: channel {channel_uuid} restarted for profile switch")
+        if result.get("status") != "success":
+            return
+        logger.info(f"[Tickarr] EAS: channel {channel_uuid} stop sent — clearing reconnect gate in 2s")
+        _time.sleep(2.0)
+        rc = RedisClient.get_client()
+        rc.delete(RedisKeys.channel_stopping(channel_uuid))
+        # Safety: if metadata state is still STOPPING, clear it so teardown check passes
+        meta_key = RedisKeys.channel_metadata(channel_uuid)
+        state = rc.hget(meta_key, "state")
+        if state and (state.decode() if isinstance(state, bytes) else state) == "stopping":
+            rc.hdel(meta_key, "state")
+        logger.info(f"[Tickarr] EAS: reconnect gate cleared for {channel_uuid}")
     except ImportError:
         logger.warning("[Tickarr] EAS: live_proxy unavailable — profile will apply on next client connect")
     except Exception as e:
@@ -582,23 +705,67 @@ def _fetch_nws_alerts(zones, severity_threshold="Moderate"):
     return alerts
 
 
-_EAS_REDIS_KEY  = f"tickarr:{_PLUGIN_KEY}:eas_result"
-_EAS_REDIS_LOCK = f"tickarr:{_PLUGIN_KEY}:eas_poll_lock"
-_EAS_STATE_KEY  = f"tickarr:{_PLUGIN_KEY}:eas_state"   # JSON {cid: event_name or null}
-_EAS_OWNER_KEY  = f"tickarr:{_PLUGIN_KEY}:eas_owner"   # nx lock — one worker applies transitions
-_EAS_CACHE_TTL  = 50   # seconds — one worker polls, all others read from Redis
+_EAS_REDIS_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_result"
+_EAS_REDIS_LOCK   = f"tickarr:{_PLUGIN_KEY}:eas_poll_lock"
+_EAS_STATE_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_state"     # JSON {cid: event_name or null}
+_EAS_OWNER_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_owner"     # nx lock — one worker applies transitions
+_EAS_ALERTS_KEY   = f"tickarr:{_PLUGIN_KEY}:eas_alerts"    # fingerprint of current alert set
+_EAS_ROTATION_KEY = f"tickarr:{_PLUGIN_KEY}:eas_rotation"  # current rotation index
+_EAS_CACHE_TTL    = 50   # seconds — one worker polls, all others read from Redis
 
 def _eas_sweep():
     settings = _get_settings()
     zones_raw = (settings.get("eas_zones") or "").strip()
-    if not zones_raw:
-        return
     zones = [z.strip() for z in zones_raw.split(",") if z.strip()]
+    # No zones configured — still need to clear any channels left in active EAS state
+    # (handles zones being removed while an alert was active)
+    if not zones:
+        rc = _get_redis_client()
+        current_state = {}
+        if rc:
+            try:
+                raw = rc.get(_EAS_STATE_KEY)
+                if raw:
+                    current_state = json.loads(raw)
+            except Exception:
+                pass
+        if not any(v for v in current_state.values()):
+            return  # nothing active, nothing to clear
+        mappings = _get_mappings()
+        from apps.channels.models import Channel
+        from core.models import StreamProfile
+        for cid, event in list(current_state.items()):
+            if not event:
+                continue
+            try:
+                mapping = mappings.get(cid, {}) or {}
+                channel = Channel.objects.filter(id=int(cid)).first()
+                if channel:
+                    _restore_profile(channel, mapping.get("original_profile_id"))
+                    eas_pid = mapping.get("eas_profile_id") or mapping.get("ticker_profile_id")
+                    if eas_pid:
+                        _delete_cloned_profile(eas_pid)
+                    mapping.pop("eas_profile_id", None)
+                    mapping.pop("ticker_profile_id", None)
+                    mappings[cid] = mapping
+                    _eas_clear(cid)
+                    _eas_restart_channel(str(channel.uuid))
+                    logger.info(f"[Tickarr] EAS: cleared ch {cid} — no zones configured")
+            except Exception as e:
+                logger.error(f"[Tickarr] EAS: clear failed ch {cid}: {e}")
+        _save_mappings(mappings)
+        if rc:
+            try:
+                rc.delete(_EAS_STATE_KEY)
+            except Exception:
+                pass
+        return
     severity_threshold = settings.get("eas_severity_filter") or "Moderate"
     try:
         tone_interval = max(30, int(settings.get("eas_tone_interval") or 300))
     except Exception:
         tone_interval = 300
+    overlay_style = settings.get("eas_overlay_style") or "tickarr"
     mappings = _get_mappings()
     eas_cids = [cid for cid, m in mappings.items() if m and m.get("type") == "eas"]
     if not eas_cids:
@@ -629,7 +796,27 @@ def _eas_sweep():
         logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
         return
 
-    worst = (max(alerts, key=lambda a: _EAS_SEV.get(a["severity"], 0)) if alerts else None)
+    # Sort all active alerts worst-first; rotation cycles through them each sweep
+    all_alerts = sorted(alerts or [], key=lambda a: _EAS_SEV.get(a["severity"], 0), reverse=True)
+    worst = all_alerts[0] if all_alerts else None
+
+    # Deduplicate by event type so each alert TYPE gets equal screen time.
+    # Multiple counties under the same event are merged into one combined area string.
+    event_groups = {}
+    for a in all_alerts:
+        ev = a["event"]
+        if ev not in event_groups:
+            event_groups[ev] = {"event": ev, "severity": a["severity"], "areas": []}
+        area = (a.get("area") or "").strip()
+        if area and area not in event_groups[ev]["areas"]:
+            event_groups[ev]["areas"].append(area)
+    unique_alerts = sorted(
+        [{"event": d["event"], "severity": d["severity"],
+          "area": "; ".join(d["areas"])} for d in event_groups.values()],
+        key=lambda a: _EAS_SEV.get(a["severity"], 0), reverse=True,
+    )
+
+    # No rotation — all alerts are written into one combined scroll text each sweep.
 
     # Read persisted alert state (shared across all workers via Redis).
     current_state = {}
@@ -653,19 +840,31 @@ def _eas_sweep():
             pass
 
     # Determine which channels need a state transition.
+    # State is boolean (active/inactive) — not the event name — so rotating alerts
+    # between sweeps never triggers a spurious re-clone.
     transitions = {}
     for cid in eas_cids:
-        old_event = current_state.get(cid)
-        new_event = worst["event"] if worst else None
-        if old_event == new_event:
+        was_active = bool(current_state.get(cid))
+        now_active = bool(worst)
+        if was_active == now_active:
             continue
         # Skip activation for channels nobody is watching right now.
-        # Clears (new_event is None) always run to restore profiles cleanly.
-        if new_event and cid not in streaming_ids:
+        # Clears always run so profiles are restored even after a viewer leaves.
+        if now_active and not was_active and cid not in streaming_ids:
             continue
-        transitions[cid] = (old_event, new_event)
+        transitions[cid] = (was_active, now_active)
+
+    label_color = _EAS_BROADCAST_COLORS.get(worst["severity"] if worst else "Severe", "0xCC0000")
 
     if not transitions:
+        # No profile changes — refresh banner text on already-active EAS channels
+        if worst:
+            for cid in eas_cids:
+                if current_state.get(cid):
+                    try:
+                        _eas_write_alert(cid, unique_alerts, overlay_style)
+                    except Exception:
+                        pass
         return
 
     # Only one worker applies transitions — others skip this cycle.
@@ -678,14 +877,14 @@ def _eas_sweep():
     new_state = dict(current_state)
     changed = False
 
-    for cid, (old_event, new_event) in transitions.items():
+    for cid, (was_active, now_active) in transitions.items():
         mapping = mappings.get(cid, {})
         try:
             channel = Channel.objects.filter(id=int(cid)).first()
             if not channel:
                 continue
 
-            if new_event:
+            if now_active:
                 # Alert firing — migrate old static format if present, then clone fresh EAS profile.
                 if mapping.get("ticker_profile_id"):
                     _restore_profile(channel, mapping["original_profile_id"])
@@ -701,16 +900,16 @@ def _eas_sweep():
                     logger.warning(f"[Tickarr] EAS: original profile missing for ch {cid}")
                     continue
 
-                eas_profile, _ = _clone_and_inject_eas(channel.id, orig, channel.name, tone_interval)
+                transcode_mode = settings.get("eas_transcode_mode") or "full"
+                eas_profile, _ = _clone_and_inject_eas(channel.id, orig, channel.name,
+                                                       tone_interval, overlay_style, label_color,
+                                                       transcode_mode)
                 _assign_profile(channel, eas_profile)
-                _eas_write_alert(cid, worst)
+                _eas_write_alert(cid, unique_alerts, overlay_style)
                 mapping["eas_profile_id"] = eas_profile.id
                 mappings[cid] = mapping
-                new_state[cid] = new_event
-
-                if not old_event:
-                    logger.info(f"[Tickarr] EAS ALERT: {new_event} — {worst['area'][:60]} (ch {cid})")
-
+                new_state[cid] = True
+                logger.info(f"[Tickarr] EAS ALERT: {worst['event']} — {worst['area'][:60]} (ch {cid})")
                 _eas_restart_channel(str(channel.uuid))
 
             else:
@@ -723,13 +922,13 @@ def _eas_sweep():
                 mapping.pop("ticker_profile_id", None)
                 mappings[cid] = mapping
                 _eas_clear(cid)
-                new_state[cid] = None
+                new_state[cid] = False
                 logger.info(f"[Tickarr] EAS: alert cleared — ch {cid}")
                 _eas_restart_channel(str(channel.uuid))
 
             with _eas_lock:
-                if new_event:
-                    _eas_active[cid] = new_event
+                if now_active:
+                    _eas_active[cid] = worst["event"] if worst else "EAS"
                 else:
                     _eas_active.pop(cid, None)
 
@@ -760,14 +959,21 @@ def _eas_sweep_loop(stop_event):
     # Rest easy.
     logger.info("[Tickarr] EAS module initialized — for jesmannstl, who understood why this matters.")
     while not stop_event.is_set():
+        interval = 60
         try:
-            interval = max(15, int((_get_settings().get("eas_poll_interval") or 60)))
-        except Exception:
-            interval = 60
-        try:
+            try:
+                interval = max(15, int((_get_settings().get("eas_poll_interval") or 60)))
+            except Exception:
+                pass
             _eas_sweep()
         except Exception as e:
             logger.error(f"[Tickarr] EAS loop error: {e}", exc_info=True)
+        finally:
+            try:
+                from django.db import connection
+                connection.close()
+            except Exception:
+                pass
         stop_event.wait(timeout=interval)
 
 
@@ -1823,15 +2029,33 @@ class Plugin:
              "label": "JAS = jesmannstl Alert System. Dedicated to jesmannstl -- a weather fanatic and beloved member of the Dispatcharr community. Every alert that fires is a reminder of him. Rest in peace."},
             {"id": "_eas_about",    "type": "info",
              "label": "Monitors NWS alerts for configured zones. When an alert fires, affected channels automatically switch to an EAS overlay profile (red flashing banner + siren tone) and restart. Channels return to normal passthrough when the alert clears."},
+            {"id": "_eas_transcode_note", "type": "info",
+             "label": "⚠ TRANSCODING NOTE (active alerts only): EAS overlays require FFmpeg to decode and re-encode video while an alert is active. Channels return to their original profile automatically when the alert clears — transcoding only occurs during the alert itself. If you experience buffering or stuttering during an alert, lower the Transcode Quality setting below. High-framerate sources (59.94fps) use approximately twice the CPU of standard sources (29.97fps)."},
+            {"id": "eas_transcode_mode", "type": "select", "label": "EAS Transcode Quality",
+             "options": [
+                 {"value": "full",    "label": "Full quality — source resolution and framerate (default; best for capable CPUs or GPU-accelerated systems)"},
+                 {"value": "1080p30", "label": "1080p 30fps — full resolution, framerate capped at 30fps (moderate CPU reduction; try this first if you see buffering)"},
+                 {"value": "720p",    "label": "720p — scaled to 720p at source framerate (significant CPU reduction; resolution restores when alert clears)"},
+                 {"value": "720p30",  "label": "720p 30fps — scaled to 720p, capped at 30fps (maximum CPU reduction; use if other options still cause buffering)"},
+             ]},
             {"id": "_eas_zone_help", "type": "info",
              "label": "To find your zone or county code: visit alerts.weather.gov, select your state, then click your county. The code appears in the URL and alert details (e.g. TXC113 = Texas, County 113). You can enter multiple codes separated by commas to cover multiple counties."},
-            {"id": "eas_zones",     "type": "text",   "label": "NWS Zone / County Codes",
+            {"id": "eas_zones",     "type": "text",   "label": "NWS Zone / County Codes (Active -- triggers alerts)",
              "placeholder": "e.g. TXC113,TXC121"},
+            {"id": "_eas_saved_help", "type": "info",
+             "label": "Saved Codes (reference only -- paste your commonly-used codes here so you don't have to look them up each time; not monitored):"},
+            {"id": "eas_saved_codes", "type": "text",   "label": "Saved / Favorite Codes",
+             "placeholder": "e.g. OKC111,OKC037,WAZ702"},
             {"id": "eas_severity_filter", "type": "select", "label": "Minimum Severity",
              "options": [
                  {"value": "Moderate", "label": "Watch (Moderate and above)"},
                  {"value": "Severe",   "label": "Warning (Severe and above)"},
                  {"value": "Extreme",  "label": "Emergency (Extreme only)"},
+             ]},
+            {"id": "eas_overlay_style", "type": "select", "label": "Alert Overlay Style",
+             "options": [
+                 {"value": "broadcast", "label": "TV Broadcast (news ticker bar — label box + scrolling crawl)"},
+                 {"value": "tickarr",   "label": "Tickarr Custom (flashing overlay boxes)"},
              ]},
             {"id": "eas_poll_interval",   "type": "number", "label": "Poll Interval (seconds)", "min": 15},
             {"id": "eas_tone_interval",   "type": "number", "label": "Siren Tone Interval (seconds) - how often the attention tone repeats during an active alert", "min": 30},
@@ -1843,6 +2067,8 @@ class Plugin:
             {"id": "eas_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             # ── Custom Text ───────────────────────────────────────────────
             {"id": "_custom_section",      "type": "info",   "label": "==========  CUSTOM TEXT  =========="},
+            {"id": "_custom_transcode_note", "type": "info",
+             "label": "⚠ TRANSCODING NOTE (ticker active only): Custom text overlays require FFmpeg to decode and re-encode video while the ticker is running. Channels on stream-copy profiles will transcode only while the custom ticker is active — they return to their original profile when the ticker is disabled. If you experience buffering or stuttering, your system may not have sufficient CPU headroom for transcoding at your source resolution and framerate."},
             {"id": "custom_target_type",   "type": "select", "label": "Apply To",
              "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
             {"id": "_custom_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
@@ -1864,6 +2090,8 @@ class Plugin:
             {"id": "custom_interval",  "type": "number", "label": "Repeat Interval (minutes) - Timed only"},
             # ── Sports Ticker ─────────────────────────────────────────────
             {"id": "_sports_section",       "type": "info",    "label": "==========  SPORTS TICKER  =========="},
+            {"id": "_sports_transcode_note", "type": "info",
+             "label": "⚠ TRANSCODING NOTE (ticker active only): Sports score overlays require FFmpeg to decode and re-encode video while the ticker is running. Channels on stream-copy profiles will transcode only while the sports ticker is active — they return to their original profile when the ticker is disabled. If you experience buffering or stuttering, your system may not have sufficient CPU headroom for transcoding at your source resolution and framerate."},
             {"id": "_sports_football",      "type": "info",    "label": "-- Football --"},
             {"id": "sports_nfl",            "type": "boolean", "label": "NFL"},
             {"id": "sports_ncaafb",         "type": "boolean", "label": "College Football (NCAAF)"},
