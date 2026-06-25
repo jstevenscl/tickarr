@@ -1,8 +1,8 @@
 {
   "name": "Tickarr",
-  "version": "0.2.00",
+  "version": "0.2.01",
   "logo": "logo.png",
-  "description": "Dynamic text overlays for IPTV channels â€” Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
+  "description": "Dynamic text overlays for IPTV channels \u00e2\u20ac\u201d Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
   "actions": [
     {
@@ -196,7 +196,7 @@
       "id": "restart_dispatcharr",
       "label": "Restart Dispatcharr",
       "confirm": {
-        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly â€” refresh in about 15 seconds. Continue?"
+        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly \u00e2\u20ac\u201d refresh in about 15 seconds. Continue?"
       }
     }
   ],
