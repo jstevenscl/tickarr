@@ -20,6 +20,8 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Profile switches back to normal passthrough the moment the alert clears
 - Attention tone (853+960 Hz EAS dual tone) repeats at a configurable interval
 
+> **Note:** Your channel runs its normal stream profile at all times. When an alert fires for your configured zone or county codes, Tickarr creates a temporary copy of that profile with the EAS overlay injected. The moment the alert clears, your original profile is silently restored — no action required.
+
 > **JAS — jesmannstl Alert System.**
 > Dedicated to jesmannstl, a weather fanatic and beloved member of the Dispatcharr community.
 > Every alert that fires is a reminder of him. Rest in peace.

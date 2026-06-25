@@ -128,6 +128,10 @@ The tone is generated mathematically inside FFmpeg — no external audio file ne
 
 ### How profile switching works
 
+Your channel runs on its normal stream profile 100% of the time — until an alert fires. When EAS detects an active alert for one of your configured zone or county codes, it automatically creates a temporary copy of your existing stream profile with the EAS crawl bar and attention tone injected into it. Your channel switches to that temporary profile for the duration of the alert. The moment the alert clears, Tickarr detects it on the next poll and silently switches your channel back to the original profile — no action needed on your part.
+
+Think of it like this: your normal profile is always the source of truth. EAS just borrows it, adds the overlay, and hands it back when the emergency is over.
+
 - **Alert fires:** Tickarr clones the channel's current stream profile, injects the EAS overlay (and tone if configured), and assigns the clone. The original profile is never modified.
 - **Alert clears:** The EAS clone is deleted and the original profile is restored. The switch happens within one poll interval (default 60 seconds).
 - **Mid-alert settings change:** Profile changes don't apply to an already-running alert. To apply new settings immediately, disable your zones and re-enable them to force a fresh clone.
