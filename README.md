@@ -12,6 +12,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Auto-maps Dispatcharr channels to satellite radio stations
 - Displays artist, song title, and channel name as a live-updating overlay
 - Audio-only channels receive an injected 1280x720 black video background
+- On-Demand mode: overlay activates when a viewer tunes in, restores to passthrough when idle
 
 **EAS/JAS Weather Alerts**
 - Monitors NOAA/NWS for active weather alerts in your configured zones
@@ -19,8 +20,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Scrolling crawl with alert details, colored severity label, and optional attention tone
 - Profile switches back to normal passthrough the moment the alert clears
 - Attention tone (853+960 Hz EAS dual tone) repeats at a configurable interval
-
-> **Note:** Your channel runs its normal stream profile at all times. When an alert fires for your configured zone or county codes, Tickarr creates a temporary copy of that profile with the EAS overlay injected. The moment the alert clears, your original profile is silently restored — no action required.
+- Test EAS Alert action to verify your overlay without waiting for a real alert
 
 > **JAS — jesmannstl Alert System.**
 > Dedicated to jesmannstl, a weather fanatic and beloved member of the Dispatcharr community.
@@ -29,11 +29,40 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 **Custom Text**
 - User-defined static or scrolling text overlay on any channel
 - Configurable position (top or bottom), display timing, and style
+- On-Demand mode: overlay fires when text is set, disappears when text is cleared
 
 **Sports Ticker**
-- Live scores from the ESPN API across 23 leagues and NASCAR
-- Scrolling three-color ticker at the top or bottom of the screen
-- Live games shown first; team filter available
+- Live scores from the ESPN API across 26 leagues and NASCAR
+- Scrolling ticker at the top or bottom of the screen — live games shown first
+- Smart trigger modes: Always On, Active Games Only, or Favorite Teams Only
+- Active Games Only: ticker fires automatically when a live game is in progress, clears when all games end
+- Favorite Teams Only: ticker fires only when your specified teams are playing
+
+---
+
+## How On-Demand Mode Works
+
+Every overlay type in Tickarr supports an on-demand mode, which keeps your channels on normal passthrough until there is actually something to show. No re-encoding, no CPU overhead, no unnecessary profile clones — until the trigger condition is met.
+
+### Sports Ticker
+
+You can set the sports ticker to only display when there is actually a live game happening. If you have MLB enabled, every time there is a live MLB game on, the ticker automatically appears on any channel you are actively watching. The moment all the games end, the ticker disappears and your channel goes back to normal.
+
+If you only care about a specific team, you can set a Favorite Teams filter. Put in the Astros and the ticker will only ever appear when the Astros are playing — not during any other game, only Houston. The moment that game ends it goes away until the next time they take the field.
+
+### Satellite Radio Now Playing
+
+Tickarr does not do anything to a channel until someone actually starts watching it. The moment a viewer tunes in, the Now Playing overlay activates — showing the current artist, song title, and channel name. If nobody has been watching for about 30 seconds, it quietly switches back to normal passthrough until the next time someone tunes in.
+
+This matters a lot if you have a large satellite radio lineup. Instead of re-encoding hundreds of channels around the clock whether anyone is watching or not, Tickarr only runs the overlay on the channels that are actually being watched right now.
+
+### Custom Text
+
+Nothing happens until you give it something to display. You enable it on a channel and the channel stays completely normal until you go to Update Custom Text, type your message, and run the action — at that point the overlay appears. When you want it gone, clear the text field and run Update Custom Text again. Tickarr removes the overlay and puts the channel back to passthrough instantly.
+
+### EAS Weather Alerts
+
+Your channel runs 100% normally at all times. Tickarr sits quietly in the background watching the NWS API for your configured zone codes — no overlay, no extra encoding, nothing. The moment an actual weather alert goes active for your zone, Tickarr automatically switches the channel to the EAS overlay: scrolling alert bar, severity label, and attention tone if configured. The second that alert clears on the NWS side, your channel goes silently back to normal. Completely automatic, start to finish.
 
 ---
 
@@ -64,6 +93,6 @@ See the [User Guide](docs/USERGUIDE.md) for full setup instructions, settings re
 
 ---
 
-## ESP Team Reference
+## ESPN Team Reference
 
 See [TEAMS.md](docs/TEAMS.md) for ESPN team abbreviations used by the Sports Ticker.
