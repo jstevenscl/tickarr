@@ -185,6 +185,8 @@ Still in EAS settings:
 1. **Apply To** — Choose: All Channels, Channel Group, Multiple Groups (CSV), or Single Channel.
 2. Fill in the matching target field (Channel Group dropdown, group name list, or single channel dropdown).
 
+> **EAS works alongside other tickers.** If a channel already has Now Playing, Custom Text, or Sports Ticker enabled, you do not need to disable it first. EAS arms on top of existing tickers and takes precedence when an alert fires. When the alert clears, the previous ticker state resumes automatically.
+
 ---
 
 ### Step 4 — Enable EAS
@@ -213,8 +215,8 @@ This fires a fake alert on your enabled channel(s) for the duration set in **Tes
 
 ### How profile switching works
 
-- **Alert fires:** Tickarr clones the channel's current passthrough profile, injects the EAS bar and tone, and assigns the clone. Your original profile is never modified.
-- **Alert clears:** The EAS clone is deleted and the original profile is restored automatically. This happens within one poll interval (default 60 seconds).
+- **Alert fires:** Tickarr clones the channel's original passthrough profile, injects the EAS bar and tone, and assigns the clone. If another ticker (Now Playing, Custom Text, Sports) was actively running, it is paused — EAS takes precedence. Your original profile is never modified.
+- **Alert clears:** The EAS clone is deleted and the channel is restored automatically. If another ticker was running before the alert, it re-activates on the next viewer connect or sweep cycle. This happens within one poll interval (default 60 seconds).
 - **Multiple alerts:** If more than one alert is active simultaneously, the overlay shows `WEATHER ALERT` as the label and the crawl lists all active events. When all alerts clear, the profile restores.
 
 ---
@@ -315,7 +317,7 @@ In Tickarr settings, scroll to the **Sports Ticker** section and fill in the fol
 
 4. **League Selection** — Toggle on the leagues you want to include in the ticker. You can enable as many as you like — sports seasons rarely overlap so enabling several does not usually mean they all appear at once.
 
-   Available leagues: NFL, NCAAF, CFL, NBA, WNBA, NCAAB, MLB, NCAA Baseball, NCAA Softball, NHL, MLS, NWSL, EPL, UCL, La Liga, Bundesliga, Serie A, Ligue 1, ATP, WTA, NCAA Volleyball, NCAA Lacrosse, NASCAR
+   Available leagues: NFL, NCAAF, CFL, NBA, WNBA, NCAAB, MLB, NCAA Baseball, NCAA Softball, NHL, MLS, NWSL, EPL, UCL (UEFA Champions League), UEL (UEFA Europa League), La Liga, Bundesliga, Serie A, Ligue 1, FIFA World Cup, FIFA Women's World Cup, ATP, WTA, NCAA Volleyball, NCAA Lacrosse, NASCAR
 
    > **Tip:** The leagues you toggle on are also the leagues that define the trigger in Active Games Only and Favorite Teams Only modes. If you enable NFL and NHL, the overlay fires when either has a live game.
 

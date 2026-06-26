@@ -20,6 +20,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Scrolling crawl with alert details, colored severity label, and optional attention tone
 - Profile switches back to normal passthrough the moment the alert clears
 - Attention tone (853+960 Hz EAS dual tone) repeats at a configurable interval
+- Co-arms with Now Playing, Custom Text, and Sports Ticker — EAS takes precedence when an alert fires and the previous ticker resumes when it clears
 - Test EAS Alert action to verify your overlay without waiting for a real alert
 
 > **JAS — jesmannstl Alert System.**

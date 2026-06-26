@@ -195,24 +195,21 @@ _EAS_BROADCAST_COLORS = {
 
 
 def _build_eas_broadcast_filter(channel_id, label_color="0xCC0000"):
-    """TV-station-style EAS: full-width bottom bar, colored label box on left, crawl on right."""
+    """TV-station-style EAS: full-width bottom bar, auto-sized colored label, crawl on right."""
     return (
         # Full-width dark background bar
         f"drawbox=x=0:y=ih-52:w=iw:h=52:color=black@0.90:t=fill,"
-        # Scrolling crawl drawn first so label box covers it on the left
+        # Scrolling crawl — drawn first so label renders on top of it
         f"drawtext=fontfile={_FONT_BOLD}"
         f":textfile={TICKER_DIR}/eas_{channel_id}_area.txt:reload=1"
         f":fontsize=20:fontcolor=white"
         f":x=w-mod(t*75\\,w+text_w+20):y=h-36,"
-        # Colored severity label box drawn on top of scroll
-        f"drawbox=x=0:y=ih-52:w=215:h=52:color={label_color}:t=fill,"
-        # White separator line
-        f"drawbox=x=215:y=ih-52:w=2:h=52:color=white@0.80:t=fill,"
-        # Alert type text on top of label box
+        # Alert type label with auto-sized colored box — covers crawl on the left
         f"drawtext=fontfile={_FONT_BOLD}"
         f":textfile={TICKER_DIR}/eas_{channel_id}_type.txt:reload=1"
         f":fontsize=16:fontcolor=white"
         f":x=10:y=h-34"
+        f":box=1:boxcolor={label_color}:boxborderw=10"
     )
 
 
@@ -641,16 +638,17 @@ def _eas_clear(channel_id):
     _atomic_write(f"eas_{channel_id}_area.txt",   "")
 
 
-def _eas_restart_channel(channel_uuid):
-    """Stop an active channel so clients reconnect with the updated EAS profile.
+def _restart_channel_stream(channel_uuid, label=""):
+    """Stop an active channel so clients reconnect with the updated stream profile.
 
     stop_channel() sets a Redis 'channel_stopping' key with a 60-second TTL.
     While that key exists, is_channel_teardown_active() returns True and Dispatcharr
     rejects ALL reconnect attempts before FFmpeg even starts — causing the 10-second
     stall loop. We delete the key after ~2s (enough for FFmpeg teardown to finish)
-    so clients can reconnect immediately.
+    so clients can reconnect immediately with the new profile.
     """
     import time as _time
+    tag = f" [{label}]" if label else ""
     try:
         from apps.proxy.live_proxy.services.channel_service import ChannelService
         from apps.proxy.live_proxy.redis_keys import RedisKeys
@@ -658,20 +656,33 @@ def _eas_restart_channel(channel_uuid):
         result = ChannelService.stop_channel(channel_uuid)
         if result.get("status") != "success":
             return
-        logger.info(f"[Tickarr] EAS: channel {channel_uuid} stop sent — clearing reconnect gate in 2s")
+        logger.info(f"tickarr:{tag} channel {channel_uuid} stop sent — clearing reconnect gate in 2s")
         _time.sleep(2.0)
         rc = RedisClient.get_client()
         rc.delete(RedisKeys.channel_stopping(channel_uuid))
-        # Safety: if metadata state is still STOPPING, clear it so teardown check passes
         meta_key = RedisKeys.channel_metadata(channel_uuid)
         state = rc.hget(meta_key, "state")
         if state and (state.decode() if isinstance(state, bytes) else state) == "stopping":
             rc.hdel(meta_key, "state")
-        logger.info(f"[Tickarr] EAS: reconnect gate cleared for {channel_uuid}")
+        logger.info(f"tickarr:{tag} reconnect gate cleared for {channel_uuid}")
     except ImportError:
-        logger.warning("[Tickarr] EAS: live_proxy unavailable — profile will apply on next client connect")
+        logger.warning(f"tickarr:{tag} live_proxy unavailable — profile will apply on next client connect")
     except Exception as e:
-        logger.debug(f"[Tickarr] EAS: restart {channel_uuid}: {e}")
+        logger.debug(f"tickarr:{tag} restart {channel_uuid}: {e}")
+
+
+def _restart_channel_stream_async(channel, label=""):
+    """Non-blocking wrapper — runs _restart_channel_stream in a daemon thread so the 2s sleep never blocks the caller."""
+    import threading as _threading
+    _threading.Thread(
+        target=_restart_channel_stream,
+        args=(str(channel.uuid), label),
+        daemon=True,
+    ).start()
+
+
+def _eas_restart_channel(channel_uuid):
+    _restart_channel_stream(channel_uuid, label="EAS")
 
 
 def _fetch_nws_alerts(zones, severity_threshold="Moderate"):
@@ -767,7 +778,7 @@ def _eas_sweep():
         tone_interval = 300
     overlay_style = settings.get("eas_overlay_style") or "tickarr"
     mappings = _get_mappings()
-    eas_cids = [cid for cid, m in mappings.items() if m and m.get("type") == "eas"]
+    eas_cids = [cid for cid, m in mappings.items() if m and (m.get("type") == "eas" or m.get("eas_armed"))]
     if not eas_cids:
         return
 
@@ -1122,10 +1133,13 @@ ESPN_PATHS = {
     'nwsl':       'sports/soccer/usa.nwsl',
     'epl':        'sports/soccer/eng.1',
     'ucl':        'sports/soccer/uefa.champions',
+    'uel':        'sports/soccer/uefa.europa',
     'laliga':     'sports/soccer/esp.1',
     'bundesliga': 'sports/soccer/ger.1',
     'seriea':     'sports/soccer/ita.1',
     'ligue1':     'sports/soccer/fra.1',
+    'fifawc':     'sports/soccer/fifa.world',
+    'fifawwc':    'sports/soccer/fifa.wwc',
     'atp':        'sports/tennis/atp',
     'wta':        'sports/tennis/wta',
     'ncaavb':     'sports/volleyball/womens-college-volleyball',
@@ -1136,9 +1150,10 @@ LABELS = {
     'nba': 'NBA', 'wnba': 'WNBA', 'ncaamb': 'NCAAB',
     'mlb': 'MLB', 'ncaabase': 'NCAA Baseball', 'ncaasb': 'NCAA Softball',
     'nhl': 'NHL',
-    'mls': 'MLS', 'nwsl': 'NWSL', 'epl': 'EPL', 'ucl': 'UCL',
+    'mls': 'MLS', 'nwsl': 'NWSL', 'epl': 'EPL', 'ucl': 'UCL', 'uel': 'UEL',
     'laliga': 'La Liga', 'bundesliga': 'Bundesliga',
     'seriea': 'Serie A', 'ligue1': 'Ligue 1',
+    'fifawc': 'FIFA WC', 'fifawwc': 'FIFA WWC',
     'atp': 'ATP', 'wta': 'WTA',
     'ncaavb': 'NCAA VB', 'ncaalax': 'NCAA Lax',
     'nascar': 'NASCAR',
@@ -1360,10 +1375,25 @@ def _fetch_sports_text(sports_list, favorites=""):
         "abbrevs":    abbrevs_text,
         "scores":     scores_text,
         "full":       full_text,
+        "has_live":   bool(live_triples),
         "target_len": len(labels_text),
         "fetched_at": now,
     }
     return labels_text, abbrevs_text, scores_text, full_text
+
+
+def _has_live_games(sports_list, favorites=""):
+    """Return True if any live game is in progress for the given sports/favorites combo."""
+    cache_key = (tuple(sorted(sports_list)), (favorites or "").strip().upper())
+    now = time.time()
+    if (_sports_text_cache["key"] == cache_key and
+            now - _sports_text_cache["fetched_at"] < SPORTS_CACHE_TTL):
+        return _sports_text_cache.get("has_live", False)
+    try:
+        _fetch_sports_text(sports_list, favorites)
+    except Exception:
+        return False
+    return _sports_text_cache.get("has_live", False)
 
 # ---------------------------------------------------------------------------
 # tickarr.com data client (replaces xmplaylist.com)
@@ -1574,6 +1604,7 @@ FAST_LOCK_KEY    = "tickarr:fast_lock"
 SPORTS_LOCK_KEY  = "tickarr:sports_lock"
 _SWEEP_LOCK_TTL  = 45   # SWEEP_SLEEP(15) + up to 10s poll + 20s buffer; refreshed post-sweep
 _FAST_LOCK_TTL   = 10   # renewed every 2s tick; 10s crash-recovery window
+_IDLE_RESTORE_DELAY = 30  # seconds with no active viewers before restoring passthrough profile
 _SPORTS_LOCK_TTL = 60   # SPORTS_SWEEP_SLEEP(30) + poll time + buffer; refreshed post-sweep
 
 
@@ -1778,6 +1809,7 @@ def _poll_channels(ch_list):
 
 def _fast_loop(stop_event):
     """Every 2s: scan Redis for newly active streams and poll them immediately.
+    For on-demand nowplaying channels, clones the overlay profile on first viewer connect.
     On first tick, just records current state without polling (avoids startup burst)."""
     known_active = None  # None = uninitialized; skip polling on first observation
     while not stop_event.wait(timeout=2):
@@ -1802,9 +1834,47 @@ def _fast_loop(stop_event):
             newly_active = current_active - known_active
             known_active = current_active
             if newly_active:
+                # On-demand nowplaying: clone overlay profile for newly active channels
+                mappings_changed = False
+                for cid in list(newly_active):
+                    mapping = mappings.get(str(cid))
+                    if not mapping:
+                        continue
+                    if mapping.get("type") != "nowplaying":
+                        continue
+                    if mapping.get("np_trigger_mode", "on_demand") != "on_demand":
+                        continue
+                    if mapping.get("ticker_profile_id"):
+                        continue  # already has an overlay profile
+                    if mapping.get("eas_profile_id"):
+                        continue  # EAS alert is active — don't touch the profile
+                    try:
+                        from apps.channels.models import Channel as _Ch
+                        from core.models import StreamProfile as _SP
+                        channel = _Ch.objects.filter(id=cid).first()
+                        orig = _SP.objects.filter(id=mapping["original_profile_id"]).first()
+                        if channel and orig:
+                            cloned, _ = _clone_and_inject(cid, orig, channel.name)
+                            _assign_profile(channel, cloned)
+                            _write_fallback(cid, channel.name, mapping.get("channel_description", ""))
+                            mapping["ticker_profile_id"] = cloned.id
+                            mapping.pop("no_viewer_since", None)
+                            mappings[str(cid)] = mapping
+                            mappings_changed = True
+                            logger.info(f"tickarr: on-demand overlay activated ch{cid} ({channel.name})")
+                    except Exception as e:
+                        logger.warning(f"tickarr: on-demand clone failed ch{cid}: {e}")
+                if mappings_changed:
+                    _save_mappings(mappings)
+                    # Rebuild ch_list now that mappings changed
+                    mappings = _get_mappings()
+                    ch_list = _build_channel_list(mappings)
+                    ch_ids = {ch[0]: ch for ch in ch_list}
+
                 to_poll = [ch_ids[cid] for cid in newly_active if cid in ch_ids]
-                logger.info(f"tickarr: stream-start → {[ch[2] for ch in to_poll]}")
-                _poll_channels(to_poll)
+                if to_poll:
+                    logger.info(f"tickarr: stream-start → {[ch[2] for ch in to_poll]}")
+                    _poll_channels(to_poll)
         except Exception as e:
             logger.debug(f"tickarr: fast loop error: {e}")
 
@@ -1820,7 +1890,9 @@ def _channel_is_stale(channel_id, now):
 
 def _sweep_loop(stop_event):
     """Poll channels on a fixed interval. Gates to active channels when Redis is available.
-    Also auto-recovers channels whose text files haven't been updated recently."""
+    Also auto-recovers channels whose text files haven't been updated recently.
+    For on-demand nowplaying channels, restores passthrough profile after _IDLE_RESTORE_DELAY
+    seconds with no active viewers."""
     SWEEP_SLEEP = 15
     while not stop_event.is_set():
         rc = None
@@ -1830,14 +1902,15 @@ def _sweep_loop(stop_event):
                 stop_event.wait(timeout=SWEEP_SLEEP)
                 continue
             mappings = _get_mappings()
+            mappings_changed = False
             if mappings:
+                # Only poll channels that have an active overlay profile
                 all_ch = _build_channel_list(mappings)
                 if all_ch:
                     active_ids = _redis_scan_active()
                     now = time.time()
                     if active_ids is not None:
                         active_ch = [c for c in all_ch if c[0] in active_ids]
-                        # Channels not seen by Redis but with stale data — auto-recover
                         stale_ch  = [c for c in all_ch
                                      if c[0] not in active_ids
                                      and _channel_is_stale(c[0], now)][:STALE_BATCH_SIZE]
@@ -1846,13 +1919,55 @@ def _sweep_loop(stop_event):
                             logger.info(f"tickarr: sweep {len(active_ch)} active, "
                                         f"{len(stale_ch)} stale (of {len(all_ch)})")
                             _poll_channels(ch_to_poll)
+
+                        # On-demand nowplaying: restore passthrough when no viewers
+                        try:
+                            from apps.channels.models import Channel as _Ch
+                            for cid_str, mapping in list(mappings.items()):
+                                if mapping.get("type") != "nowplaying":
+                                    continue
+                                if mapping.get("np_trigger_mode", "on_demand") != "on_demand":
+                                    continue
+                                ticker_pid = mapping.get("ticker_profile_id")
+                                if not ticker_pid:
+                                    continue
+                                try:
+                                    cid_int = int(cid_str)
+                                except (ValueError, TypeError):
+                                    continue
+                                if cid_int not in active_ids:
+                                    no_viewer_since = mapping.get("no_viewer_since", 0)
+                                    if not no_viewer_since:
+                                        mapping["no_viewer_since"] = now
+                                        mappings[cid_str] = mapping
+                                        mappings_changed = True
+                                    elif now - no_viewer_since >= _IDLE_RESTORE_DELAY:
+                                        channel = _Ch.objects.filter(id=cid_int).first()
+                                        if channel:
+                                            _restore_profile(channel, mapping["original_profile_id"])
+                                        _delete_cloned_profile(ticker_pid)
+                                        _remove_channel_files(cid_int)
+                                        mapping["ticker_profile_id"] = None
+                                        mapping.pop("no_viewer_since", None)
+                                        mappings[cid_str] = mapping
+                                        mappings_changed = True
+                                        logger.info(f"tickarr: on-demand idle-restore ch{cid_str} (no viewers >{_IDLE_RESTORE_DELAY}s)")
+                                else:
+                                    if "no_viewer_since" in mapping:
+                                        mapping.pop("no_viewer_since")
+                                        mappings[cid_str] = mapping
+                                        mappings_changed = True
+                        except Exception as e:
+                            logger.warning(f"tickarr: on-demand restore error: {e}")
                     else:
                         # Redis unavailable — fall back to all channels
                         logger.info(f"tickarr: sweep (no Redis) — {len(all_ch)} channels")
                         _poll_channels(all_ch)
+
+            if mappings_changed:
+                _save_mappings(mappings)
         except Exception as e:
             logger.error(f"tickarr: sweep error: {e}", exc_info=True)
-        # Refresh lock after work so TTL covers the sleep period too
         if rc is not None:
             try:
                 _redis_lock_acquire_or_refresh(rc, SWEEP_LOCK_KEY, _SWEEP_LOCK_TTL)
@@ -1862,7 +1977,9 @@ def _sweep_loop(stop_event):
 
 
 def _sports_sweep_loop(stop_event):
-    """Poll ESPN every 30s and write scores to text files for active sports channels."""
+    """Poll ESPN every 30s and write scores to text files for active sports channels.
+    For smart-mode channels (live_only / favorites_only), manages profile cloning/restoring.
+    Auto-restores smart-mode channels to passthrough after _IDLE_RESTORE_DELAY seconds with no viewers."""
     SWEEP_SLEEP = 30
     while not stop_event.is_set():
         rc = None
@@ -1873,24 +1990,133 @@ def _sports_sweep_loop(stop_event):
                 continue
             mappings = _get_mappings()
             sports_channels = [(cid, m) for cid, m in mappings.items() if m.get("type") == "sports"]
+            mappings_changed = False
+
             if sports_channels:
+                from apps.channels.models import Channel as _Channel
+                from core.models import StreamProfile as _StreamProfile
                 for cid, mapping in sports_channels:
-                    sports_list    = mapping.get("sports_list", [])
-                    favorites      = mapping.get("sports_favorites", "")
+                    sports_list  = mapping.get("sports_list", [])
+                    favorites    = mapping.get("sports_favorites", "")
+                    trigger_mode = mapping.get("sports_trigger_mode", "always")
                     if not sports_list:
                         continue
                     try:
-                        labels, abbrevs, scores, full = _fetch_sports_text(sports_list, favorites)
-                        if not scores:
-                            placeholder = "  No games scheduled  "
-                            pad         = " " * len(placeholder)
-                            scores  = placeholder
-                            labels  = pad
-                            abbrevs = pad
-                            full    = placeholder
-                        _write_sports_text(int(cid), labels, abbrevs, scores, full)
+                        if trigger_mode == "always":
+                            labels, abbrevs, scores, full = _fetch_sports_text(sports_list, favorites)
+                            if not scores:
+                                placeholder = "  No games scheduled  "
+                                pad         = " " * len(placeholder)
+                                scores, labels, abbrevs, full = placeholder, pad, pad, placeholder
+                            _write_sports_text(int(cid), labels, abbrevs, scores, full)
+                        else:
+                            fav_arg  = favorites if trigger_mode == "favorites_only" else ""
+                            has_live = _has_live_games(sports_list, fav_arg)
+                            was_active = mapping.get("sports_active", False)
+
+                            if has_live and not was_active and not mapping.get("eas_profile_id"):
+                                channel = _Channel.objects.filter(id=int(cid)).first()
+                                orig = _StreamProfile.objects.filter(id=mapping["original_profile_id"]).first()
+                                if channel and orig:
+                                    position   = mapping.get("sports_position", "bottom")
+                                    fontsize   = int(mapping.get("sports_fontsize") or 36)
+                                    color_mode = mapping.get("sports_color_mode", "single")
+                                    labelcolor = mapping.get("sports_labelcolor", "#ffd700")
+                                    abbrcolor  = mapping.get("sports_abbrcolor",  "#00d4ff")
+                                    raw_params, _ = _strip_dangerous_flags(channel.name, orig.parameters or "")
+                                    drawtext   = _build_sports_filter(int(cid), position, fontsize,
+                                                                      labelcolor, abbrcolor, color_mode)
+                                    new_params = _inject_drawtext(raw_params, drawtext)
+                                    cloned = _StreamProfile(
+                                        name=f"{PROFILE_PREFIX}{orig.name} [ch{cid}]",
+                                        command=orig.command,
+                                        parameters=new_params,
+                                        locked=False,
+                                        is_active=True,
+                                    )
+                                    cloned.save()
+                                    _assign_profile(channel, cloned)
+                                    mapping["ticker_profile_id"] = cloned.id
+                                    mapping["sports_active"]     = True
+                                    mapping.pop("no_viewer_since", None)
+                                    mappings[cid]    = mapping
+                                    mappings_changed = True
+                                    labels, abbrevs, scores, full = _fetch_sports_text(sports_list, favorites)
+                                    if not scores:
+                                        placeholder = "  No games scheduled  "
+                                        pad = " " * len(placeholder)
+                                        scores, labels, abbrevs, full = placeholder, pad, pad, placeholder
+                                    _write_sports_text(int(cid), labels, abbrevs, scores, full)
+                                    logger.info(f"tickarr: sports smart-fire activated ch{cid} (mode={trigger_mode})")
+
+                            elif not has_live and was_active:
+                                ticker_pid = mapping.get("ticker_profile_id")
+                                channel = _Channel.objects.filter(id=int(cid)).first()
+                                if channel:
+                                    _restore_profile(channel, mapping["original_profile_id"])
+                                if ticker_pid:
+                                    _delete_cloned_profile(ticker_pid)
+                                mapping["ticker_profile_id"] = None
+                                mapping["sports_active"]     = False
+                                mapping.pop("no_viewer_since", None)
+                                mappings[cid]    = mapping
+                                mappings_changed = True
+                                _remove_channel_files(int(cid))
+                                logger.info(f"tickarr: sports smart-fire cleared ch{cid} (no live games)")
+
+                            elif has_live and was_active:
+                                labels, abbrevs, scores, full = _fetch_sports_text(sports_list, favorites)
+                                if not scores:
+                                    placeholder = "  No games scheduled  "
+                                    pad = " " * len(placeholder)
+                                    scores, labels, abbrevs, full = placeholder, pad, pad, placeholder
+                                _write_sports_text(int(cid), labels, abbrevs, scores, full)
+
                     except Exception as e:
                         logger.warning(f"tickarr: sports write failed for channel {cid}: {e}")
+
+            # Auto-restore smart-mode channels with no active viewers
+            try:
+                active_ids = _redis_scan_active()
+                if active_ids is not None:
+                    now = time.time()
+                    from apps.channels.models import Channel as _Channel
+                    for cid, mapping in list(mappings.items()):
+                        if mapping.get("type") != "sports":
+                            continue
+                        if mapping.get("sports_trigger_mode", "always") == "always":
+                            continue
+                        ticker_pid = mapping.get("ticker_profile_id")
+                        if not ticker_pid:
+                            continue
+                        if int(cid) not in active_ids:
+                            no_viewer_since = mapping.get("no_viewer_since", 0)
+                            if not no_viewer_since:
+                                mapping["no_viewer_since"] = now
+                                mappings[cid]    = mapping
+                                mappings_changed = True
+                            elif now - no_viewer_since >= _IDLE_RESTORE_DELAY:
+                                channel = _Channel.objects.filter(id=int(cid)).first()
+                                if channel:
+                                    _restore_profile(channel, mapping["original_profile_id"])
+                                _delete_cloned_profile(ticker_pid)
+                                mapping["ticker_profile_id"] = None
+                                mapping["sports_active"]     = False
+                                mapping.pop("no_viewer_since", None)
+                                mappings[cid]    = mapping
+                                mappings_changed = True
+                                logger.info(f"tickarr: sports idle-restore ch{cid} (no viewers >{_IDLE_RESTORE_DELAY}s)")
+                        else:
+                            if "no_viewer_since" in mapping:
+                                mapping.pop("no_viewer_since")
+                                mappings[cid]    = mapping
+                                mappings_changed = True
+            except Exception as e:
+                logger.warning(f"tickarr: sports viewer auto-restore error: {e}")
+
+            if mappings_changed:
+                _save_mappings(mappings)
+
         except Exception as e:
             logger.error(f"tickarr: sports sweep error: {e}", exc_info=True)
         finally:
@@ -1899,7 +2125,6 @@ def _sports_sweep_loop(stop_event):
                 connection.close()
             except Exception:
                 pass
-        # Refresh lock after work so TTL covers the sleep period too
         if rc is not None:
             try:
                 _redis_lock_acquire_or_refresh(rc, SPORTS_LOCK_KEY, _SPORTS_LOCK_TTL)
@@ -2007,12 +2232,19 @@ class Plugin:
         return [
             # ── Now Playing ───────────────────────────────────────────────
             {"id": "_np_section",       "type": "info",   "label": "==========  NOW PLAYING  =========="},
+            {"id": "np_trigger_mode",   "type": "select", "label": "Trigger Mode",
+             "options": [
+                 {"value": "on_demand", "label": "On-Demand (default) — overlay activates only when a viewer connects, restores to passthrough when idle. Recommended: saves CPU and reduces memory pressure."},
+                 {"value": "always",    "label": "Always On — overlay encodes 24/7 regardless of viewers (legacy behavior)"},
+             ]},
             {"id": "np_target_type",    "type": "select", "label": "Apply To",
              "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_np_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Tickarr ticker types already active on specific channels or groups (e.g. EAS on news channels, Sports Ticker on a TV group), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
             {"id": "_np_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
             {"id": "np_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
             {"id": "np_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
             {"id": "np_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
+            {"id": "np_exclude_groups",      "type": "text",   "label": "Exclude Groups (optional) — comma-separated group names to skip, e.g. News, Sports, Entertainment", "placeholder": "e.g. News, Sports TV"},
             # ── Satellite Radio Channel Setup ─────────────────────────────
             {"id": "_ch_section", "type": "info", "label": "==========  SATELLITE RADIO CHANNEL SETUP  =========="},
             {"id": "_ch_about",   "type": "info",
@@ -2039,7 +2271,7 @@ class Plugin:
                  {"value": "720p30",  "label": "720p 30fps — scaled to 720p, capped at 30fps (maximum CPU reduction; use if other options still cause buffering)"},
              ]},
             {"id": "_eas_zone_help", "type": "info",
-             "label": "To find your zone or county code: visit alerts.weather.gov, select your state, then click your county. The code appears in the URL and alert details (e.g. TXC113 = Texas, County 113). You can enter multiple codes separated by commas to cover multiple counties."},
+             "label": "To find your zone or county code: visit weather.gov, select your state, then click your county. The code appears in the URL and alert details (e.g. TXC113 = Texas, County 113). You can enter multiple codes separated by commas to cover multiple counties."},
             {"id": "eas_zones",     "type": "text",   "label": "NWS Zone / County Codes (Active -- triggers alerts)",
              "placeholder": "e.g. TXC113,TXC121"},
             {"id": "_eas_saved_help", "type": "info",
@@ -2059,23 +2291,33 @@ class Plugin:
              ]},
             {"id": "eas_poll_interval",   "type": "number", "label": "Poll Interval (seconds)", "min": 15},
             {"id": "eas_tone_interval",   "type": "number", "label": "Siren Tone Interval (seconds) - how often the attention tone repeats during an active alert", "min": 30},
+            {"id": "eas_test_duration",   "type": "number", "label": "Test Alert Duration (seconds) - how long the Test EAS Alert action fires before auto-restoring (default 60)", "min": 10},
             {"id": "eas_target_type",   "type": "select", "label": "Apply To",
              "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_eas_allchannels_warn", "type": "info", "label": "ℹ EAS CO-ARM: EAS can be enabled alongside any other ticker type (Now Playing, Custom Text, Sports). Channels with existing tickers will have EAS armed on top — they continue running normally and only switch to the EAS overlay when a real alert fires. The only channels skipped are those with an EAS alert actively firing right now. Use Exclude Groups if you want to intentionally leave certain groups unmonitored."},
             {"id": "_eas_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
             {"id": "eas_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
             {"id": "eas_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
             {"id": "eas_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
+            {"id": "eas_exclude_groups",      "type": "text",   "label": "Exclude Groups (optional) — comma-separated group names to skip, e.g. SiriusXM, Satellite Radio", "placeholder": "e.g. SiriusXM, Satellite Radio"},
             # ── Custom Text ───────────────────────────────────────────────
             {"id": "_custom_section",      "type": "info",   "label": "==========  CUSTOM TEXT  =========="},
             {"id": "_custom_transcode_note", "type": "info",
              "label": "⚠ TRANSCODING NOTE (ticker active only): Custom text overlays require FFmpeg to decode and re-encode video while the ticker is running. Channels on stream-copy profiles will transcode only while the custom ticker is active — they return to their original profile when the ticker is disabled. If you experience buffering or stuttering, your system may not have sufficient CPU headroom for transcoding at your source resolution and framerate."},
             {"id": "custom_target_type",   "type": "select", "label": "Apply To",
              "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_custom_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Tickarr ticker types already active on specific channels or groups (e.g. Now Playing on satellite radio, EAS on news channels), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
             {"id": "_custom_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
             {"id": "custom_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
             {"id": "custom_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
             {"id": "custom_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
-            {"id": "custom_text",      "type": "text",   "label": "Custom Text"},
+            {"id": "custom_exclude_groups",      "type": "text",   "label": "Exclude Groups (optional) — comma-separated group names to skip, e.g. SiriusXM, News", "placeholder": "e.g. SiriusXM, News"},
+            {"id": "custom_trigger_mode", "type": "select", "label": "Trigger Mode",
+             "options": [
+                 {"value": "on_demand", "label": "On-Demand (default) — overlay activates when text is set, restores to passthrough when text is cleared"},
+                 {"value": "always",    "label": "Always On — overlay encodes 24/7 (legacy behavior)"},
+             ]},
+            {"id": "custom_text",      "type": "text",   "label": "Custom Text (leave blank in On-Demand mode to register the channel now and set text later)"},
             {"id": "custom_style",     "type": "select", "label": "Style",
              "options": [{"value": "static", "label": "Static"}, {"value": "scrolling", "label": "Scrolling"}]},
             {"id": "custom_position",  "type": "select", "label": "Position",
@@ -2111,10 +2353,13 @@ class Plugin:
             {"id": "sports_nwsl",           "type": "boolean", "label": "NWSL"},
             {"id": "sports_epl",            "type": "boolean", "label": "EPL (English Premier League)"},
             {"id": "sports_ucl",            "type": "boolean", "label": "UEFA Champions League"},
+            {"id": "sports_uel",            "type": "boolean", "label": "UEFA Europa League"},
             {"id": "sports_laliga",         "type": "boolean", "label": "La Liga"},
             {"id": "sports_bundesliga",     "type": "boolean", "label": "Bundesliga"},
             {"id": "sports_seriea",         "type": "boolean", "label": "Serie A"},
             {"id": "sports_ligue1",         "type": "boolean", "label": "Ligue 1"},
+            {"id": "sports_fifawc",         "type": "boolean", "label": "FIFA World Cup"},
+            {"id": "sports_fifawwc",        "type": "boolean", "label": "FIFA Women's World Cup"},
             {"id": "_sports_tennis",        "type": "info",    "label": "-- Tennis --"},
             {"id": "sports_atp",            "type": "boolean", "label": "ATP"},
             {"id": "sports_wta",            "type": "boolean", "label": "WTA"},
@@ -2124,6 +2369,12 @@ class Plugin:
             {"id": "sports_ncaavb",         "type": "boolean", "label": "NCAA Volleyball"},
             {"id": "sports_ncaalax",        "type": "boolean", "label": "NCAA Lacrosse"},
             {"id": "sports_favorites",      "type": "text",    "label": "Favorite Teams (abbreviations, comma-separated - blank = all teams)"},
+            {"id": "sports_trigger_mode",   "type": "select",  "label": "Trigger Mode",
+             "options": [
+                 {"value": "always",         "label": "Always On — ticker encodes 24/7 (default)"},
+                 {"value": "live_only",      "label": "Active Games Only — fires only when a live game is in progress"},
+                 {"value": "favorites_only", "label": "Favorite Teams Only — fires only when a favorite team is playing (requires Favorite Teams above)"},
+             ]},
             {"id": "sports_color_mode",     "type": "select",  "label": "Color Mode",
              "options": [
                  {"value": "single", "label": "Single Color - White (recommended, lower CPU)"},
@@ -2152,10 +2403,12 @@ class Plugin:
              ]},
             {"id": "sports_target_type",    "type": "select",  "label": "Apply To",
              "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_sports_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Tickarr ticker types already active on specific channels or groups (e.g. Now Playing on satellite radio, EAS on news channels), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
             {"id": "_sports_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
             {"id": "sports_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
             {"id": "sports_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
             {"id": "sports_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
+            {"id": "sports_exclude_groups",      "type": "text",   "label": "Exclude Groups (optional) — comma-separated group names to skip, e.g. SiriusXM, News", "placeholder": "e.g. SiriusXM, News"},
             # ── Active Tickers ────────────────────────────────────────────
             {"id": "_active_section", "type": "info", "label": "==========  ACTIVE TICKERS  =========="},
             {"id": "_ticker_list",    "type": "info", "label": active_label},
@@ -2178,6 +2431,7 @@ class Plugin:
             "disable_sports":       self._disable_sports_ticker,
             "enable_eas":           self._enable_eas,
             "disable_eas":          self._disable_eas,
+            "test_eas":             self._test_eas,
             "migrate_eas":          self._migrate_eas,
             "disable_all":          self._disable_all,
             "view_active":          self._view_active,
@@ -2216,6 +2470,8 @@ class Plugin:
     def _enable_nowplaying(self, params):
         from apps.channels.models import Channel, ChannelGroup
 
+        trigger_mode = (params.get("np_trigger_mode") or "on_demand").strip()
+
         channels = self._resolve_channels(params, prefix="np_")
         if not channels:
             return {"success": False, "message": "No channels found for the selected target."}
@@ -2251,22 +2507,26 @@ class Plugin:
                 else:
                     station = _match_station_by_name(channel.name, stations)
                 if station:
-                    deeplink = station.get("id")  # tickarr.com uses "id" as the deeplink
+                    deeplink = station.get("id")
 
-                cloned, removed_flags = _clone_and_inject(channel.id, original_profile, channel.name)
-                _assign_profile(channel, cloned)
+                removed_flags = []
+                ticker_profile_id = None
+
+                if trigger_mode == "always":
+                    cloned, removed_flags = _clone_and_inject(channel.id, original_profile, channel.name)
+                    _assign_profile(channel, cloned)
+                    ticker_profile_id = cloned.id
+                    _write_fallback(channel.id, channel.name, channel_description)
 
                 mappings[cid] = {
                     "original_profile_id": original_profile.id,
-                    "ticker_profile_id": cloned.id,
-                    "xm_deeplink": deeplink,
-                    "channel_name": channel.name,
+                    "ticker_profile_id":   ticker_profile_id,
+                    "xm_deeplink":         deeplink,
+                    "channel_name":        channel.name,
                     "channel_description": channel_description,
-                    "type": "nowplaying",
+                    "type":                "nowplaying",
+                    "np_trigger_mode":     trigger_mode,
                 }
-
-                # Write fallback immediately — sweep loop fetches live data within 15s
-                _write_fallback(channel.id, channel.name, channel_description)
 
                 note = (f" [auto-removed from cloned profile: {', '.join(removed_flags)}]"
                         if removed_flags else "")
@@ -2277,8 +2537,13 @@ class Plugin:
 
         _save_mappings(mappings)
 
+        trigger_note = (
+            "Overlay will activate automatically when a viewer connects and restore to passthrough when idle."
+            if trigger_mode == "on_demand" else
+            "Overlay will encode 24/7 (always-on mode)."
+        )
         parts = []
-        if enabled:  parts.append(f"Enabled: {len(enabled)} channel(s)")
+        if enabled:  parts.append(f"Enabled: {len(enabled)} channel(s)\n{trigger_note}")
         if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
         if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
@@ -2286,9 +2551,11 @@ class Plugin:
     def _enable_custom(self, params):
         from apps.channels.models import Channel, ChannelGroup
 
-        custom_text = (params.get("custom_text") or "").strip()
-        if not custom_text:
-            return {"success": False, "message": "Custom Text is required."}
+        trigger_mode = (params.get("custom_trigger_mode") or "on_demand").strip()
+        custom_text  = (params.get("custom_text") or "").strip()
+
+        if trigger_mode == "always" and not custom_text:
+            return {"success": False, "message": "Custom Text is required for Always On mode."}
 
         style    = params.get("custom_style",    "static")
         position = params.get("custom_position", "bottom")
@@ -2330,34 +2597,39 @@ class Plugin:
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
                     continue
 
-                raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
-                drawtext = _build_custom_filter(channel.id, style, position, schedule, duration, interval)
-                new_params = _inject_drawtext(raw_params, drawtext)
+                removed_flags = []
+                ticker_profile_id = None
 
-                from core.models import StreamProfile
-                cloned = StreamProfile(
-                    name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel.id}]",
-                    command=original_profile.command,
-                    parameters=new_params,
-                    locked=False,
-                    is_active=True,
-                )
-                cloned.save()
-                _assign_profile(channel, cloned)
+                if trigger_mode == "always" or (trigger_mode == "on_demand" and custom_text):
+                    raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
+                    drawtext = _build_custom_filter(channel.id, style, position, schedule, duration, interval)
+                    new_params = _inject_drawtext(raw_params, drawtext)
+                    from core.models import StreamProfile
+                    cloned = StreamProfile(
+                        name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel.id}]",
+                        command=original_profile.command,
+                        parameters=new_params,
+                        locked=False,
+                        is_active=True,
+                    )
+                    cloned.save()
+                    _assign_profile(channel, cloned)
+                    ticker_profile_id = cloned.id
+                    _write_custom_text(channel.id, custom_text)
 
                 mappings[cid] = {
-                    "original_profile_id": original_profile.id,
-                    "ticker_profile_id":   cloned.id,
-                    "channel_name":        channel.name,
-                    "type":                "custom",
-                    "custom_text":         custom_text,
-                    "custom_style":        style,
-                    "custom_position":     position,
-                    "custom_schedule":     schedule,
-                    "custom_duration":     duration,
-                    "custom_interval":     interval,
+                    "original_profile_id":  original_profile.id,
+                    "ticker_profile_id":    ticker_profile_id,
+                    "channel_name":         channel.name,
+                    "type":                 "custom",
+                    "custom_text":          custom_text,
+                    "custom_style":         style,
+                    "custom_position":      position,
+                    "custom_schedule":      schedule,
+                    "custom_duration":      duration,
+                    "custom_interval":      interval,
+                    "custom_trigger_mode":  trigger_mode,
                 }
-                _write_custom_text(channel.id, custom_text)
                 note = (f" [auto-removed: {', '.join(removed_flags)}]" if removed_flags else "")
                 enabled.append(f"{channel.name}{note}")
 
@@ -2367,16 +2639,19 @@ class Plugin:
 
         _save_mappings(mappings)
 
+        trigger_note = (
+            "Overlay will activate when text is set via Update Custom Text, and restore when text is cleared."
+            if trigger_mode == "on_demand" else
+            "Overlay will encode 24/7 (always-on mode)."
+        )
         parts = []
-        if enabled: parts.append(f"Enabled: {len(enabled)} channel(s)")
+        if enabled: parts.append(f"Enabled: {len(enabled)} channel(s)\n{trigger_note}")
         if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
         if failed:  parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _update_custom(self, params):
         custom_text = (params.get("custom_text") or "").strip()
-        if not custom_text:
-            return {"success": False, "message": "Custom Text is required."}
 
         channels = (
             self._resolve_channels(params, prefix="custom_") or
@@ -2386,7 +2661,8 @@ class Plugin:
             return {"success": False, "message": "No channels found. Select a channel in the Custom Text section."}
 
         mappings = _get_mappings()
-        updated, skipped = [], []
+        mappings_changed = False
+        updated, cleared, skipped = [], [], []
 
         for channel in channels:
             cid = str(channel.id)
@@ -2394,29 +2670,104 @@ class Plugin:
             if not mapping or mapping.get("type") != "custom":
                 skipped.append(f"{channel.name} (no custom ticker active — enable it first)")
                 continue
-            _write_custom_text(channel.id, custom_text)
-            mapping["custom_text"] = custom_text
-            updated.append(channel.name)
 
-        if updated:
+            trigger_mode   = mapping.get("custom_trigger_mode", "always")
+            ticker_pid     = mapping.get("ticker_profile_id")
+
+            if trigger_mode == "always":
+                if not custom_text:
+                    skipped.append(f"{channel.name} (text required for Always On mode — use Disable to remove the overlay)")
+                    continue
+                _write_custom_text(channel.id, custom_text)
+                mapping["custom_text"] = custom_text
+                mappings[cid] = mapping
+                mappings_changed = True
+                updated.append(channel.name)
+                continue
+
+            # On-demand mode
+            if custom_text:
+                if mapping.get("eas_profile_id"):
+                    skipped.append(f"{channel.name} (EAS alert active — text queued, overlay will appear when alert clears)")
+                    continue
+                if not ticker_pid:
+                    # Clone profile and activate
+                    try:
+                        from apps.channels.models import Channel as _Ch
+                        from core.models import StreamProfile as _SP
+                        orig = _SP.objects.filter(id=mapping["original_profile_id"]).first()
+                        if not orig:
+                            skipped.append(f"{channel.name} (original profile not found)")
+                            continue
+                        raw_params, _ = _strip_dangerous_flags(channel.name, orig.parameters or "")
+                        style    = mapping.get("custom_style",    "static")
+                        position = mapping.get("custom_position", "bottom")
+                        schedule = mapping.get("custom_schedule", "always")
+                        duration = mapping.get("custom_duration", 10)
+                        interval = mapping.get("custom_interval", 5)
+                        drawtext   = _build_custom_filter(channel.id, style, position, schedule, duration, interval)
+                        new_params = _inject_drawtext(raw_params, drawtext)
+                        cloned = _SP(
+                            name=f"{PROFILE_PREFIX}{orig.name} [ch{channel.id}]",
+                            command=orig.command,
+                            parameters=new_params,
+                            locked=False,
+                            is_active=True,
+                        )
+                        cloned.save()
+                        ch_obj = _Ch.objects.filter(id=channel.id).first() or channel
+                        _assign_profile(ch_obj, cloned)
+                        mapping["ticker_profile_id"] = cloned.id
+                    except Exception as e:
+                        skipped.append(f"{channel.name} (clone failed: {e})")
+                        logger.warning(f"tickarr: on-demand custom clone failed ch{cid}: {e}")
+                        continue
+                _write_custom_text(channel.id, custom_text)
+                mapping["custom_text"] = custom_text
+                mappings[cid] = mapping
+                mappings_changed = True
+                updated.append(channel.name)
+            else:
+                # Empty text in on-demand → restore passthrough
+                if ticker_pid:
+                    try:
+                        from apps.channels.models import Channel as _Ch
+                        ch_obj = _Ch.objects.filter(id=channel.id).first() or channel
+                        _restore_profile(ch_obj, mapping["original_profile_id"])
+                        _delete_cloned_profile(ticker_pid)
+                        _remove_channel_files(channel.id)
+                    except Exception as e:
+                        logger.warning(f"tickarr: on-demand custom restore failed ch{cid}: {e}")
+                mapping["ticker_profile_id"] = None
+                mapping["custom_text"] = ""
+                mappings[cid] = mapping
+                mappings_changed = True
+                cleared.append(channel.name)
+
+        if mappings_changed:
             _save_mappings(mappings)
 
         parts = []
-        if updated: parts.append(f"Updated {len(updated)} channel(s) - text live immediately:\n" + "\n".join(f"  - {u}" for u in updated))
+        if updated: parts.append(f"Updated {len(updated)} channel(s) — text live immediately:\n" + "\n".join(f"  - {u}" for u in updated))
+        if cleared: parts.append(f"Cleared {len(cleared)} channel(s) — restored to passthrough:\n" + "\n".join(f"  - {c}" for c in cleared))
         if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
-        return {"success": bool(updated), "message": "\n\n".join(parts) or "Nothing to do."}
+        return {"success": bool(updated or cleared), "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _enable_sports(self, params):
         sports_list = [s for s in KNOWN_SPORTS if params.get(f"sports_{s}") in (True, "true", "1", 1)]
         if not sports_list:
             return {"success": False, "message": "Select at least one sport/league before enabling."}
 
-        color_mode = params.get("sports_color_mode") or "single"
-        position   = params.get("sports_position", "bottom")
-        fontsize   = int(params.get("sports_fontsize") or 36)
-        labelcolor = params.get("sports_labelcolor") or "#ffd700"
-        abbrcolor  = params.get("sports_abbrcolor")  or "#00d4ff"
-        favorites  = (params.get("sports_favorites") or "").strip()
+        color_mode   = params.get("sports_color_mode") or "single"
+        position     = params.get("sports_position", "bottom")
+        fontsize     = int(params.get("sports_fontsize") or 36)
+        labelcolor   = params.get("sports_labelcolor") or "#ffd700"
+        abbrcolor    = params.get("sports_abbrcolor")  or "#00d4ff"
+        favorites    = (params.get("sports_favorites") or "").strip()
+        trigger_mode = (params.get("sports_trigger_mode") or "always").strip()
+
+        if trigger_mode == "favorites_only" and not favorites:
+            return {"success": False, "message": "Favorite Teams Only mode requires at least one team abbreviation in the Favorite Teams field."}
 
         channels = self._resolve_channels(params, prefix="sports_")
         if not channels:
@@ -2440,25 +2791,32 @@ class Plugin:
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
                     continue
 
-                raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
-                drawtext   = _build_sports_filter(channel.id, position, fontsize,
-                                                  labelcolor, abbrcolor, color_mode)
-                new_params = _inject_drawtext(raw_params, drawtext)
+                removed_flags = []
+                ticker_profile_id = None
 
-                from core.models import StreamProfile
-                cloned = StreamProfile(
-                    name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel.id}]",
-                    command=original_profile.command,
-                    parameters=new_params,
-                    locked=False,
-                    is_active=True,
-                )
-                cloned.save()
-                _assign_profile(channel, cloned)
+                if trigger_mode == "always":
+                    raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
+                    drawtext   = _build_sports_filter(channel.id, position, fontsize,
+                                                      labelcolor, abbrcolor, color_mode)
+                    new_params = _inject_drawtext(raw_params, drawtext)
+                    from core.models import StreamProfile
+                    cloned = StreamProfile(
+                        name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel.id}]",
+                        command=original_profile.command,
+                        parameters=new_params,
+                        locked=False,
+                        is_active=True,
+                    )
+                    cloned.save()
+                    _assign_profile(channel, cloned)
+                    ticker_profile_id = cloned.id
+                    placeholder = "Loading sports scores..."
+                    pad = " " * len(placeholder)
+                    _write_sports_text(channel.id, pad, pad, placeholder, placeholder)
 
                 mappings[cid] = {
                     "original_profile_id":    original_profile.id,
-                    "ticker_profile_id":      cloned.id,
+                    "ticker_profile_id":      ticker_profile_id,
                     "channel_name":           channel.name,
                     "type":                   "sports",
                     "sports_list":            sports_list,
@@ -2468,14 +2826,9 @@ class Plugin:
                     "sports_color_mode":      color_mode,
                     "sports_labelcolor":      labelcolor,
                     "sports_abbrcolor":       abbrcolor,
+                    "sports_trigger_mode":    trigger_mode,
+                    "sports_active":          trigger_mode == "always",
                 }
-                placeholder = "Loading sports scores..."
-                pad = " " * len(placeholder)
-                _write_sports_text(channel.id,
-                                   pad,
-                                   pad,
-                                   placeholder,
-                                   placeholder)
                 note = (f" [auto-removed: {', '.join(removed_flags)}]" if removed_flags else "")
                 enabled.append(f"{channel.name}{note}")
 
@@ -2493,11 +2846,16 @@ class Plugin:
             color_note = "Mode: Single Color white (1 drawtext layer — lower CPU)."
         parts = []
         sports_label = ", ".join(LABELS.get(s, s.upper()) for s in sports_list)
+        trigger_note = {
+            "always":         "Trigger: Always On — ticker encodes 24/7.",
+            "live_only":      "Trigger: Active Games Only — channel will switch to ticker only when a live game is in progress.",
+            "favorites_only": f"Trigger: Favorite Teams Only — channel will fire only when a team from [{favorites}] is playing.",
+        }.get(trigger_mode, "")
         if enabled:
             parts.append(
                 f"Enabled sports ticker on {len(enabled)} channel(s)\n"
                 f"Sports: {sports_label}\n"
-                f"Live scores will appear within 30 seconds.\n"
+                f"{trigger_note}\n"
                 f"{color_note}\n"
                 + "\n".join(f"  - {n}" for n in enabled)
             )
@@ -2534,7 +2892,15 @@ class Plugin:
                     _remove_custom_file(channel.id)
                 elif ticker_type == "sports":
                     _remove_sports_file(channel.id)
-                del mappings[cid]
+                if mapping.get("eas_armed"):
+                    # EAS is co-armed — preserve it as a pure EAS channel rather than deleting the mapping
+                    mappings[cid] = {
+                        "original_profile_id": mapping["original_profile_id"],
+                        "channel_name":        channel.name,
+                        "type":                "eas",
+                    }
+                else:
+                    del mappings[cid]
                 disabled.append(channel.name)
             except Exception as e:
                 logger.error(f"tickarr: disable failed for {channel.name}: {e}", exc_info=True)
@@ -2579,11 +2945,21 @@ class Plugin:
 
         for channel in channels:
             cid = str(channel.id)
-            if cid in mappings:
-                existing = mappings[cid].get("type", "nowplaying")
-                skipped.append(f"{channel.name} (already has {existing} ticker — disable first)")
-                continue
             try:
+                if cid in mappings:
+                    existing = mappings[cid]
+                    if existing.get("type") == "eas" or existing.get("eas_armed"):
+                        skipped.append(f"{channel.name} (EAS already armed — already enabled)")
+                        continue
+                    if existing.get("eas_profile_id"):
+                        skipped.append(f"{channel.name} (EAS alert currently active — wait for it to clear)")
+                        continue
+                    # Co-arm EAS alongside the existing ticker without disrupting it
+                    _eas_clear(channel.id)
+                    existing["eas_armed"] = True
+                    mappings[cid] = existing
+                    enabled.append(channel.name)
+                    continue
                 original_profile = channel.stream_profile
                 if not original_profile:
                     skipped.append(f"{channel.name} (no stream profile assigned — assign one in Channels first)")
@@ -2620,18 +2996,25 @@ class Plugin:
         for channel in channels:
             cid = str(channel.id)
             mapping = mappings.get(cid)
-            if not mapping or mapping.get("type") != "eas":
+            is_pure_eas = mapping and mapping.get("type") == "eas"
+            is_coarmed  = mapping and mapping.get("eas_armed")
+            if not mapping or (not is_pure_eas and not is_coarmed):
                 skipped.append(f"{channel.name} (no EAS ticker active)")
                 continue
             try:
-                _restore_profile(channel, mapping["original_profile_id"])
-                for pid_key in ("eas_profile_id", "ticker_profile_id"):
-                    if mapping.get(pid_key):
-                        _delete_cloned_profile(mapping[pid_key])
+                if mapping.get("eas_profile_id"):
+                    _restore_profile(channel, mapping["original_profile_id"])
+                    _delete_cloned_profile(mapping["eas_profile_id"])
                 _eas_clear(channel.id)
                 with _eas_lock:
                     _eas_active.pop(cid, None)
-                del mappings[cid]
+                if is_pure_eas:
+                    del mappings[cid]
+                else:
+                    # Co-armed: remove EAS keys, leave the ticker mapping intact
+                    mapping.pop("eas_armed", None)
+                    mapping.pop("eas_profile_id", None)
+                    mappings[cid] = mapping
                 disabled.append(channel.name)
             except Exception as e:
                 logger.error(f"tickarr: disable EAS failed for {channel.name}: {e}", exc_info=True)
@@ -2669,6 +3052,10 @@ class Plugin:
                     _eas_clear(channel.id)
                     with _eas_lock:
                         _eas_active.pop(cid, None)
+                if mapping.get("eas_armed"):
+                    _eas_clear(channel.id)
+                    with _eas_lock:
+                        _eas_active.pop(cid, None)
                 del mappings[cid]
                 disabled.append(name)
             except Exception as e:
@@ -2680,6 +3067,105 @@ class Plugin:
         if disabled: parts.append(f"Disabled: {len(disabled)} channel(s)\n" + "\n".join(f"  - {n}" for n in disabled))
         if failed:   parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _test_eas(self, params):
+        """Fire a fake EAS alert on EAS-enabled channels for a configurable duration, then auto-restore."""
+        import threading as _threading
+        duration = 60
+        try:
+            duration = max(10, min(600, int(params.get("eas_test_duration") or 60)))
+        except (ValueError, TypeError):
+            pass
+
+        channels = self._resolve_channels(params, prefix="eas_")
+        if not channels:
+            return {"success": False, "message": "No channels found. Select a channel in the EAS section."}
+
+        mappings  = _get_mappings()
+        settings  = _get_settings()
+        fired, skipped, failed = [], [], []
+
+        for channel in channels:
+            cid = str(channel.id)
+            mapping = mappings.get(cid)
+            if not mapping or (mapping.get("type") != "eas" and not mapping.get("eas_armed")):
+                skipped.append(f"{channel.name} (no EAS ticker active — enable it first)")
+                continue
+            if mapping.get("eas_profile_id"):
+                skipped.append(f"{channel.name} (EAS already active — clear it first)")
+                continue
+            try:
+                from core.models import StreamProfile
+                orig = StreamProfile.objects.filter(id=mapping["original_profile_id"]).first()
+                if not orig:
+                    failed.append(f"{channel.name} (original profile missing)")
+                    continue
+
+                tone_interval  = int(settings.get("eas_tone_interval") or 0)
+                overlay_style  = settings.get("eas_overlay_style")  or "tickarr"
+                label_color    = settings.get("eas_label_color")     or "0xCC0000"
+                transcode_mode = settings.get("eas_transcode_mode")  or "full"
+
+                eas_profile, _ = _clone_and_inject_eas(
+                    channel.id, orig, channel.name,
+                    tone_interval, overlay_style, label_color, transcode_mode,
+                )
+                _assign_profile(channel, eas_profile)
+
+                fake_alerts = [{
+                    "event":    "TEST — Tickarr EAS Test Alert",
+                    "area":     "Test Zone — this is only a test",
+                    "severity": "Moderate",
+                    "headline": f"TEST: EAS overlay firing for {duration} seconds. No action required.",
+                }]
+                _eas_write_alert(cid, fake_alerts, overlay_style)
+                mapping["eas_profile_id"] = eas_profile.id
+                mappings[cid] = mapping
+                _eas_restart_channel(str(channel.uuid))
+                fired.append((cid, channel.name, eas_profile.id, str(channel.uuid)))
+
+            except Exception as e:
+                logger.error(f"tickarr: test_eas failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} (error: {e})")
+
+        if fired:
+            _save_mappings(mappings)
+
+            def _auto_restore(entries, delay):
+                import time as _t
+                _t.sleep(delay)
+                try:
+                    m = _get_mappings()
+                    from apps.channels.models import Channel as _Ch
+                    for cid, ch_name, eas_pid, ch_uuid in entries:
+                        mapping = m.get(cid)
+                        if not mapping:
+                            continue
+                        ch = _Ch.objects.filter(id=int(cid)).first()
+                        if ch:
+                            _restore_profile(ch, mapping["original_profile_id"])
+                            _eas_restart_channel(ch_uuid)
+                        _delete_cloned_profile(eas_pid)
+                        mapping.pop("eas_profile_id", None)
+                        m[cid] = mapping
+                    _save_mappings(m)
+                    _eas_clear(int(entries[0][0]))
+                    logger.info(f"tickarr: EAS test auto-restored after {delay}s")
+                except Exception as e:
+                    logger.error(f"tickarr: EAS test auto-restore failed: {e}", exc_info=True)
+
+            t = _threading.Thread(target=_auto_restore, args=(fired, duration), daemon=True)
+            t.start()
+
+        parts = []
+        if fired:
+            names = ", ".join(n for _, n, _, _ in fired)
+            parts.append(f"EAS test alert fired on: {names}\nWill auto-restore in {duration} seconds.")
+        if skipped:
+            parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:
+            parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
+        return {"success": bool(fired), "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _migrate_eas(self, params):
         """Migrate old always-on EAS profiles (ticker_profile_id) to dynamic mode."""
@@ -3318,8 +3804,26 @@ class Plugin:
         from apps.channels.models import Channel, ChannelGroup
         target_type = params.get(f"{prefix}target_type", "group")
 
+        # Build exclusion set from the exclude_groups field (applies to all target types)
+        exclude_ids = set()
+        raw_exclude = params.get(f"{prefix}exclude_groups", "")
+        if raw_exclude:
+            for name in [n.strip() for n in raw_exclude.split(",") if n.strip()]:
+                try:
+                    grp = ChannelGroup.objects.get(name__iexact=name)
+                    exclude_ids.update(
+                        Channel.objects.filter(channel_group=grp).values_list("id", flat=True)
+                    )
+                except ChannelGroup.DoesNotExist:
+                    pass
+
+        def _apply_exclusions(channels):
+            if not exclude_ids:
+                return channels
+            return [ch for ch in channels if ch.id not in exclude_ids]
+
         if target_type == "all":
-            return list(Channel.objects.all().order_by("name"))
+            return _apply_exclusions(list(Channel.objects.all().order_by("name")))
 
         if target_type == "group":
             group_id = params.get(f"{prefix}channel_group_id")
@@ -3327,7 +3831,7 @@ class Plugin:
                 return []
             try:
                 group = ChannelGroup.objects.get(id=int(group_id))
-                return list(Channel.objects.filter(channel_group=group).order_by("name"))
+                return _apply_exclusions(list(Channel.objects.filter(channel_group=group).order_by("name")))
             except ChannelGroup.DoesNotExist:
                 return []
 
@@ -3347,13 +3851,14 @@ class Plugin:
                             channels.append(ch)
                 except ChannelGroup.DoesNotExist:
                     pass
-            return channels
+            return _apply_exclusions(channels)
 
         # single channel
         channel_id = params.get(f"{prefix}channel_id")
         if not channel_id:
             return []
         try:
-            return [Channel.objects.get(id=int(channel_id))]
+            ch = Channel.objects.get(id=int(channel_id))
+            return [] if ch.id in exclude_ids else [ch]
         except Channel.DoesNotExist:
             return []
