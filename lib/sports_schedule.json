@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T17:42:51Z",
+  "generated_at": "2026-06-26T21:14:59Z",
   "events": [
     {
       "slug": "pga",
@@ -10,31 +10,6 @@
       "channels": [
         "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Norway @ France",
-      "description": "SOCCER · Norway @ France",
-      "start_utc": "2026-06-26T19:00:00Z",
-      "end_utc": "2026-06-26T21:00:00Z",
-      "channels": [
-        "France",
-        "Norway",
-        "FOX Sports on SiriusXM",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Senegal @ Iraq",
-      "description": "SOCCER · Senegal @ Iraq",
-      "start_utc": "2026-06-26T19:00:00Z",
-      "end_utc": "2026-06-26T21:00:00Z",
-      "channels": [
-        "Iraq",
-        "Senegal",
-        "SiriusXM FC"
       ]
     },
     {
@@ -259,18 +234,6 @@
     },
     {
       "slug": "soccer",
-      "title": "Egypt @ Iran",
-      "description": "SOCCER · Egypt @ Iran",
-      "start_utc": "2026-06-27T03:00:00Z",
-      "end_utc": "2026-06-27T05:00:00Z",
-      "channels": [
-        "Iran",
-        "Egypt",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
       "title": "New Zealand @ Belgium",
       "description": "SOCCER · New Zealand @ Belgium",
       "start_utc": "2026-06-27T03:00:00Z",
@@ -279,6 +242,18 @@
         "Belgium",
         "New Zealand",
         "FOX Sports on SiriusXM",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Egypt @ Iran",
+      "description": "SOCCER · Egypt @ Iran",
+      "start_utc": "2026-06-27T03:00:00Z",
+      "end_utc": "2026-06-27T05:00:00Z",
+      "channels": [
+        "Iran",
+        "Egypt",
         "SiriusXM FC"
       ]
     },
@@ -327,18 +302,6 @@
     },
     {
       "slug": "soccer",
-      "title": "Croatia @ Ghana",
-      "description": "SOCCER · Croatia @ Ghana",
-      "start_utc": "2026-06-27T21:00:00Z",
-      "end_utc": "2026-06-27T23:00:00Z",
-      "channels": [
-        "Ghana",
-        "Croatia",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
       "title": "Panama @ England",
       "description": "SOCCER · Panama @ England",
       "start_utc": "2026-06-27T21:00:00Z",
@@ -347,6 +310,18 @@
         "England",
         "Panama",
         "FOX Sports on SiriusXM",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Croatia @ Ghana",
+      "description": "SOCCER · Croatia @ Ghana",
+      "start_utc": "2026-06-27T21:00:00Z",
+      "end_utc": "2026-06-27T23:00:00Z",
+      "channels": [
+        "Ghana",
+        "Croatia",
         "SiriusXM FC"
       ]
     },
@@ -362,18 +337,6 @@
     },
     {
       "slug": "soccer",
-      "title": "Congo DR @ Uzbekistan",
-      "description": "SOCCER · Congo DR @ Uzbekistan",
-      "start_utc": "2026-06-27T23:30:00Z",
-      "end_utc": "2026-06-28T01:30:00Z",
-      "channels": [
-        "Uzbekistan",
-        "Congo DR",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
       "title": "Colombia @ Portugal",
       "description": "SOCCER · Colombia @ Portugal",
       "start_utc": "2026-06-27T23:30:00Z",
@@ -382,6 +345,18 @@
         "Portugal",
         "Colombia",
         "FOX Sports on SiriusXM",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Congo DR @ Uzbekistan",
+      "description": "SOCCER · Congo DR @ Uzbekistan",
+      "start_utc": "2026-06-27T23:30:00Z",
+      "end_utc": "2026-06-28T01:30:00Z",
+      "channels": [
+        "Uzbekistan",
+        "Congo DR",
         "SiriusXM FC"
       ]
     },
