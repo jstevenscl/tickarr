@@ -1,17 +1,6 @@
 {
-  "generated_at": "2026-06-26T10:46:03Z",
+  "generated_at": "2026-06-26T14:11:20Z",
   "events": [
-    {
-      "slug": "f1",
-      "title": "F-1 Practice 1",
-      "description": "Formula 1 Racing and Analysis · F-1 Practice 1 · Red Bull Ring",
-      "start_utc": "2026-06-26T11:25:00Z",
-      "end_utc": "2026-06-26T13:25:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "f1",
       "title": "F-1 Practice 2",
