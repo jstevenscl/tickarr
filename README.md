@@ -18,6 +18,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Monitors NOAA/NWS for active weather alerts in your configured zones
 - Automatically activates a full-width broadcast-style alert bar when an alert fires
 - Scrolling crawl with alert details, colored severity label, and optional attention tone
+- When multiple alert types are active, the label shows the most severe event and the crawl lists all of them
 - Profile switches back to normal passthrough the moment the alert clears
 - Attention tone (853+960 Hz EAS dual tone) repeats at a configurable interval
 - Co-arms with Now Playing, Custom Text, and Sports Ticker — EAS takes precedence when an alert fires and the previous ticker resumes when it clears

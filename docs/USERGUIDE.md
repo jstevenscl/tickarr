@@ -217,7 +217,7 @@ This fires a fake alert on your enabled channel(s) for the duration set in **Tes
 
 - **Alert fires:** Tickarr clones the channel's original passthrough profile, injects the EAS bar and tone, and assigns the clone. If another ticker (Now Playing, Custom Text, Sports) was actively running, it is paused — EAS takes precedence. Your original profile is never modified.
 - **Alert clears:** The EAS clone is deleted and the channel is restored automatically. If another ticker was running before the alert, it re-activates on the next viewer connect or sweep cycle. This happens within one poll interval (default 60 seconds).
-- **Multiple alerts:** If more than one alert is active simultaneously, the overlay shows `WEATHER ALERT` as the label and the crawl lists all active events. When all alerts clear, the profile restores.
+- **Multiple alerts:** If more than one alert type is active simultaneously (e.g., a Severe Thunderstorm Warning and a Flood Watch), the label box shows the most severe event. The crawl lists all active alerts in order of severity. When all alerts clear, the profile restores.
 
 ---
 

@@ -204,12 +204,13 @@ def _build_eas_broadcast_filter(channel_id, label_color="0xCC0000"):
         f":textfile={TICKER_DIR}/eas_{channel_id}_area.txt:reload=1"
         f":fontsize=20:fontcolor=white"
         f":x=w-mod(t*75\\,w+text_w+20):y=h-36,"
-        # Alert type label with auto-sized colored box — covers crawl on the left
+        # Alert type label — boxborderw=18 fills the full 52px bar height,
+        # x=18 puts the box left edge flush with the screen (18-18=0)
         f"drawtext=fontfile={_FONT_BOLD}"
         f":textfile={TICKER_DIR}/eas_{channel_id}_type.txt:reload=1"
         f":fontsize=16:fontcolor=white"
-        f":x=10:y=h-34"
-        f":box=1:boxcolor={label_color}:boxborderw=10"
+        f":x=18:y=h-34"
+        f":box=1:boxcolor={label_color}:boxborderw=18"
     )
 
 
@@ -606,22 +607,20 @@ def _eas_write_alert(channel_id, unique_alerts, overlay_style="tickarr"):
         return (a.get("area") or "").replace("; ", "  ·  ").strip()
 
     if overlay_style == "broadcast":
-        # Clean label text (no ⚠ — the colored box carries that urgency)
+        # Label always shows the worst active event; crawl carries all details
+        type_text = unique_alerts[0]["event"].upper()
         if len(unique_alerts) == 1:
-            type_text = unique_alerts[0]["event"].upper()
             area_text = _area(unique_alerts[0])
         else:
-            type_text = "WEATHER ALERT"
             parts = [f"{a['event'].upper()} — {_area(a)}" if _area(a) else a["event"].upper()
                      for a in unique_alerts]
             area_text = "     |     ".join(parts)
     else:
-        # Tickarr custom style
+        # Tickarr custom style — label always shows worst event
+        type_text = f"⚠  {unique_alerts[0]['event'].upper()}  ⚠"
         if len(unique_alerts) == 1:
-            type_text = f"⚠  {unique_alerts[0]['event'].upper()}  ⚠"
             area_text = _area(unique_alerts[0])
         else:
-            type_text = "⚠  ACTIVE WEATHER ALERTS  ⚠"
             parts = [f"{a['event'].upper()} — {_area(a)}" if _area(a) else a["event"].upper()
                      for a in unique_alerts]
             area_text = "     ◆     ".join(parts)
