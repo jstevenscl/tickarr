@@ -3,7 +3,7 @@
   "manifest": {
     "slug": "tickarr",
     "name": "Tickarr",
-    "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
+    "description": "Dynamic text overlays for IPTV channels â€” Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
     "author": "jstevenscl",
     "registry_url": "https://github.com/jstevenscl/tickarr",
     "registry_name": "jstevenscl/tickarr",
