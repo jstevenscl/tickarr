@@ -1,8 +1,8 @@
 {
   "name": "Tickarr",
-  "version": "0.2.01",
+  "version": "0.3.00",
   "logo": "logo.png",
-  "description": "Dynamic text overlays for IPTV channels \u00e2\u20ac\u201d Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
+  "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
   "actions": [
     {
@@ -122,6 +122,17 @@
       }
     },
     {
+      "id": "update_sports",
+      "label": "Update Sports Ticker"
+    },
+    {
+      "id": "test_sports",
+      "label": "Test Sports Ticker",
+      "confirm": {
+        "message": "This will fire a fake sports ticker overlay on the selected channel for the configured duration, then auto-restore. Tune to the channel after running to see your ticker settings in action. Continue?"
+      }
+    },
+    {
       "id": "disable_sports",
       "label": "Disable Sports Ticker",
       "confirm": {
@@ -145,6 +156,13 @@
       "label": "Disable EAS Ticker",
       "confirm": {
         "message": "This will restore the original stream profile and remove the EAS overlay for the selected channel(s). Continue?"
+      }
+    },
+    {
+      "id": "test_eas",
+      "label": "Test EAS Alert",
+      "confirm": {
+        "message": "This will fire a fake EAS alert overlay on the selected EAS-enabled channel(s) for the configured duration, then auto-restore. Use this to verify your EAS overlay looks correct without waiting for a real alert. Continue?"
       }
     },
     {
@@ -196,9 +214,9 @@
       "id": "restart_dispatcharr",
       "label": "Restart Dispatcharr",
       "confirm": {
-        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly \u00e2\u20ac\u201d refresh in about 15 seconds. Continue?"
+        "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly — refresh in about 15 seconds. Continue?"
       }
     }
   ],
-  "checksum": "a4cb1cc2834d7ae1ade29b14b776dff10e480554028326ea4f45bd2bae9be707"
+  "checksum": "ce9782eff36e4a8432e17420353dc9ce42de581b9afe4ee5c005635799812405"
 }

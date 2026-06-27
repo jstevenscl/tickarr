@@ -1,6 +1,6 @@
 # Tickarr
 
-![Version](https://img.shields.io/badge/version-0.2.00-blue)
+![Version](https://img.shields.io/badge/version-0.3.00-blue)
 
 A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects dynamic text overlays into IPTV channels via FFmpeg. Tickarr clones the channel's existing stream profile, injects overlay parameters, and restores the original profile on disable — the source profile is never modified.
 
@@ -35,10 +35,11 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 
 **Sports Ticker**
 - Live scores from the ESPN API across 26 leagues and NASCAR
-- Scrolling ticker at the top or bottom of the screen — live games shown first
+- Scrolling or static ticker at the top or bottom of the screen — live games shown first
 - Smart trigger modes: Always On, Active Games Only, or Favorite Teams Only
 - Active Games Only: ticker fires automatically when a live game is in progress, clears when all games end
 - Favorite Teams Only: ticker fires only when your specified teams are playing
+- Static mode: centered fixed text — ideal when showing one or two teams via Favorite Teams
 
 ---
 
@@ -51,6 +52,8 @@ Every overlay type in Tickarr supports an on-demand mode, which keeps your chann
 You can set the sports ticker to only display when there is actually a live game happening. If you have MLB enabled, every time there is a live MLB game on, the ticker automatically appears on any channel you are actively watching. The moment all the games end, the ticker disappears and your channel goes back to normal.
 
 If you only care about a specific team, you can set a Favorite Teams filter. Put in the Astros and the ticker will only ever appear when the Astros are playing — not during any other game, only Houston. The moment that game ends it goes away until the next time they take the field.
+
+If you are using Favorite Teams and only following one or two teams, you can set the Ticker Style to **Static** — the score sits centered and fixed on screen rather than scrolling. Keep Scrolling if you have multiple leagues or teams enabled, since long content will be cut off in Static mode.
 
 ### Satellite Radio Now Playing
 
@@ -70,7 +73,7 @@ Your channel runs 100% normally at all times. Tickarr sits quietly in the backgr
 
 ## Requirements
 
-- Dispatcharr v0.26.0 or later
+- Dispatcharr v0.27.1 or later
 - Redis (used by Dispatcharr — standard in all installs)
 - FFmpeg in the Dispatcharr container (standard in all installs)
 

@@ -327,13 +327,25 @@ In Tickarr settings, scroll to the **Sports Ticker** section and fill in the fol
 
 7. **Font Size** — Text size in points. Default 36, minimum 16.
 
-8. **Color Mode**:
+8. **Static Ticker** (toggle) — When enabled, ticker text is centered and fixed on screen instead of scrolling. Best when you are using **Favorite Teams** to limit the ticker to one or two teams, so the content is short enough to fit on screen. Leave unchecked (default) for scrolling mode, which works with any amount of content. If you enable Static with many leagues or teams, text that is too long will be cut off on the right — switch back to scrolling if that happens.
+
+9. **Color Mode**:
    - **Single Color — White (default)** — All ticker text is white. Lower CPU, works on any channel.
    - **Multi-Color** — Sport/league labels and team abbreviations render in separate configurable colors. Requires a monospace bold font inside the Dispatcharr container.
 
-9. If using **Multi-Color**, optionally set:
+10. If using **Multi-Color**, optionally set:
    - **Label Color** — Color for the sport/league label (default gold, `#ffd700`).
    - **Abbrev Color** — Color for team abbreviations (default `#00d4ff`).
+
+11. **Transcode Quality (Video Channels)** — Output resolution and framerate while the ticker is active:
+    - **1080p30 (default)** — Full resolution, framerate capped at 30fps. Recommended starting point.
+    - **Full quality** — Source resolution and framerate. Highest CPU.
+    - **720p** — Scaled to 720p at source framerate.
+    - **720p 30fps** — Scaled to 720p, capped at 30fps. Maximum CPU reduction. Best for high-framerate source channels (59.94fps, 60fps).
+
+12. **Exclude Groups (optional)** — Comma-separated group names to skip when using **All Channels** or **Channel Group** Apply To. For example, enter `SiriusXM` to exclude your satellite radio group from sports ticker enrollment.
+
+13. **Test Ticker Duration (seconds)** — How long the Test Sports Ticker action runs before auto-restoring. Default 60, range 10–600.
 
 ---
 
@@ -359,6 +371,16 @@ The ticker displays approximately 600 characters of content per pass. When many 
 
 ---
 
+### Notes on Ticker Style
+
+**Scrolling** is the default and works with any amount of content. The text scrolls continuously from right to left, repeating as it loops. This is what you want any time you have more than a handful of scores to show.
+
+**Static** centers the text at a fixed position on screen. No scrolling. This works well if you are using **Favorite Teams** to limit the ticker to one or two teams — the content is short enough to fit on a single line. If you have multiple leagues enabled or many favorite teams set, the text will likely exceed the screen width and be cut off on the right side. If that happens, switch back to Scrolling.
+
+> **Tip:** Static + Favorite Teams is the best setup for a dedicated watch-party or single-team display. Set your league (e.g. MLB), add one team abbreviation in Favorite Teams (e.g. `HOU`), set Ticker Style to Static, and the score sits cleanly at the center of the screen with no scrolling.
+
+---
+
 ### Disabling
 
 Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and original profiles are restored.
@@ -376,6 +398,7 @@ Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and o
 | Channel Group | The group to enable (visible when Apply To is Channel Group) |
 | Group Names | Comma-separated group names (visible when Apply To is Multiple Groups) |
 | Channel | The individual channel to enable (visible when Apply To is Single Channel) |
+| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
 
 ### Custom Text Settings
 
@@ -390,6 +413,7 @@ Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and o
 | Schedule | Always On or Timed |
 | Display Duration | Seconds the text stays visible per cycle (Timed only) |
 | Repeat Interval | Minutes between appearances (Timed only) |
+| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
 
 ### Sports Ticker Settings
 
@@ -402,9 +426,13 @@ Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and o
 | Favorite Teams | Comma-separated team abbreviations. Required for Favorite Teams Only mode. |
 | Ticker Position | Top or Bottom |
 | Font Size | Text size in points (default 36, minimum 16) |
+| Static Ticker | Toggle — when enabled, text is centered and fixed. Default (off) = scrolling. See [Ticker Style](#notes-on-ticker-style). |
 | Color Mode | Single Color — White or Multi-Color |
 | Label Color | Sport/league label color (Multi-Color only, default `#ffd700`) |
 | Abbrev Color | Team abbreviation color (Multi-Color only, default `#00d4ff`) |
+| Transcode Quality (Video Channels) | Output quality during ticker: `1080p30` (default), `full`, `720p`, or `720p30`. Lower = less CPU. Use `720p30` for high-framerate source channels. |
+| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
+| Test Ticker Duration | Seconds the Test Sports Ticker action runs before auto-restoring. Default 60, range 10–600. |
 
 ### EAS Settings
 
@@ -419,6 +447,7 @@ Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and o
 | EAS Transcode Quality | Output resolution during alerts: `full`, `1080p30`, `720p`, or `720p30`. Lower = less CPU. |
 | Test Alert Duration (seconds) | How long the Test EAS Alert action runs before auto-restoring. Default 60, range 10–600. |
 | Apply To | Scope of channels to enable EAS on |
+| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
 
 ### Satellite Radio Channel Setup Settings
 
@@ -462,6 +491,8 @@ Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and o
 | Action | Description |
 |---|---|
 | Enable Sports Ticker | Registers channels. In Always On mode, clones immediately. In smart modes, clones when a live qualifying game is detected and restores when all games end. |
+| Update Sports Ticker | Updates the league selection, trigger mode, display settings, or ticker style on already-enabled channels without restarting the stream. Ticker content reflects the new settings within ~30 seconds. |
+| Test Sports Ticker | Fires fake score data on the selected channel for the configured Test Ticker Duration, then auto-restores. Use this to verify your display settings (position, font size, color mode, ticker style) without waiting for a live game. |
 | Disable Sports Ticker | Restores original profiles and removes all clones for Sports Ticker channels. |
 
 ### EAS/JAS Weather Alerts

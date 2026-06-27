@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-12T08:00:00Z",
+  "generated_at": "2026-06-27T08:00:00Z",
   "manifest": {
     "registry_url": "https://github.com/jstevenscl/tickarr",
     "registry_name": "jstevenscl/tickarr",
@@ -8,15 +8,15 @@
       {
         "slug": "tickarr",
         "name": "Tickarr",
-        "description": "Dynamic text overlays for IPTV channels â€” SiriusXM Now Playing, Sports Ticker, Custom Text",
+        "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
         "manifest_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/manifest.json",
         "author": "jstevenscl",
-        "last_updated": "2026-06-12T08:00:00Z",
-        "latest_version": "0.1.02",
-        "latest_md5": "ad47b7240f0dc44ca50e2da1254d6ce6",
-        "latest_sha256": "258788c07161f85ca7be08aa887d9580b732345443f885146ce60b12405d88fc",
+        "last_updated": "2026-06-27T08:00:00Z",
+        "latest_version": "0.3.00",
+        "latest_md5": "9293540f4d0f065f4ea540a15929af9d",
+        "latest_sha256": "fc7d6fd18c46d25841bb52467bd796debc11907212576b9db5369c9f83c668c5",
         "latest_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-latest.zip",
-        "latest_size": 23298
+        "latest_size": 46579
       }
     ]
   }

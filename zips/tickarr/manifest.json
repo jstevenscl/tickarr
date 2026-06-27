@@ -1,24 +1,33 @@
 {
-  "generated_at": "2026-06-12T08:00:00Z",
+  "generated_at": "2026-06-27T08:00:00Z",
   "manifest": {
     "slug": "tickarr",
     "name": "Tickarr",
-    "description": "Dynamic text overlays for IPTV channels â€” SiriusXM Now Playing, Sports Ticker, Custom Text",
+    "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
     "author": "jstevenscl",
     "registry_url": "https://github.com/jstevenscl/tickarr",
     "registry_name": "jstevenscl/tickarr",
-    "last_updated": "2026-06-12T08:00:00Z",
+    "last_updated": "2026-06-27T08:00:00Z",
     "latest": {
-      "version": "0.1.02",
-      "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.02.zip",
-      "checksum_md5": "ad47b7240f0dc44ca50e2da1254d6ce6",
-      "checksum_sha256": "258788c07161f85ca7be08aa887d9580b732345443f885146ce60b12405d88fc",
-      "size": 23298,
-      "last_updated": "2026-06-12T08:00:00Z",
-      "build_timestamp": "2026-06-12T08:00:00Z",
+      "version": "0.3.00",
+      "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.3.00.zip",
+      "checksum_md5": "9293540f4d0f065f4ea540a15929af9d",
+      "checksum_sha256": "fc7d6fd18c46d25841bb52467bd796debc11907212576b9db5369c9f83c668c5",
+      "size": 46579,
+      "last_updated": "2026-06-27T08:00:00Z",
+      "build_timestamp": "2026-06-27T08:00:00Z",
       "latest_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-latest.zip"
     },
     "versions": [
+      {
+        "version": "0.3.00",
+        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.3.00.zip",
+        "checksum_md5": "9293540f4d0f065f4ea540a15929af9d",
+        "checksum_sha256": "fc7d6fd18c46d25841bb52467bd796debc11907212576b9db5369c9f83c668c5",
+        "size": 46579,
+        "last_updated": "2026-06-27T08:00:00Z",
+        "build_timestamp": "2026-06-27T08:00:00Z"
+      },
       {
         "version": "0.1.02",
         "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.02.zip",

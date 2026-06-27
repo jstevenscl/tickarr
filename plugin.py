@@ -32,24 +32,24 @@ DRAWTEXT_FILTER_TEMPLATE = (
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_header.txt:reload=1"
-    ":fontsize=24:fontcolor=white"
-    ":x=(w-text_w)/2:y=(h/2-66)"
-    ":box=1:boxcolor=black@0.85:boxborderw=4,"
+    ":fontsize=36:fontcolor=white"
+    ":x=(w-text_w)/2:y=(h/2-100)"
+    ":box=1:boxcolor=black@0.85:boxborderw=5,"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_artist.txt:reload=1"
-    ":fontsize=37:fontcolor=#00d4ff"
-    ":x=(w-text_w)/2:y=(h/2-13),"
+    ":fontsize=56:fontcolor=#00d4ff"
+    ":x=(w-text_w)/2:y=(h/2-20),"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_song.txt:reload=1"
-    ":fontsize=32:fontcolor=white"
-    ":x=(w-text_w)/2:y=(h/2+40),"
+    ":fontsize=48:fontcolor=white"
+    ":x=(w-text_w)/2:y=(h/2+60),"
     "drawtext="
     "fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
     ":textfile={ticker_dir}/channel_{channel_id}_channel.txt:reload=1"
-    ":fontsize=21:fontcolor=#888888"
-    ":x=(w-text_w)/2:y=(h/2+86)"
+    ":fontsize=32:fontcolor=#888888"
+    ":x=(w-text_w)/2:y=(h/2+130)"
 )
 
 # ---------------------------------------------------------------------------
@@ -225,9 +225,16 @@ def _inject_drawtext(params, drawtext_filter):
         # Remove -vn and existing -map directives (replaced below)
         params = re.sub(r"\s*-vn\b", "", params)
         params = re.sub(r"\s*-map\s+\S+", "", params)
-        # Add lavfi black background as second input after the stream URL input
-        lavfi = '-f lavfi -i "color=c=black:s=854x480:r=15"'
-        params = re.sub(r"(-i\s+\S+)", rf"\1 {lavfi}", params, count=1)
+        # Add lavfi black background as second input.
+        # If -i is present in params (self-contained profiles), insert after it.
+        # Otherwise Dispatcharr supplies input 0 externally — prepend lavfi so it
+        # becomes input 1 after Dispatcharr's stream URL.
+        lavfi = '-f lavfi -i "color=c=black:s=1280x720:r=15"'
+        new_params = re.sub(r"(-i\s+\S+)", rf"\1 {lavfi}", params, count=1)
+        if new_params == params:
+            params = f"{lavfi} {params}"
+        else:
+            params = new_params
         _fc_graph = f'[1:v]{drawtext_filter}[vout]'
         fc = (
             f'-filter_complex "{_fc_graph}"'
@@ -251,6 +258,9 @@ def _inject_drawtext(params, drawtext_filter):
         params = params.replace("-vcodec copy", _VID_ENCODE)
     # "-c copy" copies ALL streams
     params = re.sub(r'(?<![:\w])-c\s+copy\b', _VID_ENCODE, params)
+
+    # Deduplicate -c:a copy that arises when base profile already has it and _VID_ENCODE adds another.
+    params = re.sub(r'(\s+-c:a\s+copy){2,}', ' -c:a copy', params)
 
     # Strip -force_key_frames. In stream-copy profiles this is ignored, but once libx264
     # is active the expression expr:gte(t,n_forced*0) evaluates true on every single frame,
@@ -652,18 +662,25 @@ def _restart_channel_stream(channel_uuid, label=""):
         from apps.proxy.live_proxy.services.channel_service import ChannelService
         from apps.proxy.live_proxy.redis_keys import RedisKeys
         from apps.channels.models import RedisClient
+        rc = RedisClient.get_client()
+        meta_key = RedisKeys.channel_metadata(channel_uuid)
+        deadline = _time.time() + 8.0
+        while _time.time() < deadline:
+            raw = rc.hget(meta_key, "state")
+            state_val = (raw.decode() if isinstance(raw, bytes) else raw) if raw else ""
+            if state_val == "active":
+                break
+            _time.sleep(0.25)
         result = ChannelService.stop_channel(channel_uuid)
         if result.get("status") != "success":
             return
-        logger.info(f"tickarr:{tag} channel {channel_uuid} stop sent — clearing reconnect gate in 2s")
-        _time.sleep(2.0)
-        rc = RedisClient.get_client()
         rc.delete(RedisKeys.channel_stopping(channel_uuid))
         meta_key = RedisKeys.channel_metadata(channel_uuid)
-        state = rc.hget(meta_key, "state")
-        if state and (state.decode() if isinstance(state, bytes) else state) == "stopping":
+        state_raw = rc.hget(meta_key, "state")
+        state_val = (state_raw.decode() if isinstance(state_raw, bytes) else state_raw) if state_raw else ""
+        if state_val == "stopping":
             rc.hdel(meta_key, "state")
-        logger.info(f"tickarr:{tag} reconnect gate cleared for {channel_uuid}")
+        logger.info(f"tickarr:{tag} channel {channel_uuid} reconnect gate cleared")
     except ImportError:
         logger.warning(f"tickarr:{tag} live_proxy unavailable — profile will apply on next client connect")
     except Exception as e:
@@ -1118,43 +1135,99 @@ def _get_settings():
 # ---------------------------------------------------------------------------
 
 ESPN_PATHS = {
+    # Football
     'nfl':        'sports/football/nfl',
     'ncaafb':     'sports/football/college-football',
     'cfl':        'sports/football/cfl',
+    'ufl':        'sports/football/ufl',
+    'xfl':        'sports/football/xfl',
+    # Basketball
     'nba':        'sports/basketball/nba',
     'wnba':       'sports/basketball/wnba',
     'ncaamb':     'sports/basketball/mens-college-basketball',
+    'ncaawb':     'sports/basketball/womens-college-basketball',
+    'nbagl':      'sports/basketball/nba-development',
+    # Baseball / Softball
     'mlb':        'sports/baseball/mlb',
     'ncaabase':   'sports/baseball/college-baseball',
-    'ncaasb':     'sports/baseball/college-softball',
+    'ncaasb':     'sports/softball/college-softball',
+    # Hockey
     'nhl':        'sports/hockey/nhl',
+    'ncaahm':     'sports/hockey/mens-college-hockey',
+    'ncaahw':     'sports/hockey/womens-college-hockey',
+    # Soccer — North America
     'mls':        'sports/soccer/usa.1',
     'nwsl':       'sports/soccer/usa.nwsl',
+    'ligamx':     'sports/soccer/mex.1',
+    # Soccer — Europe Big 5
     'epl':        'sports/soccer/eng.1',
-    'ucl':        'sports/soccer/uefa.champions',
-    'uel':        'sports/soccer/uefa.europa',
     'laliga':     'sports/soccer/esp.1',
     'bundesliga': 'sports/soccer/ger.1',
     'seriea':     'sports/soccer/ita.1',
     'ligue1':     'sports/soccer/fra.1',
+    # Soccer — Europe Other
+    'eredivisie': 'sports/soccer/ned.1',
+    'primlg':     'sports/soccer/por.1',
+    'sco1':       'sports/soccer/sco.1',
+    # Soccer — UEFA
+    'ucl':        'sports/soccer/uefa.champions',
+    'uel':        'sports/soccer/uefa.europa',
+    'uecl':       'sports/soccer/uefa.europa.conf',
+    # Soccer — International
     'fifawc':     'sports/soccer/fifa.world',
     'fifawwc':    'sports/soccer/fifa.wwc',
+    'copa':       'sports/soccer/conmebol.america',
+    'concacaf':   'sports/soccer/concacaf.champions',
+    'lgscup':     'sports/soccer/concacaf.leagues.cup',
+    # Golf
+    'pga':        'sports/golf/pga',
+    'lpga':       'sports/golf/lpga',
+    'dpwt':       'sports/golf/euro',
+    'liv':        'sports/golf/liv',
+    'pgachamp':   'sports/golf/champions-tour',
+    # Motorsports
+    'f1':         'sports/racing/f1',
+    'indycar':    'sports/racing/irl',
+    # Combat
+    'ufc':        'sports/mma/ufc',
+    # Tennis
     'atp':        'sports/tennis/atp',
     'wta':        'sports/tennis/wta',
+    # College other
     'ncaavb':     'sports/volleyball/womens-college-volleyball',
-    'ncaalax':    'sports/lacrosse/womens-college-lacrosse',
+    'ncaalaxm':   'sports/lacrosse/mens-college-lacrosse',
+    'ncaalaxw':   'sports/lacrosse/womens-college-lacrosse',
+    'pll':        'sports/lacrosse/pll',
 }
 LABELS = {
-    'nfl': 'NFL', 'ncaafb': 'NCAAF', 'cfl': 'CFL',
-    'nba': 'NBA', 'wnba': 'WNBA', 'ncaamb': 'NCAAB',
+    # Football
+    'nfl': 'NFL', 'ncaafb': 'NCAAF', 'cfl': 'CFL', 'ufl': 'UFL', 'xfl': 'XFL',
+    # Basketball
+    'nba': 'NBA', 'wnba': 'WNBA', 'ncaamb': 'NCAAB', 'ncaawb': 'NCAA WBB', 'nbagl': 'G League',
+    # Baseball / Softball
     'mlb': 'MLB', 'ncaabase': 'NCAA Baseball', 'ncaasb': 'NCAA Softball',
-    'nhl': 'NHL',
-    'mls': 'MLS', 'nwsl': 'NWSL', 'epl': 'EPL', 'ucl': 'UCL', 'uel': 'UEL',
-    'laliga': 'La Liga', 'bundesliga': 'Bundesliga',
+    # Hockey
+    'nhl': 'NHL', 'ncaahm': 'NCAA Hockey', 'ncaahw': 'NCAA WHky',
+    # Soccer
+    'mls': 'MLS', 'nwsl': 'NWSL', 'ligamx': 'Liga MX',
+    'epl': 'EPL', 'laliga': 'La Liga', 'bundesliga': 'Bundesliga',
     'seriea': 'Serie A', 'ligue1': 'Ligue 1',
+    'eredivisie': 'Eredivisie', 'primlg': 'Primeira Liga', 'sco1': 'Scottish Prem',
+    'ucl': 'UCL', 'uel': 'UEL', 'uecl': 'UECL',
     'fifawc': 'FIFA WC', 'fifawwc': 'FIFA WWC',
+    'copa': 'Copa America', 'concacaf': 'CONCACAF CC', 'lgscup': 'Leagues Cup',
+    # Golf
+    'pga': 'PGA Tour', 'lpga': 'LPGA', 'dpwt': 'DP World Tour',
+    'liv': 'LIV Golf', 'pgachamp': 'PGA Champ',
+    # Motorsports
+    'f1': 'Formula 1', 'indycar': 'IndyCar',
+    # Combat
+    'ufc': 'UFC',
+    # Tennis
     'atp': 'ATP', 'wta': 'WTA',
-    'ncaavb': 'NCAA VB', 'ncaalax': 'NCAA Lax',
+    # College other
+    'ncaavb': 'NCAA VB', 'ncaalaxm': 'NCAA Lax M', 'ncaalaxw': 'NCAA Lax W', 'pll': 'PLL',
+    # NASCAR (separate handler)
     'nascar': 'NASCAR',
 }
 KNOWN_SPORTS = list(ESPN_PATHS.keys()) + ['nascar']
@@ -1174,13 +1247,23 @@ _TICKER_FIXED_LEN = 600  # all ticker strings are always exactly this many chars
 # (live games come first so the most important scores are always visible).
 
 
+_SPORTS_TRANSCODE_PREFIXES = {
+    "full":    "",
+    "1080p30": "fps=fps=30,",
+    "720p":    "fps=fps=30,scale=-2:720:flags=fast_bilinear,",
+    "720p30":  "fps=fps=30,scale=-2:720:flags=fast_bilinear,",
+}
+
+
 def _build_sports_filter(channel_id, position="bottom", fontsize=36,
                          labelcolor="#ffd700", abbrcolor="#00d4ff",
-                         color_mode="single"):
+                         color_mode="single", transcode_mode="1080p30",
+                         ticker_style="scrolling"):
     y_map = {"top": "30", "center": "(h-text_h)/2", "bottom": "h-text_h-30"}
     y_expr = y_map.get(position, "h-text_h-30")
     fs = int(fontsize)
-    x_expr = "w-mod(t*100\\,w+text_w)"
+    x_expr = "(w-text_w)/2" if ticker_style == "static" else "w-mod(t*100\\,w+text_w)"
+    prefix = _SPORTS_TRANSCODE_PREFIXES.get(transcode_mode, "fps=fps=30,")
     use_multi = (color_mode == "multi") and bool(_FONT_MONO_BOLD)
     if use_multi:
         tmpl_scores  = _SPORTS_SCORES_LAYER.replace("w-mod(t*100\\\\,w+text_w)", x_expr).replace("w-mod(t*100\\,w+text_w)", x_expr)
@@ -1191,11 +1274,11 @@ def _build_sports_filter(channel_id, position="bottom", fontsize=36,
         scores_layer  = tmpl_scores.format(**kwargs)
         abbrevs_layer = tmpl_abbrevs.format(**kwargs, abbrcolor=abbrcolor)
         labels_layer  = tmpl_labels.format(**kwargs, labelcolor=labelcolor)
-        return f"{scores_layer},{abbrevs_layer},{labels_layer}"
+        return f"{prefix}{scores_layer},{abbrevs_layer},{labels_layer}"
     else:
         font = _FONT_MONO_BOLD or _FONT_BOLD
         tmpl = _SPORTS_SINGLE_LAYER.replace("w-mod(t*100\\\\,w+text_w)", x_expr).replace("w-mod(t*100\\,w+text_w)", x_expr)
-        return tmpl.format(
+        return prefix + tmpl.format(
             font=font, ticker_dir=TICKER_DIR,
             fontsize=fs, channel_id=channel_id, y_expr=y_expr,
         )
@@ -1404,7 +1487,7 @@ TICKARR_SXM_EPG_URL    = "https://jstevenscl.github.io/tickarr/lib/satellite_rad
 TICKARR_SXM_SOURCE     = "Tickarr: Satellite Radio"
 STATION_CACHE_TTL      = 24 * 3600
 STATION_CACHE_FILE     = os.path.join(_DATA_DIR, "station_cache.json")
-NOWPLAYING_CACHE_TTL   = 30   # seconds — matches stellartunerlog.com update interval
+NOWPLAYING_CACHE_TTL   = 15   # seconds — 15s cuts worst-case song display lag vs 30s source update cycle
 
 XMPLAYLIST_STATION_URL  = "https://xmplaylist.com/api/station/{deeplink}"
 XMPLAYLIST_MIN_INTERVAL = 1.5  # seconds between per-channel requests
@@ -1807,11 +1890,11 @@ def _poll_channels(ch_list):
 
 
 def _fast_loop(stop_event):
-    """Every 2s: scan Redis for newly active streams and poll them immediately.
+    """Every 1s: scan Redis for newly active streams and poll them immediately.
     For on-demand nowplaying channels, clones the overlay profile on first viewer connect.
     On first tick, just records current state without polling (avoids startup burst)."""
     known_active = None  # None = uninitialized; skip polling on first observation
-    while not stop_event.wait(timeout=2):
+    while not stop_event.wait(timeout=1):
         try:
             rc = _get_redis_client()
             if rc is not None and not _redis_lock_acquire_or_refresh(rc, FAST_LOCK_KEY, _FAST_LOCK_TTL):
@@ -1826,7 +1909,9 @@ def _fast_loop(stop_event):
             if current_active is None:
                 known_active = None
                 continue  # Redis unavailable — sweep loop handles everything
-            current_active &= set(ch_ids.keys())
+            sports_cids = {int(k) for k, v in mappings.items()
+                           if v and v.get("type") == "sports"}
+            current_active &= (set(ch_ids.keys()) | sports_cids)
             if known_active is None:
                 known_active = current_active  # baseline — don't poll on first tick
                 continue
@@ -1840,8 +1925,6 @@ def _fast_loop(stop_event):
                     if not mapping:
                         continue
                     if mapping.get("type") != "nowplaying":
-                        continue
-                    if mapping.get("np_trigger_mode", "on_demand") != "on_demand":
                         continue
                     if mapping.get("ticker_profile_id"):
                         continue  # already has an overlay profile
@@ -1861,8 +1944,61 @@ def _fast_loop(stop_event):
                             mappings[str(cid)] = mapping
                             mappings_changed = True
                             logger.info(f"tickarr: on-demand overlay activated ch{cid} ({channel.name})")
+                            _restart_channel_stream_async(channel, "NP")
                     except Exception as e:
                         logger.warning(f"tickarr: on-demand clone failed ch{cid}: {e}")
+
+                # On-demand sports: clone overlay profile for newly active channels
+                for cid in list(newly_active):
+                    mapping = mappings.get(str(cid))
+                    if not mapping:
+                        continue
+                    if mapping.get("type") != "sports":
+                        continue
+                    if mapping.get("ticker_profile_id"):
+                        continue  # already has overlay
+                    if mapping.get("eas_profile_id"):
+                        continue  # EAS active
+                    trigger_mode = mapping.get("sports_trigger_mode", "always")
+                    if trigger_mode in ("live_only", "favorites_only") and not mapping.get("sports_live"):
+                        continue  # content gate not open
+                    try:
+                        from apps.channels.models import Channel as _Ch
+                        from core.models import StreamProfile as _SP
+                        channel = _Ch.objects.filter(id=cid).first()
+                        orig    = _SP.objects.filter(id=mapping["original_profile_id"]).first()
+                        if channel and orig:
+                            position        = mapping.get("sports_position", "bottom")
+                            fontsize        = int(mapping.get("sports_fontsize") or 36)
+                            color_mode      = mapping.get("sports_color_mode", "single")
+                            labelcolor      = mapping.get("sports_labelcolor", "#ffd700")
+                            abbrcolor       = mapping.get("sports_abbrcolor",  "#00d4ff")
+                            transcode_mode  = mapping.get("sports_transcode_mode_video", "1080p30")
+                            ticker_style    = mapping.get("sports_ticker_style", "scrolling")
+                            raw_params, _ = _strip_dangerous_flags(channel.name, orig.parameters or "")
+                            drawtext   = _build_sports_filter(cid, position, fontsize,
+                                                              labelcolor, abbrcolor, color_mode,
+                                                              transcode_mode, ticker_style)
+                            new_params = _inject_drawtext(raw_params, drawtext)
+                            cloned = _SP(
+                                name=f"{PROFILE_PREFIX}{orig.name} [ch{cid}]",
+                                command=orig.command,
+                                parameters=new_params,
+                                locked=False,
+                                is_active=True,
+                            )
+                            cloned.save()
+                            _assign_profile(channel, cloned)
+                            mapping["ticker_profile_id"] = cloned.id
+                            mapping["sports_active"]     = True
+                            mapping.pop("no_viewer_since", None)
+                            mappings[str(cid)] = mapping
+                            mappings_changed   = True
+                            logger.info(f"tickarr: sports on-demand overlay activated ch{cid} ({channel.name})")
+                            _restart_channel_stream_async(channel, "Sports")
+                    except Exception as e:
+                        logger.warning(f"tickarr: sports on-demand clone failed ch{cid}: {e}")
+
                 if mappings_changed:
                     _save_mappings(mappings)
                     # Rebuild ch_list now that mappings changed
@@ -1944,6 +2080,7 @@ def _sweep_loop(stop_event):
                                         channel = _Ch.objects.filter(id=cid_int).first()
                                         if channel:
                                             _restore_profile(channel, mapping["original_profile_id"])
+                                            _restart_channel_stream_async(channel, "NP")
                                         _delete_cloned_profile(ticker_pid)
                                         _remove_channel_files(cid_int)
                                         mapping["ticker_profile_id"] = None
@@ -2011,65 +2148,41 @@ def _sports_sweep_loop(stop_event):
                         else:
                             fav_arg  = favorites if trigger_mode == "favorites_only" else ""
                             has_live = _has_live_games(sports_list, fav_arg)
-                            was_active = mapping.get("sports_active", False)
+                            was_live = mapping.get("sports_live", False)
 
-                            if has_live and not was_active and not mapping.get("eas_profile_id"):
-                                channel = _Channel.objects.filter(id=int(cid)).first()
-                                orig = _StreamProfile.objects.filter(id=mapping["original_profile_id"]).first()
-                                if channel and orig:
-                                    position   = mapping.get("sports_position", "bottom")
-                                    fontsize   = int(mapping.get("sports_fontsize") or 36)
-                                    color_mode = mapping.get("sports_color_mode", "single")
-                                    labelcolor = mapping.get("sports_labelcolor", "#ffd700")
-                                    abbrcolor  = mapping.get("sports_abbrcolor",  "#00d4ff")
-                                    raw_params, _ = _strip_dangerous_flags(channel.name, orig.parameters or "")
-                                    drawtext   = _build_sports_filter(int(cid), position, fontsize,
-                                                                      labelcolor, abbrcolor, color_mode)
-                                    new_params = _inject_drawtext(raw_params, drawtext)
-                                    cloned = _StreamProfile(
-                                        name=f"{PROFILE_PREFIX}{orig.name} [ch{cid}]",
-                                        command=orig.command,
-                                        parameters=new_params,
-                                        locked=False,
-                                        is_active=True,
-                                    )
-                                    cloned.save()
-                                    _assign_profile(channel, cloned)
-                                    mapping["ticker_profile_id"] = cloned.id
-                                    mapping["sports_active"]     = True
-                                    mapping.pop("no_viewer_since", None)
-                                    mappings[cid]    = mapping
-                                    mappings_changed = True
-                                    labels, abbrevs, scores, full = _fetch_sports_text(sports_list, favorites)
-                                    if not scores:
-                                        placeholder = "  No games scheduled  "
-                                        pad = " " * len(placeholder)
-                                        scores, labels, abbrevs, full = placeholder, pad, pad, placeholder
-                                    _write_sports_text(int(cid), labels, abbrevs, scores, full)
-                                    logger.info(f"tickarr: sports smart-fire activated ch{cid} (mode={trigger_mode})")
+                            if has_live:
+                                # Write text files whenever games are live so data is
+                                # ready the moment a viewer connects (fast_loop activates overlay)
+                                labels, abbrevs, scores, full = _fetch_sports_text(sports_list, favorites)
+                                if not scores:
+                                    placeholder = "  No games scheduled  "
+                                    pad         = " " * len(placeholder)
+                                    scores, labels, abbrevs, full = placeholder, pad, pad, placeholder
+                                _write_sports_text(int(cid), labels, abbrevs, scores, full)
+                                if not was_live:
+                                    mapping["sports_live"] = True
+                                    mappings[cid]          = mapping
+                                    mappings_changed       = True
+                                    logger.info(f"tickarr: sports live gate open ch{cid} (mode={trigger_mode})")
 
-                            elif not has_live and was_active:
+                            elif was_live:
+                                # Games ended — close gate and restore profile if a viewer
+                                # had triggered the overlay
                                 ticker_pid = mapping.get("ticker_profile_id")
                                 channel = _Channel.objects.filter(id=int(cid)).first()
-                                if channel:
+                                if channel and ticker_pid:
                                     _restore_profile(channel, mapping["original_profile_id"])
+                                    _restart_channel_stream_async(channel, "Sports")
                                 if ticker_pid:
                                     _delete_cloned_profile(ticker_pid)
                                 mapping["ticker_profile_id"] = None
                                 mapping["sports_active"]     = False
+                                mapping["sports_live"]       = False
                                 mapping.pop("no_viewer_since", None)
                                 mappings[cid]    = mapping
                                 mappings_changed = True
                                 _remove_channel_files(int(cid))
-                                logger.info(f"tickarr: sports smart-fire cleared ch{cid} (no live games)")
-
-                            elif has_live and was_active:
-                                labels, abbrevs, scores, full = _fetch_sports_text(sports_list, favorites)
-                                if not scores:
-                                    placeholder = "  No games scheduled  "
-                                    pad = " " * len(placeholder)
-                                    scores, labels, abbrevs, full = placeholder, pad, pad, placeholder
-                                _write_sports_text(int(cid), labels, abbrevs, scores, full)
+                                logger.info(f"tickarr: sports live gate closed ch{cid} (no live games)")
 
                     except Exception as e:
                         logger.warning(f"tickarr: sports write failed for channel {cid}: {e}")
@@ -2082,8 +2195,6 @@ def _sports_sweep_loop(stop_event):
                     from apps.channels.models import Channel as _Channel
                     for cid, mapping in list(mappings.items()):
                         if mapping.get("type") != "sports":
-                            continue
-                        if mapping.get("sports_trigger_mode", "always") == "always":
                             continue
                         ticker_pid = mapping.get("ticker_profile_id")
                         if not ticker_pid:
@@ -2231,11 +2342,6 @@ class Plugin:
         return [
             # ── Now Playing ───────────────────────────────────────────────
             {"id": "_np_section",       "type": "info",   "label": "==========  NOW PLAYING  =========="},
-            {"id": "np_trigger_mode",   "type": "select", "label": "Trigger Mode",
-             "options": [
-                 {"value": "on_demand", "label": "On-Demand (default) — overlay activates only when a viewer connects, restores to passthrough when idle. Recommended: saves CPU and reduces memory pressure."},
-                 {"value": "always",    "label": "Always On — overlay encodes 24/7 regardless of viewers (legacy behavior)"},
-             ]},
             {"id": "np_target_type",    "type": "select", "label": "Apply To",
              "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
             {"id": "_np_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Tickarr ticker types already active on specific channels or groups (e.g. EAS on news channels, Sports Ticker on a TV group), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
@@ -2332,41 +2438,78 @@ class Plugin:
             # ── Sports Ticker ─────────────────────────────────────────────
             {"id": "_sports_section",       "type": "info",    "label": "==========  SPORTS TICKER  =========="},
             {"id": "_sports_transcode_note", "type": "info",
-             "label": "⚠ TRANSCODING NOTE (ticker active only): Sports score overlays require FFmpeg to decode and re-encode video while the ticker is running. Channels on stream-copy profiles will transcode only while the sports ticker is active — they return to their original profile when the ticker is disabled. If you experience buffering or stuttering, your system may not have sufficient CPU headroom for transcoding at your source resolution and framerate."},
+             "label": "⚠ TRANSCODING NOTE (ticker active only): Sports score overlays require FFmpeg to decode and re-encode video while the ticker is running. Channels on stream-copy profiles will transcode only while the sports ticker is active — they return to their original profile when the ticker is disabled. High-framerate sources (59.94fps) use approximately twice the CPU of standard sources (29.97fps) — lower the Transcode Quality if you experience buffering."},
+            {"id": "sports_transcode_mode_video", "type": "select", "label": "Transcode Quality (Video Channels)",
+             "options": [
+                 {"value": "1080p30", "label": "1080p 30fps — full resolution, framerate capped at 30fps (default; recommended for most setups)"},
+                 {"value": "full",    "label": "Full quality — source resolution and framerate (best quality; requires capable CPU)"},
+                 {"value": "720p",    "label": "720p — scaled to 720p at source framerate (significant CPU reduction)"},
+                 {"value": "720p30",  "label": "720p 30fps — scaled to 720p, capped at 30fps (maximum CPU reduction)"},
+             ]},
             {"id": "_sports_football",      "type": "info",    "label": "-- Football --"},
             {"id": "sports_nfl",            "type": "boolean", "label": "NFL"},
             {"id": "sports_ncaafb",         "type": "boolean", "label": "College Football (NCAAF)"},
             {"id": "sports_cfl",            "type": "boolean", "label": "CFL"},
+            {"id": "sports_ufl",            "type": "boolean", "label": "UFL"},
+            {"id": "sports_xfl",            "type": "boolean", "label": "XFL"},
             {"id": "_sports_basketball",    "type": "info",    "label": "-- Basketball --"},
             {"id": "sports_nba",            "type": "boolean", "label": "NBA"},
             {"id": "sports_wnba",           "type": "boolean", "label": "WNBA"},
-            {"id": "sports_ncaamb",         "type": "boolean", "label": "College Basketball (NCAAB)"},
+            {"id": "sports_ncaamb",         "type": "boolean", "label": "NCAA Men's Basketball"},
+            {"id": "sports_ncaawb",         "type": "boolean", "label": "NCAA Women's Basketball"},
+            {"id": "sports_nbagl",          "type": "boolean", "label": "NBA G League"},
             {"id": "_sports_baseball",      "type": "info",    "label": "-- Baseball / Softball --"},
             {"id": "sports_mlb",            "type": "boolean", "label": "MLB"},
             {"id": "sports_ncaabase",       "type": "boolean", "label": "NCAA Baseball"},
             {"id": "sports_ncaasb",         "type": "boolean", "label": "NCAA Softball"},
             {"id": "_sports_hockey",        "type": "info",    "label": "-- Hockey --"},
             {"id": "sports_nhl",            "type": "boolean", "label": "NHL"},
-            {"id": "_sports_soccer",        "type": "info",    "label": "-- Soccer --"},
+            {"id": "sports_ncaahm",         "type": "boolean", "label": "NCAA Men's Hockey"},
+            {"id": "sports_ncaahw",         "type": "boolean", "label": "NCAA Women's Hockey"},
+            {"id": "_sports_soccer_na",     "type": "info",    "label": "-- Soccer — North America --"},
             {"id": "sports_mls",            "type": "boolean", "label": "MLS"},
             {"id": "sports_nwsl",           "type": "boolean", "label": "NWSL"},
+            {"id": "sports_ligamx",         "type": "boolean", "label": "Liga MX"},
+            {"id": "_sports_soccer_eu",     "type": "info",    "label": "-- Soccer — Europe (Big 5) --"},
             {"id": "sports_epl",            "type": "boolean", "label": "EPL (English Premier League)"},
-            {"id": "sports_ucl",            "type": "boolean", "label": "UEFA Champions League"},
-            {"id": "sports_uel",            "type": "boolean", "label": "UEFA Europa League"},
             {"id": "sports_laliga",         "type": "boolean", "label": "La Liga"},
             {"id": "sports_bundesliga",     "type": "boolean", "label": "Bundesliga"},
             {"id": "sports_seriea",         "type": "boolean", "label": "Serie A"},
             {"id": "sports_ligue1",         "type": "boolean", "label": "Ligue 1"},
+            {"id": "_sports_soccer_eu2",    "type": "info",    "label": "-- Soccer — Europe (Other) --"},
+            {"id": "sports_eredivisie",     "type": "boolean", "label": "Eredivisie (Netherlands)"},
+            {"id": "sports_primlg",         "type": "boolean", "label": "Primeira Liga (Portugal)"},
+            {"id": "sports_sco1",           "type": "boolean", "label": "Scottish Premiership"},
+            {"id": "_sports_soccer_uefa",   "type": "info",    "label": "-- Soccer — UEFA --"},
+            {"id": "sports_ucl",            "type": "boolean", "label": "UEFA Champions League"},
+            {"id": "sports_uel",            "type": "boolean", "label": "UEFA Europa League"},
+            {"id": "sports_uecl",           "type": "boolean", "label": "UEFA Conference League"},
+            {"id": "_sports_soccer_intl",   "type": "info",    "label": "-- Soccer — International --"},
             {"id": "sports_fifawc",         "type": "boolean", "label": "FIFA World Cup"},
             {"id": "sports_fifawwc",        "type": "boolean", "label": "FIFA Women's World Cup"},
+            {"id": "sports_copa",           "type": "boolean", "label": "Copa America"},
+            {"id": "sports_concacaf",       "type": "boolean", "label": "CONCACAF Champions Cup"},
+            {"id": "sports_lgscup",         "type": "boolean", "label": "Leagues Cup (MLS/Liga MX)"},
+            {"id": "_sports_golf",          "type": "info",    "label": "-- Golf --"},
+            {"id": "sports_pga",            "type": "boolean", "label": "PGA Tour"},
+            {"id": "sports_lpga",           "type": "boolean", "label": "LPGA"},
+            {"id": "sports_dpwt",           "type": "boolean", "label": "DP World Tour (European Tour)"},
+            {"id": "sports_liv",            "type": "boolean", "label": "LIV Golf"},
+            {"id": "sports_pgachamp",       "type": "boolean", "label": "PGA Champions Tour"},
+            {"id": "_sports_motor",         "type": "info",    "label": "-- Motorsports --"},
+            {"id": "sports_f1",             "type": "boolean", "label": "Formula 1"},
+            {"id": "sports_indycar",        "type": "boolean", "label": "IndyCar"},
+            {"id": "sports_nascar",         "type": "boolean", "label": "NASCAR Cup Series (live races only)"},
+            {"id": "_sports_combat",        "type": "info",    "label": "-- Combat Sports --"},
+            {"id": "sports_ufc",            "type": "boolean", "label": "UFC / MMA"},
             {"id": "_sports_tennis",        "type": "info",    "label": "-- Tennis --"},
-            {"id": "sports_atp",            "type": "boolean", "label": "ATP"},
-            {"id": "sports_wta",            "type": "boolean", "label": "WTA"},
-            {"id": "_sports_motor",         "type": "info",    "label": "-- Motor --"},
-            {"id": "sports_nascar",         "type": "boolean", "label": "NASCAR (live races only)"},
-            {"id": "_sports_college_other", "type": "info",    "label": "-- College Other --"},
+            {"id": "sports_atp",            "type": "boolean", "label": "ATP Tour"},
+            {"id": "sports_wta",            "type": "boolean", "label": "WTA Tour"},
+            {"id": "_sports_college_other", "type": "info",    "label": "-- College & Other --"},
             {"id": "sports_ncaavb",         "type": "boolean", "label": "NCAA Volleyball"},
-            {"id": "sports_ncaalax",        "type": "boolean", "label": "NCAA Lacrosse"},
+            {"id": "sports_ncaalaxm",       "type": "boolean", "label": "NCAA Men's Lacrosse"},
+            {"id": "sports_ncaalaxw",       "type": "boolean", "label": "NCAA Women's Lacrosse"},
+            {"id": "sports_pll",            "type": "boolean", "label": "PLL (Premier Lacrosse League)"},
             {"id": "sports_favorites",      "type": "text",    "label": "Favorite Teams (abbreviations, comma-separated - blank = all teams)"},
             {"id": "sports_trigger_mode",   "type": "select",  "label": "Trigger Mode",
              "options": [
@@ -2382,6 +2525,7 @@ class Plugin:
             {"id": "sports_position",       "type": "select",  "label": "Ticker Position",
              "options": [{"value": "bottom", "label": "Bottom"}, {"value": "top", "label": "Top"}]},
             {"id": "sports_fontsize",       "type": "number",  "label": "Font Size (default 36)", "min": 16},
+            {"id": "sports_ticker_static",  "type": "boolean", "label": "Static Ticker — centered and fixed (default: scrolling; enable when using Favorite Teams with 1–2 teams)"},
             {"id": "sports_labelcolor",     "type": "select",  "label": "Sport Label Color (NFL:, NBA:, etc.) - Multi-Color only",
              "options": [
                  {"value": "#ffd700", "label": "Gold (default)"},
@@ -2408,6 +2552,7 @@ class Plugin:
             {"id": "sports_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
             {"id": "sports_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             {"id": "sports_exclude_groups",      "type": "text",   "label": "Exclude Groups (optional) — comma-separated group names to skip, e.g. SiriusXM, News", "placeholder": "e.g. SiriusXM, News"},
+            {"id": "sports_test_duration",       "type": "number", "label": "Test Ticker Duration (seconds) — how long the Test Sports Ticker action runs before auto-restoring (default 60)", "min": 10},
             # ── Active Tickers ────────────────────────────────────────────
             {"id": "_active_section", "type": "info", "label": "==========  ACTIVE TICKERS  =========="},
             {"id": "_ticker_list",    "type": "info", "label": active_label},
@@ -2427,6 +2572,8 @@ class Plugin:
             "update_custom":        self._update_custom,
             "disable_custom":       self._disable_custom_ticker,
             "enable_sports":        self._enable_sports,
+            "update_sports":        self._update_sports,
+            "test_sports":          self._test_sports,
             "disable_sports":       self._disable_sports_ticker,
             "enable_eas":           self._enable_eas,
             "disable_eas":          self._disable_eas,
@@ -2469,7 +2616,7 @@ class Plugin:
     def _enable_nowplaying(self, params):
         from apps.channels.models import Channel, ChannelGroup
 
-        trigger_mode = (params.get("np_trigger_mode") or "on_demand").strip()
+        trigger_mode = "on_demand"
 
         channels = self._resolve_channels(params, prefix="np_")
         if not channels:
@@ -2716,6 +2863,7 @@ class Plugin:
                         cloned.save()
                         ch_obj = _Ch.objects.filter(id=channel.id).first() or channel
                         _assign_profile(ch_obj, cloned)
+                        _restart_channel_stream_async(ch_obj, "Custom")
                         mapping["ticker_profile_id"] = cloned.id
                     except Exception as e:
                         skipped.append(f"{channel.name} (clone failed: {e})")
@@ -2735,6 +2883,7 @@ class Plugin:
                         _restore_profile(ch_obj, mapping["original_profile_id"])
                         _delete_cloned_profile(ticker_pid)
                         _remove_channel_files(channel.id)
+                        _restart_channel_stream_async(ch_obj, "Custom")
                     except Exception as e:
                         logger.warning(f"tickarr: on-demand custom restore failed ch{cid}: {e}")
                 mapping["ticker_profile_id"] = None
@@ -2793,40 +2942,27 @@ class Plugin:
                 removed_flags = []
                 ticker_profile_id = None
 
-                if trigger_mode == "always":
-                    raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
-                    drawtext   = _build_sports_filter(channel.id, position, fontsize,
-                                                      labelcolor, abbrcolor, color_mode)
-                    new_params = _inject_drawtext(raw_params, drawtext)
-                    from core.models import StreamProfile
-                    cloned = StreamProfile(
-                        name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel.id}]",
-                        command=original_profile.command,
-                        parameters=new_params,
-                        locked=False,
-                        is_active=True,
-                    )
-                    cloned.save()
-                    _assign_profile(channel, cloned)
-                    ticker_profile_id = cloned.id
-                    placeholder = "Loading sports scores..."
-                    pad = " " * len(placeholder)
-                    _write_sports_text(channel.id, pad, pad, placeholder, placeholder)
+                placeholder = "Loading sports scores..."
+                pad = " " * len(placeholder)
+                _write_sports_text(channel.id, pad, pad, placeholder, placeholder)
 
                 mappings[cid] = {
-                    "original_profile_id":    original_profile.id,
-                    "ticker_profile_id":      ticker_profile_id,
-                    "channel_name":           channel.name,
-                    "type":                   "sports",
-                    "sports_list":            sports_list,
-                    "sports_favorites":       favorites,
-                    "sports_position":        position,
-                    "sports_fontsize":        fontsize,
-                    "sports_color_mode":      color_mode,
-                    "sports_labelcolor":      labelcolor,
-                    "sports_abbrcolor":       abbrcolor,
-                    "sports_trigger_mode":    trigger_mode,
-                    "sports_active":          trigger_mode == "always",
+                    "original_profile_id":         original_profile.id,
+                    "ticker_profile_id":           None,
+                    "channel_name":                channel.name,
+                    "type":                        "sports",
+                    "sports_list":                 sports_list,
+                    "sports_favorites":            favorites,
+                    "sports_position":             position,
+                    "sports_fontsize":             fontsize,
+                    "sports_color_mode":           color_mode,
+                    "sports_labelcolor":           labelcolor,
+                    "sports_abbrcolor":            abbrcolor,
+                    "sports_trigger_mode":         trigger_mode,
+                    "sports_ticker_style":         "static" if params.get("sports_ticker_static") in (True, "true", "1", 1) else "scrolling",
+                    "sports_transcode_mode_video": params.get("sports_transcode_mode_video") or "1080p30",
+                    "sports_active":               False,
+                    "sports_live":                 False,
                 }
                 note = (f" [auto-removed: {', '.join(removed_flags)}]" if removed_flags else "")
                 enabled.append(f"{channel.name}{note}")
@@ -2846,9 +2982,9 @@ class Plugin:
         parts = []
         sports_label = ", ".join(LABELS.get(s, s.upper()) for s in sports_list)
         trigger_note = {
-            "always":         "Trigger: Always On — ticker encodes 24/7.",
-            "live_only":      "Trigger: Active Games Only — channel will switch to ticker only when a live game is in progress.",
-            "favorites_only": f"Trigger: Favorite Teams Only — channel will fire only when a team from [{favorites}] is playing.",
+            "always":         "Trigger: Always — ticker activates on-demand when a viewer connects (all scores shown, including finals).",
+            "live_only":      "Trigger: Active Games Only — ticker activates on-demand when a viewer connects and a live game is in progress.",
+            "favorites_only": f"Trigger: Favorite Teams Only — ticker activates on-demand when a viewer connects and a team from [{favorites}] is playing.",
         }.get(trigger_mode, "")
         if enabled:
             parts.append(
@@ -2863,6 +2999,72 @@ class Plugin:
         if failed:
             parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _update_sports(self, params):
+        """Update sports settings on already-enabled channels without restarting the stream.
+        Updates sports_list and display settings in mappings.json; the sweep loop picks up the
+        new sports_list on its next cycle and reload=1 delivers it without a stream restart."""
+        sports_list = [s for s in KNOWN_SPORTS if params.get(f"sports_{s}") in (True, "true", "1", 1)]
+        if not sports_list:
+            return {"success": False, "message": "Select at least one sport/league."}
+
+        color_mode   = params.get("sports_color_mode") or "single"
+        position     = params.get("sports_position", "bottom")
+        fontsize     = int(params.get("sports_fontsize") or 36)
+        labelcolor   = params.get("sports_labelcolor") or "#ffd700"
+        abbrcolor    = params.get("sports_abbrcolor")  or "#00d4ff"
+        favorites    = (params.get("sports_favorites") or "").strip()
+        trigger_mode = (params.get("sports_trigger_mode") or "always").strip()
+        transcode_mode = (params.get("sports_transcode_mode_video") or "").strip() or None
+
+        if trigger_mode == "favorites_only" and not favorites:
+            return {"success": False, "message": "Favorite Teams Only mode requires at least one team abbreviation in the Favorite Teams field."}
+
+        channels = self._resolve_channels(params, prefix="sports_")
+        if not channels:
+            return {"success": False, "message": "No channels found for the selected target."}
+
+        mappings = _get_mappings()
+        updated, skipped, failed = [], [], []
+
+        for channel in channels:
+            cid = str(channel.id)
+            mapping = mappings.get(cid)
+            if not mapping or mapping.get("type") != "sports":
+                skipped.append(f"{channel.name} (no sports ticker — enable it first)")
+                continue
+            try:
+                mapping["sports_list"]                 = sports_list
+                mapping["sports_favorites"]            = favorites
+                mapping["sports_position"]             = position
+                mapping["sports_fontsize"]             = fontsize
+                mapping["sports_color_mode"]           = color_mode
+                mapping["sports_labelcolor"]           = labelcolor
+                mapping["sports_abbrcolor"]            = abbrcolor
+                mapping["sports_trigger_mode"]         = trigger_mode
+                mapping["sports_ticker_style"]         = "static" if params.get("sports_ticker_static") in (True, "true", "1", 1) else "scrolling"
+                mapping["sports_transcode_mode_video"] = transcode_mode or mapping.get("sports_transcode_mode_video") or "1080p30"
+                mappings[cid] = mapping
+                updated.append(channel.name)
+            except Exception as e:
+                logger.error(f"tickarr: update_sports failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} (error: {e})")
+
+        _save_mappings(mappings)
+
+        sports_label = ", ".join(LABELS.get(s, s.upper()) for s in sports_list)
+        parts = []
+        if updated:
+            parts.append(
+                f"Updated sports ticker on {len(updated)} channel(s) — ticker content will refresh on the next sweep cycle (within ~30s):\n"
+                f"Sports: {sports_label}\n"
+                + "\n".join(f"  - {n}" for n in updated)
+            )
+        if skipped:
+            parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:
+            parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
+        return {"success": bool(updated), "message": "\n\n".join(parts) or "Nothing to do."}
 
     # ------------------------------------------------------------------ #
     # Shared disable helper + phase-specific disable actions             #
@@ -3160,6 +3362,129 @@ class Plugin:
         if fired:
             names = ", ".join(n for _, n, _, _ in fired)
             parts.append(f"EAS test alert fired on: {names}\nWill auto-restore in {duration} seconds.")
+        if skipped:
+            parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:
+            parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
+        return {"success": bool(fired), "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _test_sports(self, params):
+        """Fire fake sports ticker content on sports-enabled channels for a configurable duration, then auto-restore."""
+        import threading as _threading
+        duration = 60
+        try:
+            duration = max(10, min(600, int(params.get("sports_test_duration") or 60)))
+        except (ValueError, TypeError):
+            pass
+
+        channels = self._resolve_channels(params, prefix="sports_")
+        if not channels:
+            return {"success": False, "message": "No channels found. Select a channel in the Sports Ticker section."}
+
+        mappings = _get_mappings()
+        fired, skipped, failed = [], [], []
+
+        for channel in channels:
+            cid = str(channel.id)
+            mapping = mappings.get(cid)
+            if not mapping or mapping.get("type") != "sports":
+                skipped.append(f"{channel.name} (no sports ticker active — enable it first)")
+                continue
+            if mapping.get("sports_active"):
+                skipped.append(f"{channel.name} (sports ticker already active — wait for games to end or disable first)")
+                continue
+            try:
+                from core.models import StreamProfile
+                orig = StreamProfile.objects.filter(id=mapping["original_profile_id"]).first()
+                if not orig:
+                    failed.append(f"{channel.name} (original profile missing)")
+                    continue
+
+                # Write fake ticker content
+                cid_int = int(cid)
+                fake_full = "  [TEST] HOU 4 @ NYY 2 (Bot 7th)    [TEST] LAD 1 @ CHC 6 (Final)    [TEST] KC 3 @ BOS 5 (Final)    Sports Ticker Test — this is only a test  "
+                fake_pad  = " " * len(fake_full)
+                # Use fake_full for all layers so single-color renders correctly.
+                # Multi-color layers align by column — fake data can't replicate that,
+                # so we force single-color in the test to avoid triple-stacked rendering
+                # that makes the font appear larger than it really is.
+                _write_sports_text(cid_int, fake_pad, fake_full, fake_full, fake_full)
+
+                # Build overlay using the channel's current settings
+                position       = mapping.get("sports_position", "bottom")
+                fontsize       = int(mapping.get("sports_fontsize") or 36)
+                color_mode     = "single"  # force single-color for test — multi-color needs columnar data
+                labelcolor     = mapping.get("sports_labelcolor", "#ffd700")
+                abbrcolor      = mapping.get("sports_abbrcolor", "#00d4ff")
+                transcode_mode = mapping.get("sports_transcode_mode_video", "1080p30")
+                ticker_style   = mapping.get("sports_ticker_style", "scrolling")
+
+                raw_params, _ = _strip_dangerous_flags(channel.name, orig.parameters or "")
+                drawtext = _build_sports_filter(cid_int, position, fontsize,
+                                                labelcolor, abbrcolor, color_mode,
+                                                transcode_mode, ticker_style)
+                new_params = _inject_drawtext(raw_params, drawtext)
+
+                ticker_pid = mapping.get("ticker_profile_id")
+                existing = StreamProfile.objects.filter(id=ticker_pid).first() if ticker_pid else None
+                if existing and existing.name.startswith(PROFILE_PREFIX):
+                    existing.parameters = new_params
+                    existing.save()
+                    sports_profile = existing
+                else:
+                    sports_profile, _ = _clone_and_inject(cid_int, orig, channel.name)
+                    sports_profile.parameters = new_params
+                    sports_profile.save()
+                    mapping["ticker_profile_id"] = sports_profile.id
+
+                _assign_profile(channel, sports_profile)
+                _restart_channel_stream_async(channel, "Sports-Test")
+
+                mapping["sports_active"] = True
+                mapping.pop("no_viewer_since", None)
+                mappings[cid] = mapping
+                fired.append((cid, channel.name, mapping["original_profile_id"], mapping["ticker_profile_id"]))
+
+            except Exception as e:
+                logger.error(f"tickarr: test_sports failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} (error: {e})")
+
+        if fired:
+            _save_mappings(mappings)
+
+            def _auto_restore(entries, delay):
+                import time as _t
+                _t.sleep(delay)
+                try:
+                    m = _get_mappings()
+                    from apps.channels.models import Channel as _Ch
+                    for cid, ch_name, orig_pid, ticker_pid in entries:
+                        mapping = m.get(cid)
+                        if not mapping:
+                            continue
+                        ch = _Ch.objects.filter(id=int(cid)).first()
+                        if ch:
+                            _restore_profile(ch, orig_pid)
+                            _restart_channel_stream_async(ch, "Sports-Test-Restore")
+                        mapping["sports_active"] = False
+                        m[cid] = mapping
+                    _save_mappings(m)
+                    logger.info(f"tickarr: sports test auto-restored after {delay}s")
+                except Exception as e:
+                    logger.error(f"tickarr: sports test auto-restore failed: {e}", exc_info=True)
+
+            t = _threading.Thread(target=_auto_restore, args=(fired, duration), daemon=True)
+            t.start()
+
+        parts = []
+        if fired:
+            names = ", ".join(n for _, n, _, _ in fired)
+            parts.append(
+                f"Sports ticker test fired on: {names}\n"
+                f"Will auto-restore in {duration} seconds.\n\n"
+                f"Tune to the channel now to see your ticker settings in action. "
+                f"The test uses fake scores — not real game data."
+            )
         if skipped:
             parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
         if failed:
