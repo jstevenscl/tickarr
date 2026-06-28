@@ -1,17 +1,6 @@
 {
-  "generated_at": "2026-06-28T13:24:05Z",
+  "generated_at": "2026-06-28T17:02:43Z",
   "events": [
-    {
-      "slug": "f1",
-      "title": "Austrian Grand Prix",
-      "description": "Formula 1 Racing and Analysis · Austrian Grand Prix · Red Bull Ring",
-      "start_utc": "2026-06-28T13:00:00Z",
-      "end_utc": "2026-06-28T15:00:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Baltimore Orioles @ Washington Nationals",
@@ -312,15 +301,59 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ Mexico",
-      "description": "SOCCER · To Be Determined @ Mexico",
+      "title": "Ecuador @ Mexico",
+      "description": "SOCCER · Ecuador @ Mexico",
       "start_utc": "2026-07-01T01:00:00Z",
       "end_utc": "2026-07-01T03:00:00Z",
       "channels": [
         "Mexico",
-        "To Be Determined",
+        "Ecuador",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Practice",
+      "description": "Formula 1 Racing and Analysis · F-1 Practice · Silverstone Circuit",
+      "start_utc": "2026-07-03T11:25:00Z",
+      "end_utc": "2026-07-03T13:25:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Sprint Qualifying",
+      "description": "Formula 1 Racing and Analysis · F-1 Sprint Qualifying · Silverstone Circuit",
+      "start_utc": "2026-07-03T15:25:00Z",
+      "end_utc": "2026-07-03T17:25:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Sprint Race",
+      "description": "Formula 1 Racing and Analysis · F-1 Sprint Race · Silverstone Circuit",
+      "start_utc": "2026-07-04T10:55:00Z",
+      "end_utc": "2026-07-04T12:55:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Qualifying",
+      "description": "Formula 1 Racing and Analysis · F-1 Qualifying · Silverstone Circuit",
+      "start_utc": "2026-07-04T14:55:00Z",
+      "end_utc": "2026-07-04T16:55:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
       ]
     },
     {
@@ -344,6 +377,17 @@
       ]
     },
     {
+      "slug": "f1",
+      "title": "British Grand Prix",
+      "description": "Formula 1 Racing and Analysis · British Grand Prix · Silverstone Circuit",
+      "start_utc": "2026-07-05T14:00:00Z",
+      "end_utc": "2026-07-05T16:00:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
       "slug": "indycar",
       "title": "Honda INDY 200 at Mid-Ohio",
       "description": "SiriusXM INDYCAR Nation · Honda INDY 200 at Mid-Ohio · Mid-Ohio Sports Car Course",
@@ -351,6 +395,61 @@
       "end_utc": "2026-07-05T18:30:00Z",
       "channels": [
         "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Practice 1",
+      "description": "Formula 1 Racing and Analysis · F-1 Practice 1 · Spa-Francorchamps",
+      "start_utc": "2026-07-17T11:25:00Z",
+      "end_utc": "2026-07-17T13:25:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Practice 2",
+      "description": "Formula 1 Racing and Analysis · F-1 Practice 2 · Spa-Francorchamps",
+      "start_utc": "2026-07-17T14:55:00Z",
+      "end_utc": "2026-07-17T16:55:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Practice 3",
+      "description": "Formula 1 Racing and Analysis · F-1 Practice 3 · Spa-Francorchamps",
+      "start_utc": "2026-07-18T10:25:00Z",
+      "end_utc": "2026-07-18T12:25:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Qualifying",
+      "description": "Formula 1 Racing and Analysis · F-1 Qualifying · Spa-Francorchamps",
+      "start_utc": "2026-07-18T13:55:00Z",
+      "end_utc": "2026-07-18T15:55:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "Belgian Grand Prix",
+      "description": "Formula 1 Racing and Analysis · Belgian Grand Prix · Spa-Francorchamps",
+      "start_utc": "2026-07-19T13:00:00Z",
+      "end_utc": "2026-07-19T15:00:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
       ]
     },
     {
@@ -371,6 +470,61 @@
       "end_utc": "2026-07-19T21:00:00Z",
       "channels": [
         "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Practice 1",
+      "description": "Formula 1 Racing and Analysis · F-1 Practice 1 · Hungaroring",
+      "start_utc": "2026-07-24T11:25:00Z",
+      "end_utc": "2026-07-24T13:25:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Practice 2",
+      "description": "Formula 1 Racing and Analysis · F-1 Practice 2 · Hungaroring",
+      "start_utc": "2026-07-24T14:55:00Z",
+      "end_utc": "2026-07-24T16:55:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Practice 3",
+      "description": "Formula 1 Racing and Analysis · F-1 Practice 3 · Hungaroring",
+      "start_utc": "2026-07-25T10:25:00Z",
+      "end_utc": "2026-07-25T12:25:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "F-1 Qualifying",
+      "description": "Formula 1 Racing and Analysis · F-1 Qualifying · Hungaroring",
+      "start_utc": "2026-07-25T13:55:00Z",
+      "end_utc": "2026-07-25T15:55:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "f1",
+      "title": "Hungarian Grand Prix",
+      "description": "Formula 1 Racing and Analysis · Hungarian Grand Prix · Hungaroring",
+      "start_utc": "2026-07-26T13:00:00Z",
+      "end_utc": "2026-07-26T15:00:00Z",
+      "channels": [
+        "F1 on SiriusXM",
+        "Formula 1 Racing and Analysis"
       ]
     }
   ]
