@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-07-01T14:21:33Z",
+  "generated_at": "2026-07-01T17:49:33Z",
   "events": [
     {
       "slug": "soccer",
-      "title": "Congo DR @ England",
-      "description": "SOCCER · Congo DR @ England",
+      "title": "England @ Congo DR",
+      "description": "SOCCER · England @ Congo DR",
       "start_utc": "2026-07-01T16:00:00Z",
       "end_utc": "2026-07-01T18:00:00Z",
       "channels": [
-        "England",
         "Congo DR",
+        "England",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
@@ -95,13 +95,13 @@
     },
     {
       "slug": "soccer",
-      "title": "Senegal @ Belgium",
-      "description": "SOCCER · Senegal @ Belgium",
+      "title": "Belgium @ Senegal",
+      "description": "SOCCER · Belgium @ Senegal",
       "start_utc": "2026-07-01T20:00:00Z",
       "end_utc": "2026-07-01T22:00:00Z",
       "channels": [
-        "Belgium",
         "Senegal",
+        "Belgium",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
@@ -147,13 +147,13 @@
     },
     {
       "slug": "soccer",
-      "title": "Bosnia and Herzegovina @ USA",
-      "description": "SOCCER · Bosnia and Herzegovina @ USA",
+      "title": "USA @ Bosnia and Herzegovina",
+      "description": "SOCCER · USA @ Bosnia and Herzegovina",
       "start_utc": "2026-07-02T00:00:00Z",
       "end_utc": "2026-07-02T02:00:00Z",
       "channels": [
-        "USA",
         "Bosnia and Herzegovina",
+        "USA",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
@@ -236,39 +236,39 @@
     },
     {
       "slug": "soccer",
-      "title": "Austria @ Spain",
-      "description": "SOCCER · Austria @ Spain",
+      "title": "Spain @ Austria",
+      "description": "SOCCER · Spain @ Austria",
       "start_utc": "2026-07-02T19:00:00Z",
       "end_utc": "2026-07-02T21:00:00Z",
       "channels": [
-        "Spain",
         "Austria",
+        "Spain",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
     {
       "slug": "soccer",
-      "title": "Croatia @ Portugal",
-      "description": "SOCCER · Croatia @ Portugal",
+      "title": "Portugal @ Croatia",
+      "description": "SOCCER · Portugal @ Croatia",
       "start_utc": "2026-07-02T23:00:00Z",
       "end_utc": "2026-07-03T01:00:00Z",
       "channels": [
-        "Portugal",
         "Croatia",
+        "Portugal",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
     {
       "slug": "soccer",
-      "title": "Algeria @ Switzerland",
-      "description": "SOCCER · Algeria @ Switzerland",
+      "title": "Switzerland @ Algeria",
+      "description": "SOCCER · Switzerland @ Algeria",
       "start_utc": "2026-07-03T03:00:00Z",
       "end_utc": "2026-07-03T05:00:00Z",
       "channels": [
-        "Switzerland",
         "Algeria",
+        "Switzerland",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
@@ -308,39 +308,39 @@
     },
     {
       "slug": "soccer",
-      "title": "Egypt @ Australia",
-      "description": "SOCCER · Egypt @ Australia",
+      "title": "Australia @ Egypt",
+      "description": "SOCCER · Australia @ Egypt",
       "start_utc": "2026-07-03T18:00:00Z",
       "end_utc": "2026-07-03T20:00:00Z",
       "channels": [
-        "Australia",
         "Egypt",
+        "Australia",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
     {
       "slug": "soccer",
-      "title": "Cape Verde @ Argentina",
-      "description": "SOCCER · Cape Verde @ Argentina",
+      "title": "Argentina @ Cape Verde",
+      "description": "SOCCER · Argentina @ Cape Verde",
       "start_utc": "2026-07-03T22:00:00Z",
       "end_utc": "2026-07-04T00:00:00Z",
       "channels": [
-        "Argentina",
         "Cape Verde",
+        "Argentina",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
     },
     {
       "slug": "soccer",
-      "title": "Ghana @ Colombia",
-      "description": "SOCCER · Ghana @ Colombia",
+      "title": "Colombia @ Ghana",
+      "description": "SOCCER · Colombia @ Ghana",
       "start_utc": "2026-07-04T01:30:00Z",
       "end_utc": "2026-07-04T03:30:00Z",
       "channels": [
-        "Colombia",
         "Ghana",
+        "Colombia",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
@@ -379,13 +379,13 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "SOCCER · To Be Determined @ To Be Determined",
+      "title": "Canada @ Morocco",
+      "description": "SOCCER · Canada @ Morocco",
       "start_utc": "2026-07-04T17:00:00Z",
       "end_utc": "2026-07-04T19:00:00Z",
       "channels": [
-        "To Be Determined",
-        "To Be Determined",
+        "Morocco",
+        "Canada",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
@@ -413,13 +413,13 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "SOCCER · To Be Determined @ To Be Determined",
+      "title": "Paraguay @ France",
+      "description": "SOCCER · Paraguay @ France",
       "start_utc": "2026-07-04T21:00:00Z",
       "end_utc": "2026-07-04T23:00:00Z",
       "channels": [
-        "To Be Determined",
-        "To Be Determined",
+        "France",
+        "Paraguay",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
@@ -478,13 +478,13 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "SOCCER · To Be Determined @ To Be Determined",
+      "title": "Brazil @ Norway",
+      "description": "SOCCER · Brazil @ Norway",
       "start_utc": "2026-07-05T20:00:00Z",
       "end_utc": "2026-07-05T22:00:00Z",
       "channels": [
-        "To Be Determined",
-        "To Be Determined",
+        "Norway",
+        "Brazil",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
@@ -504,13 +504,13 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "SOCCER · To Be Determined @ To Be Determined",
+      "title": "Mexico @ To Be Determined",
+      "description": "SOCCER · Mexico @ To Be Determined",
       "start_utc": "2026-07-06T00:00:00Z",
       "end_utc": "2026-07-06T02:00:00Z",
       "channels": [
         "To Be Determined",
-        "To Be Determined",
+        "Mexico",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
