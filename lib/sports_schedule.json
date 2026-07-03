@@ -1,17 +1,6 @@
 {
-  "generated_at": "2026-07-03T17:18:02Z",
+  "generated_at": "2026-07-03T20:57:16Z",
   "events": [
-    {
-      "slug": "f1",
-      "title": "F-1 Sprint Qualifying",
-      "description": "Formula 1 Racing and Analysis · F-1 Sprint Qualifying · Silverstone Circuit",
-      "start_utc": "2026-07-03T15:25:00Z",
-      "end_utc": "2026-07-03T17:25:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "pga",
       "title": "John Deere Classic",
@@ -21,19 +10,6 @@
       "channels": [
         "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Australia @ Egypt",
-      "description": "SOCCER · Australia @ Egypt",
-      "start_utc": "2026-07-03T18:00:00Z",
-      "end_utc": "2026-07-03T20:00:00Z",
-      "channels": [
-        "Egypt",
-        "Australia",
-        "FOX Sports on SiriusXM",
-        "SiriusXM FC"
       ]
     },
     {
