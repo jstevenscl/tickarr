@@ -4470,7 +4470,11 @@ class Plugin:
     def _clean_orphans(self, params):
         from core.models import StreamProfile
         mappings = _get_mappings()
-        active_ticker_ids = {m["ticker_profile_id"] for m in mappings.values()}
+        active_ticker_ids = set()
+        for m in mappings.values():
+            for key in ("ticker_profile_id", "eas_profile_id"):
+                if m.get(key):
+                    active_ticker_ids.add(m[key])
 
         # Primary sweep: profiles whose name starts with PROFILE_PREFIX
         named = list(StreamProfile.objects.filter(name__startswith=PROFILE_PREFIX))
