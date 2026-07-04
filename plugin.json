@@ -6,49 +6,45 @@
   "author": "jstevenscl",
   "actions": [
     {
-      "id": "_header_siriusxm",
-      "type": "info",
-      "label": "-- Satellite Radio --"
-    },
-    {
-      "id": "_header_nowplaying",
-      "type": "info",
-      "label": "Now Playing Ticker"
-    },
-    {
       "id": "enable_nowplaying",
       "label": "Enable Now Playing",
+      "description": "Registers targeted channels for the Satellite Radio Now Playing overlay. The overlay activates on-demand when a viewer tunes in and restores to passthrough when the channel goes idle.",
+      "button_label": "Enable",
+      "button_variant": "filled",
+      "button_color": "cyan",
       "confirm": {
-        "message": "This will clone a stream profile for each selected channel and start showing live satellite radio now-playing data on the overlay. Channels already enabled will be skipped. Continue?"
+        "message": "This will register the selected channels for Now Playing. The overlay activates on-demand when a viewer tunes in. Channels already enabled will be skipped. Continue?"
       }
     },
     {
       "id": "disable_nowplaying",
       "label": "Disable Now Playing",
+      "description": "Removes the Now Playing overlay from all targeted channels and restores their original stream profiles.",
+      "button_label": "Disable",
+      "button_variant": "outline",
+      "button_color": "cyan",
       "confirm": {
         "message": "This will restore the original stream profile and remove ticker data for the selected Now Playing channel(s). Continue?"
       }
     },
     {
-      "id": "_header_sxm_setup",
-      "type": "info",
-      "label": "Channel Setup"
-    },
-    {
-      "id": "_sxm_setup_note",
-      "type": "info",
-      "label": "Uses the channel group / channel selected in Settings above."
-    },
-    {
       "id": "fill_sxm_epg",
-      "label": "Fill EPG - Full Satellite Radio Guide",
+      "label": "Fill EPG — Full Satellite Radio Guide",
+      "description": "Downloads Tickarr's satellite radio EPG and assigns it to the selected channels — sets tvg-id, channel name, and full guide data. Run this first if your satellite radio channels have no EPG.",
+      "button_label": "Fill EPG",
+      "button_variant": "filled",
+      "button_color": "cyan",
       "confirm": {
-        "message": "Downloads Tickarr's satellite radio EPG (sports schedules + channel guide data) and assigns it to the selected channels. Continue?"
+        "message": "Downloads Tickarr's satellite radio EPG and assigns it to the selected channels. Continue?"
       }
     },
     {
       "id": "fill_epg",
-      "label": "Fill EPG - TVG ID Only",
+      "label": "Fill EPG — TVG ID Only",
+      "description": "Sets the tvg-id only on selected channels so they match an EPG source you already have loaded. Use this instead of Full EPG if you have an existing EPG source.",
+      "button_label": "TVG ID Only",
+      "button_variant": "outline",
+      "button_color": "cyan",
       "confirm": {
         "message": "Sets the TVG ID on selected channels so they can match an EPG source you already have loaded. Does not download any guide data. Continue?"
       }
@@ -56,6 +52,10 @@
     {
       "id": "sort_channels",
       "label": "Sort Channels",
+      "description": "Renumbers selected channels by satellite radio lineup order, starting from the Sort Start Number in Settings (auto-detected if blank).",
+      "button_label": "Sort",
+      "button_variant": "filled",
+      "button_color": "cyan",
       "confirm": {
         "message": "Renumbers selected channels by satellite radio lineup order, starting from Sort Start Number (or auto-detected if blank). Continue?"
       }
@@ -63,18 +63,21 @@
     {
       "id": "assign_logos",
       "label": "Assign Logos",
+      "description": "Sets channel logos from Tickarr's built-in satellite radio logo library. Channels with no match are skipped.",
+      "button_label": "Logos",
+      "button_variant": "outline",
+      "button_color": "cyan",
       "confirm": {
         "message": "Sets logos on selected channels using Tickarr's built-in satellite radio logo library. Channels with no match are skipped. Continue?"
       }
     },
     {
-      "id": "_header_sxm_combined",
-      "type": "info",
-      "label": "Run Everything Together"
-    },
-    {
       "id": "fill_and_sort",
       "label": "Fill EPG + Sort",
+      "description": "Runs Full Satellite Radio EPG fill and Sort Channels together on the selected channels. Use this when you want EPG data assigned and channels renumbered in one step.",
+      "button_label": "Fill + Sort",
+      "button_variant": "filled",
+      "button_color": "cyan",
       "confirm": {
         "message": "Runs Full Satellite Radio EPG fill and Sort Channels together on the selected channels. Continue?"
       }
@@ -82,112 +85,152 @@
     {
       "id": "fill_sort_logos",
       "label": "Fill EPG + Sort + Logos",
+      "description": "Runs Full EPG fill, Sort Channels, and Assign Logos together. Recommended for a complete first-time satellite radio setup.",
+      "button_label": "Fill + Sort + Logos",
+      "button_variant": "filled",
+      "button_color": "cyan",
       "confirm": {
         "message": "Runs Full Satellite Radio EPG fill, Sort Channels, and Assign Logos together on the selected channels. Continue?"
       }
     },
     {
-      "id": "_header_custom",
-      "type": "info",
-      "label": "-- Custom Text --"
-    },
-    {
-      "id": "enable_custom",
-      "label": "Enable Custom Text",
-      "confirm": {
-        "message": "This will clone a stream profile for each selected channel with your custom text overlay. Channels that already have any ticker type enabled will be skipped. Continue?"
-      }
-    },
-    {
-      "id": "update_custom",
-      "label": "Update Custom Text"
-    },
-    {
-      "id": "disable_custom",
-      "label": "Disable Custom Ticker",
-      "confirm": {
-        "message": "This will restore the original stream profile and remove ticker data for the selected Custom Text channel(s). Continue?"
-      }
-    },
-    {
-      "id": "_header_sports",
-      "type": "info",
-      "label": "-- Sports Ticker --"
-    },
-    {
-      "id": "enable_sports",
-      "label": "Enable Sports Ticker",
-      "confirm": {
-        "message": "This will clone a stream profile for each selected channel with a live sports score ticker. Channels that already have any ticker type enabled will be skipped. Continue?"
-      }
-    },
-    {
-      "id": "update_sports",
-      "label": "Update Sports Ticker"
-    },
-    {
-      "id": "test_sports",
-      "label": "Test Sports Ticker",
-      "confirm": {
-        "message": "This will fire a fake sports ticker overlay on the selected channel for the configured duration, then auto-restore. Tune to the channel after running to see your ticker settings in action. Continue?"
-      }
-    },
-    {
-      "id": "disable_sports",
-      "label": "Disable Sports Ticker",
-      "confirm": {
-        "message": "This will restore the original stream profile and remove ticker data for the selected Sports Ticker channel(s). Continue?"
-      }
-    },
-    {
-      "id": "_header_eas",
-      "type": "info",
-      "label": "-- EAS Weather Alerts --"
-    },
-    {
       "id": "enable_eas",
-      "label": "Enable EAS Silent Ticker",
+      "label": "Enable EAS — JAS Weather Alerts",
+      "description": "Arms selected channels for EAS monitoring. No profile is cloned until a real NWS alert fires for your configured zones — channels stream normally until then. Can be enabled alongside any existing ticker type.",
+      "button_label": "Enable",
+      "button_variant": "filled",
+      "button_color": "orange",
       "confirm": {
-        "message": "This will clone a stream profile for each selected channel with a silent EAS overlay. The overlay is invisible under normal conditions and activates automatically when an NWS alert fires for your configured zones. Continue?"
-      }
-    },
-    {
-      "id": "disable_eas",
-      "label": "Disable EAS Ticker",
-      "confirm": {
-        "message": "This will restore the original stream profile and remove the EAS overlay for the selected channel(s). Continue?"
+        "message": "Arms the selected channels for EAS. No profile is cloned yet — the overlay only activates when a real NWS alert fires for your configured zones. Continue?"
       }
     },
     {
       "id": "test_eas",
       "label": "Test EAS Alert",
+      "description": "Fires a fake EAS alert on the enabled channels for the configured Test Alert Duration, then auto-restores. Use this to verify your overlay style, severity label, and attention tone without waiting for a real alert.",
+      "button_label": "Test Alert",
+      "button_variant": "outline",
+      "button_color": "orange",
       "confirm": {
-        "message": "This will fire a fake EAS alert overlay on the selected EAS-enabled channel(s) for the configured duration, then auto-restore. Use this to verify your EAS overlay looks correct without waiting for a real alert. Continue?"
+        "message": "Fires a fake EAS alert overlay on the selected EAS-enabled channel(s) for the configured duration, then auto-restores. Continue?"
+      }
+    },
+    {
+      "id": "disable_eas",
+      "label": "Disable EAS Ticker",
+      "description": "Disarms all EAS-enabled channels and restores their original stream profiles. If an alert is currently active, the overlay is also removed.",
+      "button_label": "Disable",
+      "button_variant": "outline",
+      "button_color": "orange",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove the EAS overlay for the selected channel(s). Continue?"
       }
     },
     {
       "id": "migrate_eas",
       "label": "Migrate EAS to Dynamic Mode",
+      "description": "One-time migration for installs upgrading from an older Tickarr version that used always-on EAS profiles. Restores all EAS channels to passthrough and re-arms them in dynamic mode.",
+      "button_label": "Migrate",
+      "button_variant": "outline",
+      "button_color": "orange",
       "confirm": {
         "message": "This restores all EAS channels to their original passthrough profiles and removes the old always-on re-encode profiles. Channels will automatically switch to EAS overlay only when a real NWS alert fires. Continue?"
       }
     },
     {
-      "id": "_header_manage",
-      "type": "info",
-      "label": "-- Manage --"
+      "id": "enable_custom",
+      "label": "Enable Custom Text",
+      "description": "Registers channels for the Custom Text overlay. In On-Demand mode, no profile is cloned until text is set via Update Custom Text. In Always On mode, profiles are cloned and the overlay starts immediately.",
+      "button_label": "Enable",
+      "button_variant": "filled",
+      "button_color": "blue",
+      "confirm": {
+        "message": "This will register the selected channels for the Custom Text overlay. Channels that already have any ticker type enabled will be skipped. Continue?"
+      }
+    },
+    {
+      "id": "update_custom",
+      "label": "Update Custom Text",
+      "description": "Sets or changes the displayed message on active Custom Text channels without interrupting the stream. In On-Demand mode, activates the overlay when text is provided or restores passthrough when text is cleared.",
+      "button_label": "Update Text",
+      "button_variant": "filled",
+      "button_color": "blue"
+    },
+    {
+      "id": "disable_custom",
+      "label": "Disable Custom Ticker",
+      "description": "Removes the Custom Text overlay from all targeted channels and restores their original stream profiles.",
+      "button_label": "Disable",
+      "button_variant": "outline",
+      "button_color": "blue",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove ticker data for the selected Custom Text channel(s). Continue?"
+      }
+    },
+    {
+      "id": "enable_sports",
+      "label": "Enable Sports Ticker",
+      "description": "Registers channels for the Sports Ticker. In Always On mode, profiles are cloned immediately. In smart trigger modes, the overlay activates when a qualifying live game is detected and restores to passthrough when all games end.",
+      "button_label": "Enable",
+      "button_variant": "filled",
+      "button_color": "green",
+      "confirm": {
+        "message": "This will register the selected channels for the Sports Ticker. Channels that already have any ticker type enabled will be skipped. Continue?"
+      }
+    },
+    {
+      "id": "update_sports",
+      "label": "Update Sports Ticker",
+      "description": "Updates the league selection, trigger mode, or display settings on already-enabled Sports Ticker channels without restarting the stream. Changes take effect within ~30 seconds.",
+      "button_label": "Update",
+      "button_variant": "filled",
+      "button_color": "green"
+    },
+    {
+      "id": "test_sports",
+      "label": "Test Sports Ticker",
+      "description": "Fires fake score data on the selected channel for the configured Test Ticker Duration, then auto-restores. Use this to verify position, font size, color mode, and ticker style without waiting for a live game.",
+      "button_label": "Test Ticker",
+      "button_variant": "outline",
+      "button_color": "green",
+      "confirm": {
+        "message": "Fires a fake sports ticker overlay on the selected channel for the configured duration, then auto-restores. Tune to the channel after running to see your settings in action. Continue?"
+      }
+    },
+    {
+      "id": "disable_sports",
+      "label": "Disable Sports Ticker",
+      "description": "Removes the Sports Ticker overlay from all targeted channels and restores their original stream profiles.",
+      "button_label": "Disable",
+      "button_variant": "outline",
+      "button_color": "green",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove ticker data for the selected Sports Ticker channel(s). Continue?"
+      }
     },
     {
       "id": "view_active",
-      "label": "View Active Tickers"
+      "label": "View Active Tickers",
+      "description": "Lists all channels with an active Tickarr overlay, grouped by type. Shows which channels are actively transcoding vs. on passthrough.",
+      "button_label": "View",
+      "button_variant": "outline",
+      "button_color": "violet"
     },
     {
       "id": "refresh_channels",
-      "label": "Refresh Channel Data"
+      "label": "Refresh Channel Data",
+      "description": "Reloads the channel and group list from Dispatcharr. Run this if a channel or group is missing from a dropdown in Settings.",
+      "button_label": "Refresh",
+      "button_variant": "outline",
+      "button_color": "violet"
     },
     {
       "id": "disable_all",
       "label": "Disable All Tickers",
+      "description": "Removes every active Tickarr overlay across all channels and restores all original stream profiles.",
+      "button_label": "Disable All",
+      "button_variant": "filled",
+      "button_color": "red",
       "confirm": {
         "message": "This will restore original stream profiles and remove ticker data for ALL enabled channels. Continue?"
       }
@@ -195,17 +238,29 @@
     {
       "id": "clean_orphans",
       "label": "Clean Orphaned Profiles",
+      "description": "Removes Tickarr-cloned stream profiles left behind when channels were deleted while a ticker was active.",
+      "button_label": "Clean",
+      "button_variant": "outline",
+      "button_color": "violet",
       "confirm": {
         "message": "This will delete all Tickarr-cloned stream profiles that have no active channel mapping. Continue?"
       }
     },
     {
       "id": "redis_diag",
-      "label": "Redis Diagnostics"
+      "label": "Redis Diagnostics",
+      "description": "Reports whether Redis is reachable and how many channels have active viewers detected. Use this to diagnose on-demand mode not triggering.",
+      "button_label": "Diagnostics",
+      "button_variant": "outline",
+      "button_color": "violet"
     },
     {
       "id": "reload_poller",
       "label": "Reload Poller",
+      "description": "Restarts the background polling threads without restarting Dispatcharr. Use if overlays stop updating but streams are still live.",
+      "button_label": "Reload",
+      "button_variant": "outline",
+      "button_color": "violet",
       "confirm": {
         "message": "This will restart the background polling thread. Active ticker data will resume within 15 seconds. Continue?"
       }
@@ -213,6 +268,10 @@
     {
       "id": "restart_dispatcharr",
       "label": "Restart Dispatcharr",
+      "description": "Restarts the Dispatcharr container. Required after every install or update. The page will go offline for about 15 seconds — refresh after it comes back.",
+      "button_label": "Restart",
+      "button_variant": "filled",
+      "button_color": "red",
       "confirm": {
         "message": "This will send a graceful restart signal to Dispatcharr. The page will go offline briefly — refresh in about 15 seconds. Continue?"
       }

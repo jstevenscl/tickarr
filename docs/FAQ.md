@@ -10,6 +10,21 @@ Yes. Dispatcharr caches Python modules at startup — new plugin code is not act
 
 ---
 
+**Q: A channel was skipped with "stream profile is Proxy or Redirect". What does this mean?**
+
+Tickarr injects overlays by adding FFmpeg filter parameters to the channel's cloned stream profile. **Proxy** and **Redirect** profiles do not go through FFmpeg — they either pass the stream through Dispatcharr's internal proxy or redirect the client straight to the source URL. There is no FFmpeg process to inject a drawtext filter into, so Tickarr cannot add an overlay to these channels.
+
+To fix it:
+
+1. In Dispatcharr, go to **Channels** and open the affected channel.
+2. Under **Stream Profile**, select any FFmpeg-based profile (any profile that is not named **Proxy** or **Redirect**). If you're not sure which to use, the default FFmpeg profile works for most channels.
+3. Click **Save**.
+4. Re-run the Tickarr enable action for that channel.
+
+If many channels are affected at once, the likely cause is that Dispatcharr's system-wide default stream profile is set to Proxy or Redirect and those channels have no explicit profile assigned. Change the default in Dispatcharr **Settings → Streams** to an FFmpeg-based profile, then re-run the enable action.
+
+---
+
 **Q: Will enabling a ticker change my stream quality or original stream profile?**
 
 No. Tickarr clones your existing stream profile and injects the overlay filter into the clone. Your original profile is never modified. When you disable the ticker, the original profile is restored and the clone is deleted.

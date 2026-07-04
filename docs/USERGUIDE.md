@@ -42,6 +42,19 @@ Before enabling **any** Tickarr overlay on a channel, that channel must have a s
 
 Repeat for every channel (or use a Channel Group default profile) before running any Tickarr enable action.
 
+### Proxy and Redirect profiles are not compatible
+
+Tickarr injects overlays by adding FFmpeg filters to the channel's stream profile. Channels using a **Proxy** or **Redirect** stream profile cannot use any ticker — these profiles pass the stream through Dispatcharr's internal proxy or redirect the client directly to the source URL, bypassing FFmpeg entirely. There is no FFmpeg process to inject into.
+
+If a channel is skipped with the message **"stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker"**, do the following:
+
+1. In Dispatcharr, go to **Channels** and open the affected channel.
+2. Under **Stream Profile**, select any FFmpeg-based profile. Any profile that is not named **Proxy** or **Redirect** is FFmpeg-based. If you're unsure which to choose, the default FFmpeg profile works for most channels.
+3. Click **Save**.
+4. Go back to Tickarr and re-run the enable action you were trying to use.
+
+**If many channels are affected:** The most likely cause is that Dispatcharr's system-wide default stream profile is set to Proxy or Redirect, and those channels have no explicit profile assigned. To fix all of them at once, go to Dispatcharr **Settings → Streams** and change the default stream profile to an FFmpeg-based one. After saving, re-run the Tickarr enable action.
+
 ---
 
 ## Satellite Radio Now Playing
@@ -58,7 +71,9 @@ The overlay updates automatically as tracks change — no interaction needed aft
 
 If you have not yet set up channel names, EPG data, sort order, or logos for your satellite radio channels, Tickarr can do all of it. These steps are optional but strongly recommended before enabling Now Playing so that channel matching works correctly.
 
-All four actions below use the same **Apply To** target you configure in Tickarr settings. Scroll to the **Satellite Radio Channel Setup** section in Tickarr settings and select your channel group before running any of these.
+> **Where to find this in the app:** In Tickarr Settings, the **Now Playing** fields appear first. Scroll **down past the Now Playing section** to reach the **Satellite Radio Channel Setup** section. Configure the Apply To target there, then come back here to run the actions below.
+
+All four actions below use the same **Apply To** target you configure in the **Satellite Radio Channel Setup** section of Tickarr settings. Select your channel group there before running any of these.
 
 | Action | What it does | When to run it |
 |---|---|---|
@@ -73,23 +88,23 @@ All four actions below use the same **Apply To** target you configure in Tickarr
 
 ### Step 2 — Configure Now Playing settings
 
-In Tickarr settings, scroll to the **Now Playing** section and fill in the following fields **in order**:
+In Tickarr settings, scroll to the **Now Playing** section (it is the first section at the top of the settings panel) and fill in the following fields **in order**:
 
-1. **Trigger Mode** — Controls when the overlay is active:
-   - **On-Demand (recommended)** — The overlay only activates when someone is watching the channel. When the channel goes idle, it automatically restores to the original passthrough profile. This is the best option for most users because it avoids unnecessary re-encoding on unwatched channels and reduces memory and CPU usage.
-   - **Always On** — The overlay encodes 24/7 regardless of viewers. Use this only if you have a specific reason to need the profile always active.
+> **Note:** Now Playing always runs in on-demand mode — the overlay activates automatically when a viewer tunes in and restores to passthrough when the channel goes idle. There is no always-on option for Now Playing.
 
-2. **Apply To** — Choose the scope:
+1. **Apply To** — Choose the scope:
    - **All Channels** — Enables Now Playing on every channel Tickarr can see. Use this only if your entire channel library is satellite radio.
    - **Channel Group** — Enables Now Playing on every channel in a specific group. This is the recommended option for most installs where satellite radio channels are in their own group.
    - **Multiple Groups (CSV)** — Enter a comma-separated list of group names to enable across several groups at once.
    - **Single Channel** — Enables Now Playing on one specific channel.
 
-3. Fill in the field that matches your Apply To selection:
+2. Fill in the field that matches your Apply To selection:
    - If **Channel Group**: select the group from the **Channel Group** dropdown.
    - If **Multiple Groups**: type the group names in **Group Names** (e.g. `SiriusXM, Satellite Radio`).
    - If **Single Channel**: select the channel from the **Channel** dropdown.
    - Leave all other target fields blank.
+
+3. **Exclude Groups (optional)** — If you chose **All Channels** or **Channel Group**, enter any group names you want skipped (e.g. `News, Sports`) as a comma-separated list.
 
 ---
 
@@ -97,9 +112,7 @@ In Tickarr settings, scroll to the **Now Playing** section and fill in the follo
 
 Run **Actions → Enable Now Playing**.
 
-Tickarr will:
-- In **On-Demand** mode: register the selected channels. No profile clone happens yet. The overlay activates automatically the first time a viewer tunes in.
-- In **Always On** mode: clone a stream profile for each selected channel immediately and start the poller.
+Tickarr registers the selected channels. No profile clone happens yet — the overlay activates automatically the first time a viewer tunes in, and restores to passthrough when the channel goes idle.
 
 The action result will confirm how many channels were enabled and how many were skipped (already enabled, no stream profile, etc.).
 
@@ -109,7 +122,7 @@ The action result will confirm how many channels were enabled and how many were 
 
 - Run **Actions → View Active Tickers** to see a list of all enabled channels grouped by type.
 - Tune into one of the enabled channels. The overlay appears within 15 seconds of the first viewer connecting (one poll interval).
-- In On-Demand mode: after you stop watching and the channel goes idle for 30 seconds, the overlay is silently removed and the channel returns to passthrough. It reactivates the next time someone tunes in.
+- After you stop watching and the channel goes idle for 30 seconds, the overlay is silently removed and the channel returns to passthrough. It reactivates the next time someone tunes in.
 
 ---
 
@@ -156,40 +169,40 @@ To monitor multiple zones (e.g. your county plus surrounding counties), you will
 
 ### Step 2 — Configure EAS settings
 
-In Tickarr settings, scroll to the **EAS Weather Alerts** section and fill in the following:
+In Tickarr settings, scroll to the **EAS Weather Alerts** section and fill in the following fields **in the order they appear**:
 
-1. **Zone IDs** — Enter your zone or county code(s), comma-separated. Example: `OHZ001,OHC035`. No spaces needed. Codes are case-sensitive.
+1. **EAS Transcode Quality** — Resolution during an active alert. Channels run at full passthrough when there is no alert — transcoding only occurs while an alert is active.
+   - **Full quality (default)** — Source resolution and framerate. Best for capable CPUs or GPU-accelerated systems.
+   - **1080p 30fps** — Full resolution, framerate capped at 30fps. Try this first if you see buffering.
+   - **720p** — Scaled to 720p at source framerate. Significant CPU reduction.
+   - **720p 30fps** — Scaled to 720p, capped at 30fps. Maximum CPU reduction.
 
-2. **Poll Interval (seconds)** — How often Tickarr checks NWS for new or cleared alerts. Default is 60 seconds. Minimum is 15. Lower values mean faster detection but more API calls.
+2. **NWS Zone / County Codes** — Enter your zone or county code(s), comma-separated. Example: `OHZ001,OHC035`. No spaces needed. Codes are case-sensitive.
 
-3. **Overlay Style**:
-   - **Broadcast (recommended)** — Dark bar across the bottom with a colored severity label on the left and a scrolling white crawl on the right. Looks like a real TV station alert.
-   - **Tickarr** — Simpler two-line text overlay.
+3. **Saved / Favorite Codes (optional)** — A reference field for codes you use often but aren't actively monitoring right now. Paste them here so you don't have to look them up again — these codes are not monitored, just stored for your convenience.
 
-4. **Alert Label Color** — Hex color for the severity label box (e.g. `0xCC0000` for red, `0xFF8C00` for orange). This sets the default color; severity automatically overrides it for tornado warnings and other critical events.
+4. **Minimum Severity** — Minimum severity level to trigger the overlay:
+   - **Watch (Moderate and above)** — Default. Triggers on most weather events.
+   - **Warning (Severe and above)** — Only significant threats.
+   - **Emergency (Extreme only)** — Only the most critical events.
 
-5. **Severity Filter** — Minimum severity level to trigger the overlay. Options: Minor, Moderate, Severe, Extreme. Default is Moderate. Set to Extreme if you only want the overlay to fire for the most critical events.
+5. **Alert Overlay Style**:
+   - **TV Broadcast (recommended)** — Dark bar across the bottom with a colored severity label on the left and a scrolling white crawl on the right. Looks like a real TV station alert.
+   - **Tickarr Custom** — Simpler flashing overlay boxes.
 
-6. **Siren Tone Interval (seconds)** — How often the EAS attention tone (853 Hz + 960 Hz dual tone) repeats during an active alert. Set to `0` to disable the tone entirely. Set to `60` for a tone every minute. Set to `300` for less intrusive toning on long-duration events like flood watches. Minimum is 30 when enabled.
+6. **Poll Interval (seconds)** — How often Tickarr checks NWS for new or cleared alerts. Default is 60 seconds. Minimum is 15.
 
-7. **EAS Transcode Quality** — Resolution during an active alert: `full` (source resolution), `1080p30`, `720p`, or `720p30`. Lower quality reduces CPU load. If your server struggles during alerts, try `720p30`.
+7. **Siren Tone Interval (seconds)** — How often the EAS attention tone (853 Hz + 960 Hz dual tone) repeats during an active alert. Set to `0` to disable the tone entirely. Minimum is 30 when enabled.
 
 8. **Test Alert Duration (seconds)** — How long the Test EAS Alert action fires before auto-restoring. Default 60. Range 10–600.
 
----
-
-### Step 3 — Select your channels
-
-Still in EAS settings:
-
-1. **Apply To** — Choose: All Channels, Channel Group, Multiple Groups (CSV), or Single Channel.
-2. Fill in the matching target field (Channel Group dropdown, group name list, or single channel dropdown).
+9. **Apply To** — Choose: All Channels, Channel Group, Multiple Groups (CSV), or Single Channel. Fill in the matching target field (Channel Group dropdown, group name list, or single channel dropdown).
 
 > **EAS works alongside other tickers.** If a channel already has Now Playing, Custom Text, or Sports Ticker enabled, you do not need to disable it first. EAS arms on top of existing tickers and takes precedence when an alert fires. When the alert clears, the previous ticker state resumes automatically.
 
 ---
 
-### Step 4 — Enable EAS
+### Step 3 — Enable EAS
 
 Run **Actions → Enable EAS Silent Ticker**.
 
@@ -197,7 +210,7 @@ Tickarr registers the selected channels as EAS-armed. No profile is cloned yet. 
 
 ---
 
-### Step 5 — Test your EAS setup
+### Step 4 — Test your EAS setup
 
 Before waiting for a real alert, verify your overlay looks correct:
 
@@ -237,29 +250,31 @@ Custom Text displays any message you choose on one or more channels. You can sho
 
 ### Step 1 — Configure Custom Text settings
 
-In Tickarr settings, scroll to the **Custom Text** section and fill in the following **in order**:
+In Tickarr settings, scroll to the **Custom Text** section and fill in the following fields **in the order they appear**:
 
-1. **Trigger Mode** — Controls when the overlay profile is active:
+1. **Apply To** — Choose: All Channels, Channel Group, Multiple Groups, or Single Channel.
+
+2. Fill in the matching target field (group dropdown, group name list, or channel dropdown). Leave all other target fields blank.
+
+3. **Exclude Groups (optional)** — Comma-separated group names to skip when using All Channels or Channel Group scope (e.g. `SiriusXM, News`).
+
+4. **Trigger Mode** — Controls when the overlay profile is active:
    - **On-Demand (recommended)** — No profile is cloned until you set text via **Update Custom Text**. When you clear the text (set it to blank) and run Update again, the overlay removes itself and the channel returns to passthrough. This saves CPU on channels where you only occasionally need a message.
    - **Always On** — A profile is cloned and assigned immediately when you enable, even if text is empty. The overlay encodes 24/7.
 
-2. **Apply To** — Choose: All Channels, Channel Group, Multiple Groups, or Single Channel.
+5. **Custom Text** — The message to display. In On-Demand mode you can leave this blank at enable time and set the text later via Update Custom Text. In Always On mode, text is required.
 
-3. Fill in the matching target field (group dropdown, group name list, or channel dropdown). Leave all other target fields blank.
-
-4. **Custom Text** — The message to display. In On-Demand mode you can leave this blank at enable time and set the text later via Update Custom Text. In Always On mode, text is required.
-
-5. **Style**:
+6. **Style**:
    - **Static** — Text stays in a fixed position.
    - **Scrolling** — Text scrolls horizontally across the screen.
 
-6. **Position** — Top or Bottom of the screen.
+7. **Position** — Top, Bottom, or Center of the screen.
 
-7. **Schedule**:
+8. **Schedule**:
    - **Always On** — Text is visible continuously while the channel is running.
    - **Timed** — Text appears for a set number of seconds, disappears, then reappears on a repeating cycle.
 
-8. If you chose **Timed**, set:
+9. If you chose **Timed**, set:
    - **Display Duration** — Seconds the text stays visible each cycle.
    - **Repeat Interval** — Minutes between appearances (measured from when the text disappears). Must be longer than Duration.
 
@@ -304,48 +319,46 @@ The sports ticker pulls live scores from the ESPN API and displays them in a scr
 
 ### Step 1 — Configure Sports Ticker settings
 
-In Tickarr settings, scroll to the **Sports Ticker** section and fill in the following **in order**:
+In Tickarr settings, scroll to the **Sports Ticker** section and fill in the following fields **in the order they appear**:
 
-1. **Trigger Mode** — Controls when the overlay profile is active:
-   - **Always On** — The ticker encodes 24/7 regardless of whether any game is in progress. Best if you always want the ticker running.
-   - **Active Games Only** — The overlay only activates when at least one of your selected leagues has a live game in progress. When all games end, the channel automatically restores to passthrough. Saves CPU during off-hours and overnight.
-   - **Favorite Teams Only** — Same as Active Games Only, but the trigger is narrower: the overlay only fires when one of your favorite teams is currently playing. Requires Favorite Teams to be set (see step 5 below).
+1. **Transcode Quality (Video Channels)** — Output resolution and framerate while the ticker is active. Channels return to their original profile when the ticker is not running.
+   - **1080p30 (default)** — Full resolution, framerate capped at 30fps. Recommended starting point.
+   - **Full quality** — Source resolution and framerate. Highest CPU.
+   - **720p** — Scaled to 720p at source framerate.
+   - **720p 30fps** — Scaled to 720p, capped at 30fps. Maximum CPU reduction. Best for high-framerate source channels (59.94fps, 60fps).
 
-2. **Apply To** — Choose: All Channels, Channel Group, Multiple Groups, or Single Channel.
+2. **League Selection** — Toggle on the leagues you want to include in the ticker. Leagues are grouped by sport. You can enable as many as you like — sports seasons rarely overlap so enabling several does not usually mean they all appear at once.
 
-3. Fill in the matching target field. Leave the others blank.
+   Available leagues: NFL, NCAAF, CFL, UFL, XFL, NBA, WNBA, NCAA Men's/Women's Basketball, NBA G League, MLB, NCAA Baseball/Softball, NHL, NCAA Men's/Women's Hockey, MLS, NWSL, Liga MX, EPL, La Liga, Bundesliga, Serie A, Ligue 1, Eredivisie, Primeira Liga, Scottish Premiership, UCL, UEL, UEFA Conference League, FIFA World Cup, FIFA Women's World Cup, Copa America, CONCACAF, Leagues Cup, PGA Tour, LPGA, DP World Tour, LIV Golf, PGA Champions Tour, Formula 1, IndyCar, NASCAR, UFC/MMA, ATP, WTA, NCAA Volleyball, NCAA Men's/Women's Lacrosse, PLL
 
-4. **League Selection** — Toggle on the leagues you want to include in the ticker. You can enable as many as you like — sports seasons rarely overlap so enabling several does not usually mean they all appear at once.
+   > **Tip:** The leagues you toggle on define what triggers the overlay in Active Games Only and Favorite Teams Only modes. If you enable NFL and NHL, the overlay fires when either has a live game.
 
-   Available leagues: NFL, NCAAF, CFL, NBA, WNBA, NCAAB, MLB, NCAA Baseball, NCAA Softball, NHL, MLS, NWSL, EPL, UCL (UEFA Champions League), UEL (UEFA Europa League), La Liga, Bundesliga, Serie A, Ligue 1, FIFA World Cup, FIFA Women's World Cup, ATP, WTA, NCAA Volleyball, NCAA Lacrosse, NASCAR
+3. **Favorite Teams** — Optional. Enter team abbreviations comma-separated (e.g. `GB, CHI, DET`). When favorites are set, only games involving those teams appear in the ticker. Required when using **Favorite Teams Only** trigger mode. See [TEAMS.md](TEAMS.md) for all abbreviations by league.
 
-   > **Tip:** The leagues you toggle on are also the leagues that define the trigger in Active Games Only and Favorite Teams Only modes. If you enable NFL and NHL, the overlay fires when either has a live game.
+4. **Trigger Mode** — Controls when the overlay profile is active:
+   - **Always On (default)** — The ticker encodes 24/7 regardless of whether any game is in progress.
+   - **Active Games Only** — The overlay only activates when at least one of your selected leagues has a live game in progress. Restores to passthrough when all games end. Saves CPU during off-hours.
+   - **Favorite Teams Only** — Same as Active Games Only, but only fires when one of your favorite teams is playing. Requires Favorite Teams to be set (step 3 above).
 
-5. **Favorite Teams** — Optional. Enter team abbreviations comma-separated (e.g. `GB, CHI, DET`). When favorites are set, only games involving those teams appear in the ticker. Required when using **Favorite Teams Only** trigger mode. See [TEAMS.md](TEAMS.md) for all abbreviations by league.
+5. **Color Mode**:
+   - **Single Color — White (default)** — All ticker text is white. Lower CPU, works on any channel.
+   - **Multi-Color** — Sport/league labels and team abbreviations render in separate configurable colors. Requires a monospace bold font inside the Dispatcharr container.
 
 6. **Ticker Position** — Top or Bottom of the screen.
 
 7. **Font Size** — Text size in points. Default 36, minimum 16.
 
-8. **Static Ticker** (toggle) — When enabled, ticker text is centered and fixed on screen instead of scrolling. Best when you are using **Favorite Teams** to limit the ticker to one or two teams, so the content is short enough to fit on screen. Leave unchecked (default) for scrolling mode, which works with any amount of content. If you enable Static with many leagues or teams, text that is too long will be cut off on the right — switch back to scrolling if that happens.
+8. **Static Ticker** (toggle) — When enabled, ticker text is centered and fixed on screen instead of scrolling. Best when using **Favorite Teams** with one or two teams so content fits on one line. Leave off (default) for scrolling mode. If you enable Static with many leagues, text will be cut off — switch back to scrolling if that happens.
 
-9. **Color Mode**:
-   - **Single Color — White (default)** — All ticker text is white. Lower CPU, works on any channel.
-   - **Multi-Color** — Sport/league labels and team abbreviations render in separate configurable colors. Requires a monospace bold font inside the Dispatcharr container.
+9. If using **Multi-Color**, optionally set:
+   - **Sport Label Color** — Color for the sport/league label (default gold, `#ffd700`).
+   - **Team Abbreviation Color** — Color for team abbreviations (default `#00d4ff`).
 
-10. If using **Multi-Color**, optionally set:
-   - **Label Color** — Color for the sport/league label (default gold, `#ffd700`).
-   - **Abbrev Color** — Color for team abbreviations (default `#00d4ff`).
+10. **Apply To** — Choose: All Channels, Channel Group, Multiple Groups, or Single Channel. Fill in the matching target field. Leave the others blank.
 
-11. **Transcode Quality (Video Channels)** — Output resolution and framerate while the ticker is active:
-    - **1080p30 (default)** — Full resolution, framerate capped at 30fps. Recommended starting point.
-    - **Full quality** — Source resolution and framerate. Highest CPU.
-    - **720p** — Scaled to 720p at source framerate.
-    - **720p 30fps** — Scaled to 720p, capped at 30fps. Maximum CPU reduction. Best for high-framerate source channels (59.94fps, 60fps).
+11. **Exclude Groups (optional)** — Comma-separated group names to skip when using All Channels or Channel Group scope (e.g. `SiriusXM` to exclude your satellite radio group).
 
-12. **Exclude Groups (optional)** — Comma-separated group names to skip when using **All Channels** or **Channel Group** Apply To. For example, enter `SiriusXM` to exclude your satellite radio group from sports ticker enrollment.
-
-13. **Test Ticker Duration (seconds)** — How long the Test Sports Ticker action runs before auto-restoring. Default 60, range 10–600.
+12. **Test Ticker Duration (seconds)** — How long the Test Sports Ticker action runs before auto-restoring. Default 60, range 10–600.
 
 ---
 
@@ -389,82 +402,103 @@ Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and o
 
 ## Settings Reference
 
+The Settings panel displays sections in this order: **Now Playing → Satellite Radio Channel Setup → EAS Weather Alerts → Custom Text → Sports Ticker → Active Tickers**.
+
 ### Now Playing Settings
 
 | Field | Description |
 |---|---|
-| Trigger Mode | On-Demand (recommended) or Always On — see [Satellite Radio Now Playing](#satellite-radio-now-playing) |
 | Apply To | Scope: All Channels, Channel Group, Multiple Groups, or Single Channel |
 | Channel Group | The group to enable (visible when Apply To is Channel Group) |
 | Group Names | Comma-separated group names (visible when Apply To is Multiple Groups) |
 | Channel | The individual channel to enable (visible when Apply To is Single Channel) |
 | Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
 
-### Custom Text Settings
-
-| Field | Description |
-|---|---|
-| Trigger Mode | On-Demand (recommended) or Always On |
-| Apply To | Scope: All Channels, Channel Group, Multiple Groups, or Single Channel |
-| Channel Group / Group Names / Channel | Matching target field for the Apply To selection |
-| Custom Text | The message to display. Can be left blank in On-Demand mode. |
-| Style | Static (fixed position) or Scrolling (horizontal scroll) |
-| Position | Top or Bottom of the screen |
-| Schedule | Always On or Timed |
-| Display Duration | Seconds the text stays visible per cycle (Timed only) |
-| Repeat Interval | Minutes between appearances (Timed only) |
-| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
-
-### Sports Ticker Settings
-
-| Field | Description |
-|---|---|
-| Trigger Mode | Always On, Active Games Only, or Favorite Teams Only |
-| Apply To | Scope: All Channels, Channel Group, Multiple Groups, or Single Channel |
-| Channel Group / Group Names / Channel | Matching target field |
-| League Toggles | One toggle per supported league; enable any combination |
-| Favorite Teams | Comma-separated team abbreviations. Required for Favorite Teams Only mode. |
-| Ticker Position | Top or Bottom |
-| Font Size | Text size in points (default 36, minimum 16) |
-| Static Ticker | Toggle — when enabled, text is centered and fixed. Default (off) = scrolling. See [Ticker Style](#notes-on-ticker-style). |
-| Color Mode | Single Color — White or Multi-Color |
-| Label Color | Sport/league label color (Multi-Color only, default `#ffd700`) |
-| Abbrev Color | Team abbreviation color (Multi-Color only, default `#00d4ff`) |
-| Transcode Quality (Video Channels) | Output quality during ticker: `1080p30` (default), `full`, `720p`, or `720p30`. Lower = less CPU. Use `720p30` for high-framerate source channels. |
-| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
-| Test Ticker Duration | Seconds the Test Sports Ticker action runs before auto-restoring. Default 60, range 10–600. |
-
-### EAS Settings
-
-| Field | Description |
-|---|---|
-| Zone IDs | Comma-separated NWS zone or county codes (e.g. `OHZ001,OHC035`). Find yours at [weather.gov](https://www.weather.gov). |
-| Poll Interval (seconds) | How often Tickarr checks NWS for alerts. Default 60s, minimum 15s. |
-| Overlay Style | `broadcast` — TV-style bar at the bottom (recommended). `tickarr` — simpler two-line overlay. |
-| Alert Label Color | Hex color for the severity label box (e.g. `0xCC0000`). |
-| Severity Filter | Minimum severity to trigger: Minor, Moderate, Severe, or Extreme. Default: Moderate. |
-| Siren Tone Interval (seconds) | Seconds between EAS attention tone repetitions (853+960 Hz). Set to 0 to disable. |
-| EAS Transcode Quality | Output resolution during alerts: `full`, `1080p30`, `720p`, or `720p30`. Lower = less CPU. |
-| Test Alert Duration (seconds) | How long the Test EAS Alert action runs before auto-restoring. Default 60, range 10–600. |
-| Apply To | Scope of channels to enable EAS on |
-| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
+Now Playing always runs in on-demand mode — no Trigger Mode setting. The overlay activates when a viewer tunes in and restores to passthrough when idle.
 
 ### Satellite Radio Channel Setup Settings
 
 | Field | Description |
 |---|---|
-| Apply To | Scope to use for all Channel Setup actions (Fill EPG, Sort, Logos) |
+| Apply To | Scope to use for all Channel Setup actions (Fill EPG, Sort, Logos). Channel Group or Single Channel only. |
+| Channel Group | The group to target for Channel Setup actions |
+| Channel | The individual channel to target |
 | Sort Start Number | Channel number to start from when sorting. Leave blank to auto-detect. |
+
+### EAS Settings
+
+| Field | Description |
+|---|---|
+| EAS Transcode Quality | Output resolution during alerts: `full` (default), `1080p30`, `720p`, or `720p30`. Lower = less CPU. |
+| NWS Zone / County Codes | Comma-separated NWS zone or county codes (e.g. `OHZ001,OHC035`). Find yours at [weather.gov](https://www.weather.gov). |
+| Saved / Favorite Codes | Reference-only storage for frequently used codes. Not actively monitored. |
+| Minimum Severity | Minimum severity to trigger: Watch (Moderate+), Warning (Severe+), or Emergency (Extreme only). Default: Watch. |
+| Alert Overlay Style | `TV Broadcast` — news ticker bar (recommended). `Tickarr Custom` — simpler flashing overlay. |
+| Poll Interval (seconds) | How often Tickarr checks NWS for alerts. Default 60s, minimum 15s. |
+| Siren Tone Interval (seconds) | Seconds between EAS attention tone repetitions (853+960 Hz). Set to 0 to disable. |
+| Test Alert Duration (seconds) | How long the Test EAS Alert action runs before auto-restoring. Default 60, range 10–600. |
+| Apply To | Scope of channels to enable EAS on |
+| Channel Group / Group Names / Channel | Matching target field for the Apply To selection |
+| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
+
+### Custom Text Settings
+
+| Field | Description |
+|---|---|
+| Apply To | Scope: All Channels, Channel Group, Multiple Groups, or Single Channel |
+| Channel Group / Group Names / Channel | Matching target field for the Apply To selection |
+| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
+| Trigger Mode | On-Demand (recommended) or Always On |
+| Custom Text | The message to display. Can be left blank in On-Demand mode. |
+| Style | Static (fixed position), Scrolling (horizontal scroll) |
+| Position | Top, Bottom, or Center of the screen |
+| Schedule | Always On or Timed |
+| Display Duration | Seconds the text stays visible per cycle (Timed only) |
+| Repeat Interval | Minutes between appearances (Timed only) |
+
+### Sports Ticker Settings
+
+| Field | Description |
+|---|---|
+| Transcode Quality (Video Channels) | Output quality during ticker: `1080p30` (default), `full`, `720p`, or `720p30`. Lower = less CPU. Use `720p30` for high-framerate source channels. |
+| League Toggles | One toggle per supported league; enable any combination |
+| Favorite Teams | Comma-separated team abbreviations. Required for Favorite Teams Only mode. |
+| Trigger Mode | Always On (default), Active Games Only, or Favorite Teams Only |
+| Color Mode | Single Color — White or Multi-Color |
+| Ticker Position | Top or Bottom |
+| Font Size | Text size in points (default 36, minimum 16) |
+| Static Ticker | Toggle — when enabled, text is centered and fixed. Default (off) = scrolling. See [Ticker Style](#notes-on-ticker-style). |
+| Sport Label Color | Sport/league label color (Multi-Color only, default `#ffd700`) |
+| Team Abbreviation Color | Team abbreviation color (Multi-Color only, default `#00d4ff`) |
+| Apply To | Scope: All Channels, Channel Group, Multiple Groups, or Single Channel |
+| Channel Group / Group Names / Channel | Matching target field |
+| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
+| Test Ticker Duration | Seconds the Test Sports Ticker action runs before auto-restoring. Default 60, range 10–600. |
 
 ---
 
 ## Actions Reference
 
+The Actions panel displays sections in the same order as the Settings panel: **Now Playing → Channel Setup → EAS/JAS Weather Alerts → Custom Text → Sports Ticker → Manage**.
+
+### Action Button Color Key
+
+Each section has its own button color so you can identify which overlay type an action belongs to at a glance. Within each color, **filled** buttons activate or update and **outline** buttons remove, restore, or run a secondary utility.
+
+| Color | Section |
+|---|---|
+| Cyan | Satellite Radio — Now Playing and Channel Setup |
+| Orange | EAS / JAS Weather Alerts |
+| Blue | Custom Text |
+| Green | Sports Ticker |
+| Violet | Manage |
+| Red | Global destructive actions only — Disable All Tickers and Restart Dispatcharr |
+
 ### Satellite Radio Now Playing
 
 | Action | Description |
 |---|---|
-| Enable Now Playing | Registers targeted channels for Now Playing. In On-Demand mode, clones profiles when viewers connect. In Always On mode, clones immediately. |
+| Enable Now Playing | Registers targeted channels for Now Playing. Clones profiles on-demand when viewers connect; restores to passthrough when idle. |
 | Disable Now Playing | Restores original profiles and removes all clones for Now Playing channels. |
 
 ### Satellite Radio Channel Setup
@@ -477,6 +511,15 @@ Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and o
 | Assign Logos | Sets logos from Tickarr's built-in satellite radio library. |
 | Fill EPG + Sort | Runs Full EPG fill and Sort together. |
 | Fill EPG + Sort + Logos | Runs Full EPG fill, Sort, and Logos together. Recommended for first-time setup. |
+
+### EAS/JAS Weather Alerts
+
+| Action | Description |
+|---|---|
+| Enable EAS Silent Ticker | Arms selected channels for EAS. No profile is cloned until a real alert fires. |
+| Test EAS Alert | Fires a fake EAS overlay for the configured Test Alert Duration, then auto-restores. Use this to verify your overlay looks correct without waiting for a real alert. |
+| Disable EAS Ticker | Restores original profiles and disarms all EAS-enabled channels. |
+| Migrate EAS to Dynamic Mode | One-time migration for users upgrading from an older version of Tickarr that used always-on EAS profiles. Restores all EAS channels to passthrough and re-arms them in dynamic mode. |
 
 ### Custom Text
 
@@ -494,15 +537,6 @@ Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and o
 | Update Sports Ticker | Updates the league selection, trigger mode, display settings, or ticker style on already-enabled channels without restarting the stream. Ticker content reflects the new settings within ~30 seconds. |
 | Test Sports Ticker | Fires fake score data on the selected channel for the configured Test Ticker Duration, then auto-restores. Use this to verify your display settings (position, font size, color mode, ticker style) without waiting for a live game. |
 | Disable Sports Ticker | Restores original profiles and removes all clones for Sports Ticker channels. |
-
-### EAS/JAS Weather Alerts
-
-| Action | Description |
-|---|---|
-| Enable EAS Silent Ticker | Arms selected channels for EAS. No profile is cloned until a real alert fires. |
-| Test EAS Alert | Fires a fake EAS overlay for the configured Test Alert Duration, then auto-restores. Use this to verify your overlay looks correct without waiting for a real alert. |
-| Disable EAS Ticker | Restores original profiles and disarms all EAS-enabled channels. |
-| Migrate EAS to Dynamic Mode | One-time migration for users upgrading from an older version of Tickarr that used always-on EAS profiles. Restores all EAS channels to passthrough and re-arms them in dynamic mode. |
 
 ### Manage
 

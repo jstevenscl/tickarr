@@ -2593,6 +2593,8 @@ class Plugin:
             "reload_poller":        self._reload_poller,
             "restart_dispatcharr":  self._restart_dispatcharr,
         }
+        if action.startswith("_section_"):
+            return {"success": True, "message": ""}
         handler = dispatch.get(action)
         if not handler:
             return {"success": False, "message": f"Unknown action: {action}"}
@@ -2636,7 +2638,15 @@ class Plugin:
             try:
                 original_profile = channel.stream_profile
                 if not original_profile:
+                    try:
+                        original_profile = channel.get_stream_profile()
+                    except Exception:
+                        original_profile = None
+                if not original_profile:
                     skipped.append(f"{channel.name} (no stream profile assigned — go to Channels, open this channel, and assign any stream profile, then re-run)")
+                    continue
+                if not (original_profile.parameters or "").strip():
+                    skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
@@ -2737,7 +2747,15 @@ class Plugin:
             try:
                 original_profile = channel.stream_profile
                 if not original_profile:
+                    try:
+                        original_profile = channel.get_stream_profile()
+                    except Exception:
+                        original_profile = None
+                if not original_profile:
                     skipped.append(f"{channel.name} (no stream profile assigned — go to Channels, open this channel, and assign any stream profile, then re-run)")
+                    continue
+                if not (original_profile.parameters or "").strip():
+                    skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
@@ -2933,7 +2951,15 @@ class Plugin:
             try:
                 original_profile = channel.stream_profile
                 if not original_profile:
+                    try:
+                        original_profile = channel.get_stream_profile()
+                    except Exception:
+                        original_profile = None
+                if not original_profile:
                     skipped.append(f"{channel.name} (no stream profile assigned — go to Channels, open this channel, and assign any stream profile, then re-run)")
+                    continue
+                if not (original_profile.parameters or "").strip():
+                    skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
@@ -3163,7 +3189,15 @@ class Plugin:
                     continue
                 original_profile = channel.stream_profile
                 if not original_profile:
+                    try:
+                        original_profile = channel.get_stream_profile()
+                    except Exception:
+                        original_profile = None
+                if not original_profile:
                     skipped.append(f"{channel.name} (no stream profile assigned — assign one in Channels first)")
+                    continue
+                if not (original_profile.parameters or "").strip():
+                    skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
                     skipped.append(f"{channel.name} (already has a Tickarr profile — disable first)")

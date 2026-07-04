@@ -76,6 +76,7 @@ Your channel runs 100% normally at all times. Tickarr sits quietly in the backgr
 - Dispatcharr v0.27.1 or later
 - Redis (used by Dispatcharr — standard in all installs)
 - FFmpeg in the Dispatcharr container (standard in all installs)
+- Channels must have an FFmpeg-based stream profile assigned — **Proxy** and **Redirect** profiles bypass FFmpeg and cannot be used with any Tickarr overlay. See [Before You Start](docs/USERGUIDE.md#before-you-start--universal-requirements) in the User Guide if affected channels are being skipped.
 
 ---
 
@@ -95,6 +96,21 @@ Your channel runs 100% normally at all times. Tickarr sits quietly in the backgr
 ## Quick Start
 
 See the [User Guide](docs/USERGUIDE.md) for full setup instructions, settings reference, and troubleshooting.
+
+---
+
+## Actions Tab — Button Color Key
+
+Each section of the Actions tab has its own button color. Filled buttons activate or update; outline buttons remove, restore, or run a secondary utility.
+
+| Color | Section |
+|---|---|
+| Cyan | Satellite Radio — Now Playing and Channel Setup |
+| Orange | EAS / JAS Weather Alerts |
+| Blue | Custom Text |
+| Green | Sports Ticker |
+| Violet | Manage |
+| Red | Global destructive — Disable All Tickers and Restart Dispatcharr only |
 
 ---
 
