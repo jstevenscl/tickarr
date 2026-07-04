@@ -1,120 +1,6 @@
 {
-  "generated_at": "2026-07-04T02:22:18Z",
+  "generated_at": "2026-07-04T06:42:11Z",
   "events": [
-    {
-      "slug": "nascar",
-      "title": "NCS Practice",
-      "description": "SiriusXM NASCAR Radio · NCS Practice · Chicagoland Speedway",
-      "start_utc": "2026-07-03T22:00:00Z",
-      "end_utc": "2026-07-04T01:30:00Z",
-      "channels": [
-        "SiriusXM NASCAR Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Colorado Rockies @ San Francisco Giants",
-      "description": "MLB · Colorado Rockies @ San Francisco Giants",
-      "start_utc": "2026-07-04T00:10:00Z",
-      "end_utc": "2026-07-04T03:10:00Z",
-      "channels": [
-        "San Francisco Giants",
-        "Colorado Rockies",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Houston Astros @ Tampa Bay Rays",
-      "description": "MLB · Houston Astros @ Tampa Bay Rays",
-      "start_utc": "2026-07-04T00:15:00Z",
-      "end_utc": "2026-07-04T03:15:00Z",
-      "channels": [
-        "Tampa Bay Rays",
-        "Houston Astros",
-        "MLB Play-by-Play 181",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Colombia @ Ghana",
-      "description": "SOCCER · Colombia @ Ghana",
-      "start_utc": "2026-07-04T01:30:00Z",
-      "end_utc": "2026-07-04T03:30:00Z",
-      "channels": [
-        "Ghana",
-        "Colombia",
-        "FOX Sports on SiriusXM",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Los Angeles Angels @ Boston Red Sox",
-      "description": "MLB · Los Angeles Angels @ Boston Red Sox",
-      "start_utc": "2026-07-04T01:38:00Z",
-      "end_utc": "2026-07-04T04:38:00Z",
-      "channels": [
-        "Boston Red Sox",
-        "Los Angeles Angels",
-        "MLB Play-by-Play 182",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Athletics @ Miami Marlins",
-      "description": "MLB · Athletics @ Miami Marlins",
-      "start_utc": "2026-07-04T01:40:00Z",
-      "end_utc": "2026-07-04T04:40:00Z",
-      "channels": [
-        "Miami Marlins",
-        "Athletics",
-        "MLB Play-by-Play 183",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Arizona Diamondbacks @ Milwaukee Brewers",
-      "description": "MLB · Arizona Diamondbacks @ Milwaukee Brewers",
-      "start_utc": "2026-07-04T01:45:00Z",
-      "end_utc": "2026-07-04T04:45:00Z",
-      "channels": [
-        "Milwaukee Brewers",
-        "Arizona Diamondbacks",
-        "MLB Play-by-Play 184",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Los Angeles Dodgers @ San Diego Padres",
-      "description": "MLB · Los Angeles Dodgers @ San Diego Padres",
-      "start_utc": "2026-07-04T02:10:00Z",
-      "end_utc": "2026-07-04T05:10:00Z",
-      "channels": [
-        "San Diego Padres",
-        "Los Angeles Dodgers",
-        "MLB Play-by-Play 175",
-        "MLB en Español 870",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Seattle Mariners @ Toronto Blue Jays",
-      "description": "MLB · Seattle Mariners @ Toronto Blue Jays",
-      "start_utc": "2026-07-04T02:10:00Z",
-      "end_utc": "2026-07-04T05:10:00Z",
-      "channels": [
-        "Toronto Blue Jays",
-        "Seattle Mariners",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "f1",
       "title": "F-1 Sprint Race",
@@ -135,6 +21,19 @@
       "channels": [
         "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Washington Nationals @ Pittsburgh Pirates",
+      "description": "MLB · Washington Nationals @ Pittsburgh Pirates",
+      "start_utc": "2026-07-04T15:05:00Z",
+      "end_utc": "2026-07-04T18:05:00Z",
+      "channels": [
+        "Pittsburgh Pirates",
+        "Washington Nationals",
+        "MLB Play-by-Play 175",
+        "MLB Network Radio"
       ]
     },
     {
@@ -172,6 +71,18 @@
       ]
     },
     {
+      "slug": "mlb",
+      "title": "New York Yankees @ Minnesota Twins",
+      "description": "MLB · New York Yankees @ Minnesota Twins",
+      "start_utc": "2026-07-04T17:35:00Z",
+      "end_utc": "2026-07-04T20:35:00Z",
+      "channels": [
+        "Minnesota Twins",
+        "New York Yankees",
+        "MLB Network Radio"
+      ]
+    },
+    {
       "slug": "nascar",
       "title": "NCS Pole Qualifying",
       "description": "SiriusXM NASCAR Radio · NCS Pole Qualifying · Chicagoland Speedway",
@@ -179,6 +90,35 @@
       "end_utc": "2026-07-04T22:30:00Z",
       "channels": [
         "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Texas Rangers @ Detroit Tigers",
+      "description": "MLB · Texas Rangers @ Detroit Tigers",
+      "start_utc": "2026-07-04T20:05:00Z",
+      "end_utc": "2026-07-04T23:05:00Z",
+      "channels": [
+        "Detroit Tigers",
+        "Texas Rangers",
+        "MLB Play-by-Play 176",
+        "MLB en Español 870",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Seattle Mariners @ Toronto Blue Jays",
+      "description": "MLB · Seattle Mariners @ Toronto Blue Jays",
+      "start_utc": "2026-07-04T20:10:00Z",
+      "end_utc": "2026-07-04T23:10:00Z",
+      "channels": [
+        "Toronto Blue Jays",
+        "Seattle Mariners",
+        "MLB Play-by-Play 175",
+        "MLB Play-by-Play 177",
+        "Sports 964",
+        "MLB Network Radio"
       ]
     },
     {
@@ -202,6 +142,151 @@
       "end_utc": "2026-07-05T00:30:00Z",
       "channels": [
         "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Cincinnati Reds @ Baltimore Orioles",
+      "description": "MLB · Cincinnati Reds @ Baltimore Orioles",
+      "start_utc": "2026-07-04T23:10:00Z",
+      "end_utc": "2026-07-05T02:10:00Z",
+      "channels": [
+        "Baltimore Orioles",
+        "Cincinnati Reds",
+        "MLB Play-by-Play 179",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Cleveland Guardians @ Chicago White Sox",
+      "description": "MLB · Cleveland Guardians @ Chicago White Sox",
+      "start_utc": "2026-07-04T23:10:00Z",
+      "end_utc": "2026-07-05T02:10:00Z",
+      "channels": [
+        "Chicago White Sox",
+        "Cleveland Guardians",
+        "MLB Play-by-Play 180",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Houston Astros @ Tampa Bay Rays",
+      "description": "MLB · Houston Astros @ Tampa Bay Rays",
+      "start_utc": "2026-07-04T23:10:00Z",
+      "end_utc": "2026-07-05T02:10:00Z",
+      "channels": [
+        "Tampa Bay Rays",
+        "Houston Astros",
+        "MLB Play-by-Play 178",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Chicago Cubs @ St. Louis Cardinals",
+      "description": "MLB · Chicago Cubs @ St. Louis Cardinals",
+      "start_utc": "2026-07-05T00:08:00Z",
+      "end_utc": "2026-07-05T03:08:00Z",
+      "channels": [
+        "St. Louis Cardinals",
+        "Chicago Cubs",
+        "MLB Play-by-Play 175",
+        "MLB Play-by-Play 183",
+        "Sports 964",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Atlanta Braves @ New York Mets",
+      "description": "MLB · Atlanta Braves @ New York Mets",
+      "start_utc": "2026-07-05T00:08:00Z",
+      "end_utc": "2026-07-05T03:08:00Z",
+      "channels": [
+        "New York Mets",
+        "Atlanta Braves",
+        "MLB Play-by-Play 182",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Colorado Rockies @ San Francisco Giants",
+      "description": "MLB · Colorado Rockies @ San Francisco Giants",
+      "start_utc": "2026-07-05T00:10:00Z",
+      "end_utc": "2026-07-05T03:10:00Z",
+      "channels": [
+        "San Francisco Giants",
+        "Colorado Rockies",
+        "MLB Play-by-Play 181",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Kansas City Royals @ Philadelphia Phillies",
+      "description": "MLB · Kansas City Royals @ Philadelphia Phillies",
+      "start_utc": "2026-07-05T00:10:00Z",
+      "end_utc": "2026-07-05T03:10:00Z",
+      "channels": [
+        "Philadelphia Phillies",
+        "Kansas City Royals",
+        "MLB Play-by-Play 184",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Los Angeles Angels @ Boston Red Sox",
+      "description": "MLB · Los Angeles Angels @ Boston Red Sox",
+      "start_utc": "2026-07-05T01:38:00Z",
+      "end_utc": "2026-07-05T04:38:00Z",
+      "channels": [
+        "Boston Red Sox",
+        "Los Angeles Angels",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Athletics @ Miami Marlins",
+      "description": "MLB · Athletics @ Miami Marlins",
+      "start_utc": "2026-07-05T01:40:00Z",
+      "end_utc": "2026-07-05T04:40:00Z",
+      "channels": [
+        "Miami Marlins",
+        "Athletics",
+        "MLB Play-by-Play 186",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Arizona Diamondbacks @ Milwaukee Brewers",
+      "description": "MLB · Arizona Diamondbacks @ Milwaukee Brewers",
+      "start_utc": "2026-07-05T01:40:00Z",
+      "end_utc": "2026-07-05T04:40:00Z",
+      "channels": [
+        "Milwaukee Brewers",
+        "Arizona Diamondbacks",
+        "MLB Play-by-Play 185",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Los Angeles Dodgers @ San Diego Padres",
+      "description": "MLB · Los Angeles Dodgers @ San Diego Padres",
+      "start_utc": "2026-07-05T02:10:00Z",
+      "end_utc": "2026-07-05T05:10:00Z",
+      "channels": [
+        "San Diego Padres",
+        "Los Angeles Dodgers",
+        "MLB Play-by-Play 177",
+        "MLB en Español 871",
+        "MLB Network Radio"
       ]
     },
     {
