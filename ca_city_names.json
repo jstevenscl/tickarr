@@ -1,0 +1,3378 @@
+{
+  "ab-1": {
+    "en": "Cochrane",
+    "fr": "Cochrane"
+  },
+  "ab-10": {
+    "en": "Athabasca",
+    "fr": "Athabasca"
+  },
+  "ab-11": {
+    "en": "Okotoks",
+    "fr": "Okotoks"
+  },
+  "ab-12": {
+    "en": "Airdrie",
+    "fr": "Airdrie"
+  },
+  "ab-14": {
+    "en": "Hinton",
+    "fr": "Hinton"
+  },
+  "ab-15": {
+    "en": "Lloydminster",
+    "fr": "Lloydminster"
+  },
+  "ab-16": {
+    "en": "Rocky Mountain House",
+    "fr": "Rocky Mountain House"
+  },
+  "ab-17": {
+    "en": "Crowsnest",
+    "fr": "Crowsnest"
+  },
+  "ab-18": {
+    "en": "Camrose",
+    "fr": "Camrose"
+  },
+  "ab-19": {
+    "en": "Milk River",
+    "fr": "Milk River"
+  },
+  "ab-2": {
+    "en": "Barrhead",
+    "fr": "Barrhead"
+  },
+  "ab-20": {
+    "en": "Fort McMurray",
+    "fr": "Fort McMurray"
+  },
+  "ab-21": {
+    "en": "Rainbow Lake",
+    "fr": "Rainbow Lake"
+  },
+  "ab-22": {
+    "en": "Stony Plain",
+    "fr": "Stony Plain"
+  },
+  "ab-23": {
+    "en": "Cold Lake",
+    "fr": "Cold Lake"
+  },
+  "ab-24": {
+    "en": "High Level",
+    "fr": "High Level"
+  },
+  "ab-25": {
+    "en": "Peace River",
+    "fr": "Peace River"
+  },
+  "ab-26": {
+    "en": "Vegreville",
+    "fr": "Vegreville"
+  },
+  "ab-27": {
+    "en": "Vauxhall",
+    "fr": "Vauxhall"
+  },
+  "ab-28": {
+    "en": "Fort Chipewyan",
+    "fr": "Fort Chipewyan"
+  },
+  "ab-29": {
+    "en": "Red Deer",
+    "fr": "Red Deer"
+  },
+  "ab-3": {
+    "en": "Canmore",
+    "fr": "Canmore"
+  },
+  "ab-30": {
+    "en": "Lethbridge",
+    "fr": "Lethbridge"
+  },
+  "ab-31": {
+    "en": "Grande Prairie",
+    "fr": "Grande Prairie"
+  },
+  "ab-32": {
+    "en": "Lac La Biche",
+    "fr": "Lac La Biche"
+  },
+  "ab-33": {
+    "en": "Mildred Lake",
+    "fr": "Mildred Lake"
+  },
+  "ab-34": {
+    "en": "Kananaskis (Nakiska Ridgetop)",
+    "fr": "Kananaskis (Nakiska Ridgetop)"
+  },
+  "ab-35": {
+    "en": "Onefour",
+    "fr": "Onefour"
+  },
+  "ab-36": {
+    "en": "Breton",
+    "fr": "Breton"
+  },
+  "ab-37": {
+    "en": "Hendrickson Creek",
+    "fr": "Hendrickson Creek"
+  },
+  "ab-38": {
+    "en": "Nordegg",
+    "fr": "Nordegg"
+  },
+  "ab-39": {
+    "en": "Lacombe",
+    "fr": "Lacombe"
+  },
+  "ab-4": {
+    "en": "High River",
+    "fr": "High River"
+  },
+  "ab-40": {
+    "en": "Red Earth Creek",
+    "fr": "Red Earth Creek"
+  },
+  "ab-41": {
+    "en": "Willow Creek (Provincial Park)",
+    "fr": "Willow Creek (Parc provincial)"
+  },
+  "ab-42": {
+    "en": "Bow Valley (Provincial Park)",
+    "fr": "Bow Valley (Parc provincial)"
+  },
+  "ab-43": {
+    "en": "Bow Island",
+    "fr": "Bow Island"
+  },
+  "ab-44": {
+    "en": "Stavely",
+    "fr": "Stavely"
+  },
+  "ab-45": {
+    "en": "Grande Cache",
+    "fr": "Grande Cache"
+  },
+  "ab-46": {
+    "en": "Pincher Creek",
+    "fr": "Pincher Creek"
+  },
+  "ab-47": {
+    "en": "Suffield",
+    "fr": "Suffield"
+  },
+  "ab-48": {
+    "en": "Drayton Valley",
+    "fr": "Drayton Valley"
+  },
+  "ab-49": {
+    "en": "Banff",
+    "fr": "Banff"
+  },
+  "ab-5": {
+    "en": "Stettler",
+    "fr": "Stettler"
+  },
+  "ab-50": {
+    "en": "Edmonton",
+    "fr": "Edmonton"
+  },
+  "ab-51": {
+    "en": "Medicine Hat",
+    "fr": "Medicine Hat"
+  },
+  "ab-52": {
+    "en": "Calgary",
+    "fr": "Calgary"
+  },
+  "ab-53": {
+    "en": "Sundre",
+    "fr": "Sundre"
+  },
+  "ab-54": {
+    "en": "Slave Lake",
+    "fr": "Slave Lake"
+  },
+  "ab-55": {
+    "en": "Wainwright",
+    "fr": "Wainwright"
+  },
+  "ab-56": {
+    "en": "Whitecourt",
+    "fr": "Whitecourt"
+  },
+  "ab-57": {
+    "en": "Beaverlodge",
+    "fr": "Beaverlodge"
+  },
+  "ab-58": {
+    "en": "Brooks",
+    "fr": "Brooks"
+  },
+  "ab-59": {
+    "en": "Coronation",
+    "fr": "Coronation"
+  },
+  "ab-6": {
+    "en": "Strathmore",
+    "fr": "Strathmore"
+  },
+  "ab-60": {
+    "en": "Claresholm",
+    "fr": "Claresholm"
+  },
+  "ab-61": {
+    "en": "Calgary (Olympic Park)",
+    "fr": "Calgary (Parc Olympique)"
+  },
+  "ab-62": {
+    "en": "Drumheller",
+    "fr": "Drumheller"
+  },
+  "ab-63": {
+    "en": "Elk Island (National Park)",
+    "fr": "Elk Island (Parc national)"
+  },
+  "ab-64": {
+    "en": "Cardston",
+    "fr": "Cardston"
+  },
+  "ab-65": {
+    "en": "Garden Creek",
+    "fr": "Garden Creek"
+  },
+  "ab-66": {
+    "en": "Waterton Park",
+    "fr": "Parc Waterton"
+  },
+  "ab-67": {
+    "en": "Esther",
+    "fr": "Esther"
+  },
+  "ab-68": {
+    "en": "Highvale",
+    "fr": "Highvale"
+  },
+  "ab-69": {
+    "en": "Three Hills",
+    "fr": "Three Hills"
+  },
+  "ab-7": {
+    "en": "Taber",
+    "fr": "Taber"
+  },
+  "ab-70": {
+    "en": "Jasper",
+    "fr": "Jasper"
+  },
+  "ab-71": {
+    "en": "Edmonton (Int'l Aprt)",
+    "fr": "Edmonton (Aprt int.)"
+  },
+  "ab-72": {
+    "en": "Edson",
+    "fr": "Edson"
+  },
+  "ab-8": {
+    "en": "Westlock",
+    "fr": "Westlock"
+  },
+  "ab-9": {
+    "en": "Wetaskiwin",
+    "fr": "Wetaskiwin"
+  },
+  "bc-1": {
+    "en": "Gibsons",
+    "fr": "Gibsons"
+  },
+  "bc-10": {
+    "en": "Rock Creek",
+    "fr": "Rock Creek"
+  },
+  "bc-100": {
+    "en": "Langley",
+    "fr": "Langley"
+  },
+  "bc-11": {
+    "en": "Kootenay (National Park)",
+    "fr": "Kootenay (Parc national)"
+  },
+  "bc-12": {
+    "en": "Clearwater",
+    "fr": "Clearwater"
+  },
+  "bc-13": {
+    "en": "Valemount",
+    "fr": "Valemount"
+  },
+  "bc-14": {
+    "en": "Dease Lake",
+    "fr": "Dease Lake"
+  },
+  "bc-15": {
+    "en": "Estevan Point",
+    "fr": "Estevan Point"
+  },
+  "bc-16": {
+    "en": "Pemberton",
+    "fr": "Pemberton"
+  },
+  "bc-17": {
+    "en": "Tofino",
+    "fr": "Tofino"
+  },
+  "bc-18": {
+    "en": "Bella Coola",
+    "fr": "Bella Coola"
+  },
+  "bc-19": {
+    "en": "Campbell River",
+    "fr": "Campbell River"
+  },
+  "bc-20": {
+    "en": "Nanaimo",
+    "fr": "Nanaimo"
+  },
+  "bc-21": {
+    "en": "Castlegar",
+    "fr": "Castlegar"
+  },
+  "bc-22": {
+    "en": "Blue River",
+    "fr": "Blue River"
+  },
+  "bc-23": {
+    "en": "Chetwynd",
+    "fr": "Chetwynd"
+  },
+  "bc-24": {
+    "en": "Chilliwack",
+    "fr": "Chilliwack"
+  },
+  "bc-25": {
+    "en": "Dawson Creek",
+    "fr": "Dawson Creek"
+  },
+  "bc-26": {
+    "en": "Creston",
+    "fr": "Creston"
+  },
+  "bc-27": {
+    "en": "Vernon",
+    "fr": "Vernon"
+  },
+  "bc-28": {
+    "en": "Lillooet",
+    "fr": "Lillooet"
+  },
+  "bc-29": {
+    "en": "Malahat",
+    "fr": "Malahat"
+  },
+  "bc-3": {
+    "en": "Sechelt",
+    "fr": "Sechelt"
+  },
+  "bc-30": {
+    "en": "Kitimat",
+    "fr": "Kitimat"
+  },
+  "bc-31": {
+    "en": "Hope Slide",
+    "fr": "Hope Slide"
+  },
+  "bc-32": {
+    "en": "Gonzales Point",
+    "fr": "Gonzales Point"
+  },
+  "bc-33": {
+    "en": "Lytton",
+    "fr": "Lytton"
+  },
+  "bc-34": {
+    "en": "Golden",
+    "fr": "Golden"
+  },
+  "bc-35": {
+    "en": "Pitt Meadows",
+    "fr": "Pitt Meadows"
+  },
+  "bc-36": {
+    "en": "Hope",
+    "fr": "Hope"
+  },
+  "bc-37": {
+    "en": "Nelson",
+    "fr": "Nelson"
+  },
+  "bc-38": {
+    "en": "Nakusp",
+    "fr": "Nakusp"
+  },
+  "bc-39": {
+    "en": "Grand Forks",
+    "fr": "Grand Forks"
+  },
+  "bc-40": {
+    "en": "Esquimalt",
+    "fr": "Esquimalt"
+  },
+  "bc-41": {
+    "en": "Princeton",
+    "fr": "Princeton"
+  },
+  "bc-42": {
+    "en": "Puntzi Mountain",
+    "fr": "Puntzi Mountain"
+  },
+  "bc-43": {
+    "en": "Burns Lake",
+    "fr": "Burns Lake"
+  },
+  "bc-44": {
+    "en": "Vanderhoof",
+    "fr": "Vanderhoof"
+  },
+  "bc-45": {
+    "en": "Kamloops",
+    "fr": "Kamloops"
+  },
+  "bc-46": {
+    "en": "Port Alberni",
+    "fr": "Port Alberni"
+  },
+  "bc-47": {
+    "en": "McBride",
+    "fr": "McBride"
+  },
+  "bc-48": {
+    "en": "Kelowna",
+    "fr": "Kelowna"
+  },
+  "bc-49": {
+    "en": "Merritt",
+    "fr": "Merritt"
+  },
+  "bc-5": {
+    "en": "Ucluelet",
+    "fr": "Ucluelet"
+  },
+  "bc-50": {
+    "en": "Squamish",
+    "fr": "Squamish"
+  },
+  "bc-51": {
+    "en": "Salmon Arm",
+    "fr": "Salmon Arm"
+  },
+  "bc-52": {
+    "en": "Sparwood",
+    "fr": "Sparwood"
+  },
+  "bc-53": {
+    "en": "Tetsa River (Provincial Park)",
+    "fr": "Tetsa River (Parc provincial)"
+  },
+  "bc-54": {
+    "en": "Summerland",
+    "fr": "Summerland"
+  },
+  "bc-55": {
+    "en": "Cache Creek",
+    "fr": "Cache Creek"
+  },
+  "bc-56": {
+    "en": "Masset",
+    "fr": "Masset"
+  },
+  "bc-57": {
+    "en": "Prince Rupert",
+    "fr": "Prince Rupert"
+  },
+  "bc-58": {
+    "en": "Powell River",
+    "fr": "Powell River"
+  },
+  "bc-59": {
+    "en": "Victoria (Hartland)",
+    "fr": "Victoria (Hartland)"
+  },
+  "bc-6": {
+    "en": "Cassiar",
+    "fr": "Cassiar"
+  },
+  "bc-60": {
+    "en": "Tatlayoko Lake",
+    "fr": "Tatlayoko Lake"
+  },
+  "bc-61": {
+    "en": "Comox",
+    "fr": "Comox"
+  },
+  "bc-62": {
+    "en": "White Rock",
+    "fr": "White Rock"
+  },
+  "bc-63": {
+    "en": "Muncho Lake",
+    "fr": "Muncho Lake"
+  },
+  "bc-64": {
+    "en": "Quesnel",
+    "fr": "Quesnel"
+  },
+  "bc-65": {
+    "en": "Revelstoke",
+    "fr": "Revelstoke"
+  },
+  "bc-66": {
+    "en": "Victoria (University of)",
+    "fr": "Victoria (Université de)"
+  },
+  "bc-67": {
+    "en": "Atlin",
+    "fr": "Atlin"
+  },
+  "bc-68": {
+    "en": "Yoho (National Park)",
+    "fr": "Yoho (Parc national)"
+  },
+  "bc-69": {
+    "en": "Osoyoos",
+    "fr": "Osoyoos"
+  },
+  "bc-7": {
+    "en": "100 Mile House",
+    "fr": "100 Mile House"
+  },
+  "bc-70": {
+    "en": "Agassiz",
+    "fr": "Agassiz"
+  },
+  "bc-71": {
+    "en": "Trail",
+    "fr": "Trail"
+  },
+  "bc-72": {
+    "en": "Invermere",
+    "fr": "Invermere"
+  },
+  "bc-73": {
+    "en": "Stewart",
+    "fr": "Stewart"
+  },
+  "bc-74": {
+    "en": "Vancouver",
+    "fr": "Vancouver"
+  },
+  "bc-75": {
+    "en": "Victoria Harbour",
+    "fr": "Victoria Harbour"
+  },
+  "bc-76": {
+    "en": "Williams Lake",
+    "fr": "Williams Lake"
+  },
+  "bc-77": {
+    "en": "Cranbrook",
+    "fr": "Cranbrook"
+  },
+  "bc-78": {
+    "en": "Fort St. John",
+    "fr": "Fort St. John"
+  },
+  "bc-79": {
+    "en": "Prince George",
+    "fr": "Prince George"
+  },
+  "bc-8": {
+    "en": "Dome Creek",
+    "fr": "Dome Creek"
+  },
+  "bc-80": {
+    "en": "Terrace",
+    "fr": "Terrace"
+  },
+  "bc-81": {
+    "en": "Abbotsford",
+    "fr": "Abbotsford"
+  },
+  "bc-82": {
+    "en": "Smithers",
+    "fr": "Smithers"
+  },
+  "bc-83": {
+    "en": "Fort Nelson",
+    "fr": "Fort Nelson"
+  },
+  "bc-84": {
+    "en": "Penticton",
+    "fr": "Penticton"
+  },
+  "bc-85": {
+    "en": "Victoria",
+    "fr": "Victoria"
+  },
+  "bc-86": {
+    "en": "Whistler",
+    "fr": "Whistler"
+  },
+  "bc-87": {
+    "en": "Liard River",
+    "fr": "Liard River"
+  },
+  "bc-88": {
+    "en": "Sandspit",
+    "fr": "Sandspit"
+  },
+  "bc-89": {
+    "en": "Port Hardy",
+    "fr": "Port Hardy"
+  },
+  "bc-9": {
+    "en": "Good Hope Lake",
+    "fr": "Good Hope Lake"
+  },
+  "bc-90": {
+    "en": "Mackenzie",
+    "fr": "Mackenzie"
+  },
+  "bc-91": {
+    "en": "Clinton",
+    "fr": "Clinton"
+  },
+  "bc-92": {
+    "en": "Courtenay",
+    "fr": "Courtenay"
+  },
+  "bc-93": {
+    "en": "Gulf Islands (Southern)",
+    "fr": "Gulf Islands (Secteur sud)"
+  },
+  "bc-94": {
+    "en": "Bella Bella",
+    "fr": "Bella Bella"
+  },
+  "bc-95": {
+    "en": "Cummins Lakes Park",
+    "fr": "Cummins Lakes Park"
+  },
+  "bc-96": {
+    "en": "Richmond",
+    "fr": "Richmond"
+  },
+  "bc-97": {
+    "en": "Duncan",
+    "fr": "Duncan"
+  },
+  "bc-98": {
+    "en": "Qualicum Beach",
+    "fr": "Qualicum Beach"
+  },
+  "bc-99": {
+    "en": "West Vancouver",
+    "fr": "West Vancouver"
+  },
+  "mb-10": {
+    "en": "Minnedosa",
+    "fr": "Minnedosa"
+  },
+  "mb-11": {
+    "en": "Morris",
+    "fr": "Morris"
+  },
+  "mb-12": {
+    "en": "Snow Lake",
+    "fr": "Snow Lake"
+  },
+  "mb-13": {
+    "en": "Steinbach",
+    "fr": "Steinbach"
+  },
+  "mb-14": {
+    "en": "Oak Point",
+    "fr": "Oak Point"
+  },
+  "mb-15": {
+    "en": "McCreary",
+    "fr": "McCreary"
+  },
+  "mb-16": {
+    "en": "Souris",
+    "fr": "Souris"
+  },
+  "mb-17": {
+    "en": "Morden",
+    "fr": "Morden"
+  },
+  "mb-18": {
+    "en": "Little Grand Rapids",
+    "fr": "Little Grand Rapids"
+  },
+  "mb-19": {
+    "en": "Pilot Mound",
+    "fr": "Pilot Mound"
+  },
+  "mb-2": {
+    "en": "Dominion City",
+    "fr": "Dominion City"
+  },
+  "mb-20": {
+    "en": "Virden",
+    "fr": "Virden"
+  },
+  "mb-21": {
+    "en": "Arnes",
+    "fr": "Arnes"
+  },
+  "mb-22": {
+    "en": "Leaf Rapids",
+    "fr": "Leaf Rapids"
+  },
+  "mb-23": {
+    "en": "Sprague",
+    "fr": "Sprague"
+  },
+  "mb-24": {
+    "en": "Fisher Branch",
+    "fr": "Fisher Branch"
+  },
+  "mb-25": {
+    "en": "Norway House",
+    "fr": "Norway House"
+  },
+  "mb-26": {
+    "en": "Winkler",
+    "fr": "Winkler"
+  },
+  "mb-27": {
+    "en": "Oxford House",
+    "fr": "Oxford House"
+  },
+  "mb-28": {
+    "en": "Shoal Lake",
+    "fr": "Shoal Lake"
+  },
+  "mb-29": {
+    "en": "Portage la Prairie",
+    "fr": "Portage la Prairie"
+  },
+  "mb-3": {
+    "en": "Altona",
+    "fr": "Altona"
+  },
+  "mb-30": {
+    "en": "The Pas",
+    "fr": "The Pas"
+  },
+  "mb-31": {
+    "en": "Wasagaming",
+    "fr": "Wasagaming"
+  },
+  "mb-32": {
+    "en": "Roblin",
+    "fr": "Roblin"
+  },
+  "mb-33": {
+    "en": "Bissett",
+    "fr": "Bissett"
+  },
+  "mb-34": {
+    "en": "Thompson",
+    "fr": "Thompson"
+  },
+  "mb-35": {
+    "en": "Carberry",
+    "fr": "Carberry"
+  },
+  "mb-36": {
+    "en": "Winnipeg (The Forks)",
+    "fr": "Winnipeg (La Fourche)"
+  },
+  "mb-37": {
+    "en": "Bloodvein",
+    "fr": "Bloodvein"
+  },
+  "mb-38": {
+    "en": "Winnipeg",
+    "fr": "Winnipeg"
+  },
+  "mb-39": {
+    "en": "Shamattawa",
+    "fr": "Shamattawa"
+  },
+  "mb-4": {
+    "en": "Pine Falls",
+    "fr": "Pine Falls"
+  },
+  "mb-40": {
+    "en": "Delta",
+    "fr": "Delta"
+  },
+  "mb-41": {
+    "en": "Lynn Lake",
+    "fr": "Lynn Lake"
+  },
+  "mb-42": {
+    "en": "Churchill",
+    "fr": "Churchill"
+  },
+  "mb-43": {
+    "en": "Bachelors Island",
+    "fr": "Bachelors Island"
+  },
+  "mb-44": {
+    "en": "Pinawa",
+    "fr": "Pinawa"
+  },
+  "mb-45": {
+    "en": "Melita",
+    "fr": "Melita"
+  },
+  "mb-46": {
+    "en": "Swan River",
+    "fr": "Swan River"
+  },
+  "mb-47": {
+    "en": "Emerson",
+    "fr": "Emerson"
+  },
+  "mb-48": {
+    "en": "Gretna",
+    "fr": "Gretna"
+  },
+  "mb-49": {
+    "en": "Deerwood",
+    "fr": "Deerwood"
+  },
+  "mb-5": {
+    "en": "Poplar River",
+    "fr": "Poplar River"
+  },
+  "mb-50": {
+    "en": "Hunters Point",
+    "fr": "Hunters Point"
+  },
+  "mb-51": {
+    "en": "Tadoule Lake",
+    "fr": "Tadoule Lake"
+  },
+  "mb-52": {
+    "en": "Brandon",
+    "fr": "Brandon"
+  },
+  "mb-53": {
+    "en": "Brochet",
+    "fr": "Brochet"
+  },
+  "mb-54": {
+    "en": "Berens River",
+    "fr": "Berens River"
+  },
+  "mb-55": {
+    "en": "Victoria Beach",
+    "fr": "Victoria Beach"
+  },
+  "mb-56": {
+    "en": "York Factory",
+    "fr": "York Factory"
+  },
+  "mb-57": {
+    "en": "Grand Rapids",
+    "fr": "Grand Rapids"
+  },
+  "mb-58": {
+    "en": "Dauphin",
+    "fr": "Dauphin"
+  },
+  "mb-59": {
+    "en": "Island Lake",
+    "fr": "Island Lake"
+  },
+  "mb-6": {
+    "en": "Richer",
+    "fr": "Richer"
+  },
+  "mb-60": {
+    "en": "Flin Flon",
+    "fr": "Flin Flon"
+  },
+  "mb-61": {
+    "en": "Shilo",
+    "fr": "Shilo"
+  },
+  "mb-62": {
+    "en": "Gimli",
+    "fr": "Gimli"
+  },
+  "mb-63": {
+    "en": "Gods Lake",
+    "fr": "Gods Lake"
+  },
+  "mb-64": {
+    "en": "Gillam",
+    "fr": "Gillam"
+  },
+  "mb-65": {
+    "en": "Carman",
+    "fr": "Carman"
+  },
+  "mb-66": {
+    "en": "Turtle Mountain (Provincial Park)",
+    "fr": "Turtle Mountain (Parc provincial)"
+  },
+  "mb-67": {
+    "en": "Pukatawagan",
+    "fr": "Pukatawagan"
+  },
+  "mb-7": {
+    "en": "Vita",
+    "fr": "Vita"
+  },
+  "mb-8": {
+    "en": "Whiteshell",
+    "fr": "Whiteshell"
+  },
+  "mb-9": {
+    "en": "Grand Beach",
+    "fr": "Grand Beach"
+  },
+  "nb-1": {
+    "en": "Grand-Bouctouche",
+    "fr": "Grand-Bouctouche"
+  },
+  "nb-10": {
+    "en": "Mount Carleton (Provincial Park)",
+    "fr": "Mont Carleton (Parc provincial)"
+  },
+  "nb-11": {
+    "en": "Oromocto",
+    "fr": "Oromocto"
+  },
+  "nb-12": {
+    "en": "Quispamsis",
+    "fr": "Quispamsis"
+  },
+  "nb-13": {
+    "en": "Richibucto",
+    "fr": "Richibucto"
+  },
+  "nb-14": {
+    "en": "Rogersville",
+    "fr": "Rogersville"
+  },
+  "nb-15": {
+    "en": "Sackville",
+    "fr": "Sackville"
+  },
+  "nb-16": {
+    "en": "Saint-Quentin",
+    "fr": "Saint-Quentin"
+  },
+  "nb-17": {
+    "en": "Shediac",
+    "fr": "Shédiac"
+  },
+  "nb-18": {
+    "en": "Saint Andrews",
+    "fr": "Saint Andrews"
+  },
+  "nb-19": {
+    "en": "Sussex",
+    "fr": "Sussex"
+  },
+  "nb-2": {
+    "en": "Campbellton",
+    "fr": "Campbellton"
+  },
+  "nb-20": {
+    "en": "Tracadie-Sheila",
+    "fr": "Tracadie-Sheila"
+  },
+  "nb-21": {
+    "en": "Woodstock",
+    "fr": "Woodstock"
+  },
+  "nb-22": {
+    "en": "Bas-Caraquet",
+    "fr": "Bas-Caraquet"
+  },
+  "nb-23": {
+    "en": "Saint John",
+    "fr": "Saint John"
+  },
+  "nb-24": {
+    "en": "St. Leonard",
+    "fr": "St. Leonard"
+  },
+  "nb-25": {
+    "en": "Miramichi",
+    "fr": "Miramichi"
+  },
+  "nb-26": {
+    "en": "Dalhousie",
+    "fr": "Dalhousie"
+  },
+  "nb-27": {
+    "en": "Grand Manan",
+    "fr": "Grand Manan"
+  },
+  "nb-28": {
+    "en": "Bathurst",
+    "fr": "Bathurst"
+  },
+  "nb-29": {
+    "en": "Fredericton",
+    "fr": "Fredericton"
+  },
+  "nb-3": {
+    "en": "Chipman",
+    "fr": "Chipman"
+  },
+  "nb-30": {
+    "en": "Charlo",
+    "fr": "Charlo"
+  },
+  "nb-31": {
+    "en": "Miscou Island",
+    "fr": "Miscou Island"
+  },
+  "nb-32": {
+    "en": "Edmundston",
+    "fr": "Edmundston"
+  },
+  "nb-33": {
+    "en": "Point Lepreau",
+    "fr": "Point Lepreau"
+  },
+  "nb-34": {
+    "en": "Point Escuminac",
+    "fr": "Point Escuminac"
+  },
+  "nb-35": {
+    "en": "St. Stephen",
+    "fr": "St. Stephen"
+  },
+  "nb-36": {
+    "en": "Moncton",
+    "fr": "Moncton"
+  },
+  "nb-4": {
+    "en": "Doaktown",
+    "fr": "Doaktown"
+  },
+  "nb-5": {
+    "en": "Fundy (National Park)",
+    "fr": "Fundy (Parc national)"
+  },
+  "nb-6": {
+    "en": "Grand Falls",
+    "fr": "Grand-Sault"
+  },
+  "nb-8": {
+    "en": "Hopewell",
+    "fr": "Hopewell"
+  },
+  "nb-9": {
+    "en": "Kouchibouguac",
+    "fr": "Kouchibouguac"
+  },
+  "nl-1": {
+    "en": "Clarenville",
+    "fr": "Clarenville"
+  },
+  "nl-10": {
+    "en": "Musgrave Harbour",
+    "fr": "Musgrave Harbour"
+  },
+  "nl-11": {
+    "en": "Port au Choix",
+    "fr": "Port-au-Choix"
+  },
+  "nl-12": {
+    "en": "Wabush Lake",
+    "fr": "Wabush Lake"
+  },
+  "nl-13": {
+    "en": "Rocky Harbour",
+    "fr": "Rocky Harbour"
+  },
+  "nl-14": {
+    "en": "Bonavista",
+    "fr": "Bonavista"
+  },
+  "nl-15": {
+    "en": "Terra Nova (National Park)",
+    "fr": "Terra Nova (Parc national)"
+  },
+  "nl-16": {
+    "en": "Gander",
+    "fr": "Gander"
+  },
+  "nl-17": {
+    "en": "Channel-Port aux Basques",
+    "fr": "Channel-Port aux Basques"
+  },
+  "nl-18": {
+    "en": "Wreckhouse",
+    "fr": "Wreckhouse"
+  },
+  "nl-19": {
+    "en": "Winterland",
+    "fr": "Winterland"
+  },
+  "nl-2": {
+    "en": "Campbellton",
+    "fr": "Campbellton"
+  },
+  "nl-20": {
+    "en": "Labrador City",
+    "fr": "Labrador City"
+  },
+  "nl-21": {
+    "en": "Churchill Falls",
+    "fr": "Churchill Falls"
+  },
+  "nl-22": {
+    "en": "La Scie",
+    "fr": "La Scie"
+  },
+  "nl-23": {
+    "en": "Happy Valley-Goose Bay",
+    "fr": "Happy Valley-Goose Bay"
+  },
+  "nl-24": {
+    "en": "St. John's",
+    "fr": "St. John's"
+  },
+  "nl-25": {
+    "en": "Makkovik",
+    "fr": "Makkovik"
+  },
+  "nl-26": {
+    "en": "Marble Mountain",
+    "fr": "Marble Mountain"
+  },
+  "nl-27": {
+    "en": "Stephenville",
+    "fr": "Stephenville"
+  },
+  "nl-28": {
+    "en": "Cape Race",
+    "fr": "Cape Race"
+  },
+  "nl-29": {
+    "en": "Mary's Harbour",
+    "fr": "Mary's Harbour"
+  },
+  "nl-3": {
+    "en": "Marystown",
+    "fr": "Marystown"
+  },
+  "nl-30": {
+    "en": "Placentia",
+    "fr": "Placentia"
+  },
+  "nl-31": {
+    "en": "Burgeo",
+    "fr": "Burgeo"
+  },
+  "nl-32": {
+    "en": "Cartwright",
+    "fr": "Cartwright"
+  },
+  "nl-33": {
+    "en": "Daniel's Harbour",
+    "fr": "Daniel's Harbour"
+  },
+  "nl-34": {
+    "en": "Badger",
+    "fr": "Badger"
+  },
+  "nl-35": {
+    "en": "Twillingate",
+    "fr": "Twillingate"
+  },
+  "nl-36": {
+    "en": "St. Lawrence",
+    "fr": "St. Lawrence"
+  },
+  "nl-37": {
+    "en": "St. Anthony",
+    "fr": "St. Anthony"
+  },
+  "nl-38": {
+    "en": "Hopedale",
+    "fr": "Hopedale"
+  },
+  "nl-39": {
+    "en": "Deer Lake",
+    "fr": "Deer Lake"
+  },
+  "nl-4": {
+    "en": "Buchans",
+    "fr": "Buchans"
+  },
+  "nl-40": {
+    "en": "Nain",
+    "fr": "Nain"
+  },
+  "nl-41": {
+    "en": "Corner Brook",
+    "fr": "Corner Brook"
+  },
+  "nl-42": {
+    "en": "New-Wes-Valley",
+    "fr": "New-Wes-Valley"
+  },
+  "nl-43": {
+    "en": "Bay Roberts",
+    "fr": "Bay Roberts"
+  },
+  "nl-44": {
+    "en": "Englee",
+    "fr": "Englee"
+  },
+  "nl-45": {
+    "en": "L'Anse-au-Loup",
+    "fr": "L'Anse-au-Loup"
+  },
+  "nl-46": {
+    "en": "Rigolet",
+    "fr": "Rigolet"
+  },
+  "nl-47": {
+    "en": "Cartwright Junction (Trans-Labrador Hwy)",
+    "fr": "Cartwright Junction (Rte Trans-Labrador)"
+  },
+  "nl-48": {
+    "en": "Gull Island Rapids (Trans-Labrador Hwy)",
+    "fr": "Gull Island Rapids (Rte Trans-Labrador)"
+  },
+  "nl-5": {
+    "en": "Grand Bank",
+    "fr": "Grand Bank"
+  },
+  "nl-6": {
+    "en": "Grand Falls-Windsor",
+    "fr": "Grand Falls-Windsor"
+  },
+  "nl-7": {
+    "en": "Gros Morne",
+    "fr": "Gros Morne"
+  },
+  "nl-8": {
+    "en": "St. Alban's",
+    "fr": "St. Alban's"
+  },
+  "nl-9": {
+    "en": "Lewisporte",
+    "fr": "Lewisporte"
+  },
+  "ns-1": {
+    "en": "New Glasgow",
+    "fr": "New Glasgow"
+  },
+  "ns-10": {
+    "en": "Sheet Harbour",
+    "fr": "Sheet Harbour"
+  },
+  "ns-11": {
+    "en": "Shelburne",
+    "fr": "Shelburne"
+  },
+  "ns-12": {
+    "en": "St. Peter's",
+    "fr": "St. Peter's"
+  },
+  "ns-13": {
+    "en": "Parrsboro",
+    "fr": "Parrsboro"
+  },
+  "ns-14": {
+    "en": "Tatamagouche",
+    "fr": "Tatamagouche"
+  },
+  "ns-15": {
+    "en": "Windsor",
+    "fr": "Windsor"
+  },
+  "ns-16": {
+    "en": "Ingonish",
+    "fr": "Ingonish"
+  },
+  "ns-17": {
+    "en": "Kentville",
+    "fr": "Kentville"
+  },
+  "ns-18": {
+    "en": "North East Margaree",
+    "fr": "North East Margaree"
+  },
+  "ns-19": {
+    "en": "Halifax",
+    "fr": "Halifax"
+  },
+  "ns-2": {
+    "en": "Annapolis Royal",
+    "fr": "Annapolis Royal"
+  },
+  "ns-20": {
+    "en": "Digby",
+    "fr": "Digby"
+  },
+  "ns-21": {
+    "en": "Lunenburg",
+    "fr": "Lunenburg"
+  },
+  "ns-22": {
+    "en": "Malay Falls",
+    "fr": "Malay Falls"
+  },
+  "ns-23": {
+    "en": "Hart Island",
+    "fr": "Hart Island"
+  },
+  "ns-24": {
+    "en": "Fourchu Head",
+    "fr": "Cap Fourchu"
+  },
+  "ns-25": {
+    "en": "Truro",
+    "fr": "Truro"
+  },
+  "ns-26": {
+    "en": "Port Hawkesbury",
+    "fr": "Port Hawkesbury"
+  },
+  "ns-27": {
+    "en": "Brier Island",
+    "fr": "Brier Island"
+  },
+  "ns-28": {
+    "en": "Tracadie",
+    "fr": "Tracadie"
+  },
+  "ns-29": {
+    "en": "Yarmouth",
+    "fr": "Yarmouth"
+  },
+  "ns-3": {
+    "en": "Antigonish",
+    "fr": "Antigonish"
+  },
+  "ns-30": {
+    "en": "Western Head",
+    "fr": "Western Head"
+  },
+  "ns-31": {
+    "en": "Sydney",
+    "fr": "Sydney"
+  },
+  "ns-32": {
+    "en": "Grand Étang",
+    "fr": "Grand Étang"
+  },
+  "ns-33": {
+    "en": "Amherst",
+    "fr": "Amherst"
+  },
+  "ns-34": {
+    "en": "Caribou",
+    "fr": "Caribou"
+  },
+  "ns-35": {
+    "en": "Greenwood",
+    "fr": "Greenwood"
+  },
+  "ns-36": {
+    "en": "Beaver Island",
+    "fr": "Beaver Island"
+  },
+  "ns-37": {
+    "en": "Baccaro Point",
+    "fr": "Cap Baccaro"
+  },
+  "ns-38": {
+    "en": "Chéticamp",
+    "fr": "Chéticamp"
+  },
+  "ns-39": {
+    "en": "Liverpool",
+    "fr": "Liverpool"
+  },
+  "ns-4": {
+    "en": "Baddeck",
+    "fr": "Baddeck"
+  },
+  "ns-40": {
+    "en": "Halifax (Shearwater)",
+    "fr": "Halifax (Shearwater)"
+  },
+  "ns-41": {
+    "en": "Cape George",
+    "fr": "Cape George"
+  },
+  "ns-42": {
+    "en": "Kejimkujik (National Park)",
+    "fr": "Kejimkujik (Parc national)"
+  },
+  "ns-43": {
+    "en": "North Mountain (Cape Breton)",
+    "fr": "North Mountain (Cap-Breton)"
+  },
+  "ns-44": {
+    "en": "Eskasoni",
+    "fr": "Eskasoni"
+  },
+  "ns-5": {
+    "en": "Bridgetown",
+    "fr": "Bridgetown"
+  },
+  "ns-6": {
+    "en": "Bridgewater",
+    "fr": "Bridgewater"
+  },
+  "ns-7": {
+    "en": "Economy",
+    "fr": "Economy"
+  },
+  "ns-8": {
+    "en": "Guysborough",
+    "fr": "Guysborough"
+  },
+  "nt-1": {
+    "en": "Detah",
+    "fr": "Detah"
+  },
+  "nt-10": {
+    "en": "Fort McPherson",
+    "fr": "Fort McPherson"
+  },
+  "nt-11": {
+    "en": "Tulita",
+    "fr": "Tulita"
+  },
+  "nt-12": {
+    "en": "Nahanni Butte",
+    "fr": "Nahanni Butte"
+  },
+  "nt-13": {
+    "en": "Aklavik",
+    "fr": "Aklavik"
+  },
+  "nt-14": {
+    "en": "Ekati (Lac de Gras)",
+    "fr": "Ekati (Lac de Gras)"
+  },
+  "nt-15": {
+    "en": "Sambaa K'e",
+    "fr": "Sambaa K'e"
+  },
+  "nt-16": {
+    "en": "Paulatuk",
+    "fr": "Paulatuk"
+  },
+  "nt-17": {
+    "en": "Fort Smith",
+    "fr": "Fort Smith"
+  },
+  "nt-18": {
+    "en": "Gameti",
+    "fr": "Gameti"
+  },
+  "nt-19": {
+    "en": "Sachs Harbour",
+    "fr": "Sachs Harbour"
+  },
+  "nt-2": {
+    "en": "Enterprise",
+    "fr": "Enterprise"
+  },
+  "nt-20": {
+    "en": "Tuktoyaktuk",
+    "fr": "Tuktoyaktuk"
+  },
+  "nt-21": {
+    "en": "Norman Wells",
+    "fr": "Norman Wells"
+  },
+  "nt-22": {
+    "en": "Deline",
+    "fr": "Deline"
+  },
+  "nt-23": {
+    "en": "Wrigley",
+    "fr": "Wrigley"
+  },
+  "nt-24": {
+    "en": "Yellowknife",
+    "fr": "Yellowknife"
+  },
+  "nt-26": {
+    "en": "Colville Lake",
+    "fr": "Colville Lake"
+  },
+  "nt-27": {
+    "en": "Fort Providence",
+    "fr": "Fort Providence"
+  },
+  "nt-28": {
+    "en": "Indin River",
+    "fr": "Indin River"
+  },
+  "nt-29": {
+    "en": "Fort Liard",
+    "fr": "Fort Liard"
+  },
+  "nt-3": {
+    "en": "Fort Resolution",
+    "fr": "Fort Resolution"
+  },
+  "nt-30": {
+    "en": "Inuvik",
+    "fr": "Inuvik"
+  },
+  "nt-31": {
+    "en": "Lutselke",
+    "fr": "Lutselke"
+  },
+  "nt-4": {
+    "en": "Fort Simpson",
+    "fr": "Fort Simpson"
+  },
+  "nt-5": {
+    "en": "Fort Good Hope",
+    "fr": "Fort Good Hope"
+  },
+  "nt-6": {
+    "en": "Whati",
+    "fr": "Whati"
+  },
+  "nt-7": {
+    "en": "Ulukhaktok",
+    "fr": "Ulukhaktok"
+  },
+  "nt-8": {
+    "en": "Hay River",
+    "fr": "Hay River"
+  },
+  "nt-9": {
+    "en": "Wekweeti",
+    "fr": "Wekweeti"
+  },
+  "nu-1": {
+    "en": "Nanisivik",
+    "fr": "Nanisivik"
+  },
+  "nu-10": {
+    "en": "Arctic Bay",
+    "fr": "Arctic Bay"
+  },
+  "nu-11": {
+    "en": "Eureka",
+    "fr": "Eureka"
+  },
+  "nu-12": {
+    "en": "Grise Fiord",
+    "fr": "Grise Fiord"
+  },
+  "nu-13": {
+    "en": "Kugaaruk",
+    "fr": "Kugaaruk"
+  },
+  "nu-14": {
+    "en": "Baker Lake",
+    "fr": "Baker Lake"
+  },
+  "nu-15": {
+    "en": "Cambridge Bay",
+    "fr": "Cambridge Bay"
+  },
+  "nu-16": {
+    "en": "Kugluktuk",
+    "fr": "Kugluktuk"
+  },
+  "nu-17": {
+    "en": "Chesterfield",
+    "fr": "Chesterfield"
+  },
+  "nu-18": {
+    "en": "Clyde River",
+    "fr": "Clyde River"
+  },
+  "nu-19": {
+    "en": "Ennadai",
+    "fr": "Ennadai"
+  },
+  "nu-2": {
+    "en": "Kinngait",
+    "fr": "Kinngait"
+  },
+  "nu-20": {
+    "en": "Arviat",
+    "fr": "Arviat"
+  },
+  "nu-21": {
+    "en": "Iqaluit",
+    "fr": "Iqaluit"
+  },
+  "nu-22": {
+    "en": "Alert",
+    "fr": "Alert"
+  },
+  "nu-23": {
+    "en": "Igloolik",
+    "fr": "Igloolik"
+  },
+  "nu-24": {
+    "en": "Gjoa Haven",
+    "fr": "Gjoa Haven"
+  },
+  "nu-25": {
+    "en": "Pond Inlet",
+    "fr": "Pond Inlet"
+  },
+  "nu-26": {
+    "en": "Kimmirut",
+    "fr": "Kimmirut"
+  },
+  "nu-27": {
+    "en": "Resolute",
+    "fr": "Resolute"
+  },
+  "nu-28": {
+    "en": "Rankin Inlet",
+    "fr": "Rankin Inlet"
+  },
+  "nu-29": {
+    "en": "Sanikiluaq",
+    "fr": "Sanikiluaq"
+  },
+  "nu-3": {
+    "en": "Naujaat",
+    "fr": "Naujaat"
+  },
+  "nu-4": {
+    "en": "Sanirajak",
+    "fr": "Sanirajak"
+  },
+  "nu-5": {
+    "en": "Qikiqtarjuaq",
+    "fr": "Qikiqtarjuaqq"
+  },
+  "nu-6": {
+    "en": "Whale Cove",
+    "fr": "Whale Cove"
+  },
+  "nu-7": {
+    "en": "Pangnirtung",
+    "fr": "Pangnirtung"
+  },
+  "nu-8": {
+    "en": "Taloyoak",
+    "fr": "Taloyoak"
+  },
+  "nu-9": {
+    "en": "Coral Harbour",
+    "fr": "Coral Harbour"
+  },
+  "on-1": {
+    "en": "Algonquin Park (Brent)",
+    "fr": "Parc Algonquin (Brent)"
+  },
+  "on-100": {
+    "en": "Thunder Bay",
+    "fr": "Thunder Bay"
+  },
+  "on-101": {
+    "en": "Ogoki",
+    "fr": "Ogoki"
+  },
+  "on-102": {
+    "en": "Bancroft",
+    "fr": "Bancroft"
+  },
+  "on-103": {
+    "en": "Parry Sound",
+    "fr": "Parry Sound"
+  },
+  "on-104": {
+    "en": "Red Lake",
+    "fr": "Red Lake"
+  },
+  "on-105": {
+    "en": "Sachigo Lake",
+    "fr": "Sachigo Lake"
+  },
+  "on-106": {
+    "en": "Smiths Falls",
+    "fr": "Smiths Falls"
+  },
+  "on-107": {
+    "en": "St. Catharines",
+    "fr": "St. Catharines"
+  },
+  "on-108": {
+    "en": "Marathon",
+    "fr": "Marathon"
+  },
+  "on-109": {
+    "en": "Vineland",
+    "fr": "Vineland"
+  },
+  "on-11": {
+    "en": "Chatham-Kent",
+    "fr": "Chatham-Kent"
+  },
+  "on-110": {
+    "en": "Wingham",
+    "fr": "Wingham"
+  },
+  "on-111": {
+    "en": "Armstrong",
+    "fr": "Armstrong"
+  },
+  "on-112": {
+    "en": "Petawawa",
+    "fr": "Petawawa"
+  },
+  "on-113": {
+    "en": "Moosonee",
+    "fr": "Moosonee"
+  },
+  "on-114": {
+    "en": "Alliston",
+    "fr": "Alliston"
+  },
+  "on-115": {
+    "en": "Stirling",
+    "fr": "Stirling"
+  },
+  "on-116": {
+    "en": "Stratford",
+    "fr": "Stratford"
+  },
+  "on-117": {
+    "en": "Oshawa",
+    "fr": "Oshawa"
+  },
+  "on-118": {
+    "en": "Ottawa (Kanata - Orléans)",
+    "fr": "Ottawa (Kanata - Orléans)"
+  },
+  "on-119": {
+    "en": "Whitby",
+    "fr": "Whitby"
+  },
+  "on-12": {
+    "en": "Fort Erie",
+    "fr": "Fort Erie"
+  },
+  "on-120": {
+    "en": "Pickle Lake",
+    "fr": "Pickle Lake"
+  },
+  "on-121": {
+    "en": "Peterborough",
+    "fr": "Peterborough"
+  },
+  "on-122": {
+    "en": "Alexandria",
+    "fr": "Alexandria"
+  },
+  "on-123": {
+    "en": "Terrace Bay",
+    "fr": "Terrace Bay"
+  },
+  "on-124": {
+    "en": "Big Trout Lake",
+    "fr": "Big Trout Lake"
+  },
+  "on-125": {
+    "en": "Niagara Falls",
+    "fr": "Niagara Falls"
+  },
+  "on-126": {
+    "en": "Trenton",
+    "fr": "Trenton"
+  },
+  "on-127": {
+    "en": "Timmins",
+    "fr": "Timmins"
+  },
+  "on-128": {
+    "en": "Toronto Island",
+    "fr": "Toronto Island"
+  },
+  "on-129": {
+    "en": "Sandy Lake",
+    "fr": "Sandy Lake"
+  },
+  "on-13": {
+    "en": "Orillia",
+    "fr": "Orillia"
+  },
+  "on-130": {
+    "en": "Wiarton",
+    "fr": "Wiarton"
+  },
+  "on-131": {
+    "en": "Pembroke",
+    "fr": "Pembroke"
+  },
+  "on-132": {
+    "en": "Webequie",
+    "fr": "Webequie"
+  },
+  "on-133": {
+    "en": "Barry's Bay",
+    "fr": "Barry's Bay"
+  },
+  "on-134": {
+    "en": "Savant Lake",
+    "fr": "Savant Lake"
+  },
+  "on-135": {
+    "en": "Sioux Lookout",
+    "fr": "Sioux Lookout"
+  },
+  "on-136": {
+    "en": "Earlton",
+    "fr": "Earlton"
+  },
+  "on-137": {
+    "en": "London",
+    "fr": "London"
+  },
+  "on-138": {
+    "en": "Wawa",
+    "fr": "Wawa"
+  },
+  "on-139": {
+    "en": "North Bay",
+    "fr": "North Bay"
+  },
+  "on-14": {
+    "en": "Welland",
+    "fr": "Welland"
+  },
+  "on-140": {
+    "en": "Orangeville",
+    "fr": "Orangeville"
+  },
+  "on-141": {
+    "en": "Rondeau (Provincial Park)",
+    "fr": "Rondeau (Parc provincial)"
+  },
+  "on-142": {
+    "en": "Kapuskasing",
+    "fr": "Kapuskasing"
+  },
+  "on-143": {
+    "en": "Toronto",
+    "fr": "Toronto"
+  },
+  "on-144": {
+    "en": "Gore Bay",
+    "fr": "Gore Bay"
+  },
+  "on-145": {
+    "en": "Kakabeka Falls",
+    "fr": "Kakabeka Falls"
+  },
+  "on-146": {
+    "en": "Killarney",
+    "fr": "Killarney"
+  },
+  "on-147": {
+    "en": "Sarnia",
+    "fr": "Sarnia"
+  },
+  "on-148": {
+    "en": "Atikokan",
+    "fr": "Atikokan"
+  },
+  "on-149": {
+    "en": "Port Perry",
+    "fr": "Port Perry"
+  },
+  "on-15": {
+    "en": "Woodstock",
+    "fr": "Woodstock"
+  },
+  "on-150": {
+    "en": "Collingwood",
+    "fr": "Collingwood"
+  },
+  "on-151": {
+    "en": "Barrie",
+    "fr": "Barrie"
+  },
+  "on-152": {
+    "en": "Cornwall",
+    "fr": "Cornwall"
+  },
+  "on-153": {
+    "en": "Greenstone (Beardmore)",
+    "fr": "Greenstone (Beardmore)"
+  },
+  "on-154": {
+    "en": "Upsala",
+    "fr": "Upsala"
+  },
+  "on-155": {
+    "en": "Winchester",
+    "fr": "Winchester"
+  },
+  "on-156": {
+    "en": "Ignace",
+    "fr": "Ignace"
+  },
+  "on-157": {
+    "en": "Tobermory",
+    "fr": "Tobermory"
+  },
+  "on-158": {
+    "en": "Wunnummin Lake",
+    "fr": "Wunnummin Lake"
+  },
+  "on-159": {
+    "en": "Fort Frances",
+    "fr": "Fort Frances"
+  },
+  "on-16": {
+    "en": "Walkerton",
+    "fr": "Walkerton"
+  },
+  "on-160": {
+    "en": "Goderich",
+    "fr": "Goderich"
+  },
+  "on-161": {
+    "en": "Simcoe",
+    "fr": "Simcoe"
+  },
+  "on-162": {
+    "en": "Sault Ste. Marie",
+    "fr": "Sault Ste. Marie"
+  },
+  "on-163": {
+    "en": "Montreal River Harbour",
+    "fr": "Montreal River Harbour"
+  },
+  "on-164": {
+    "en": "Attawapiskat",
+    "fr": "Attawapiskat"
+  },
+  "on-165": {
+    "en": "Haliburton",
+    "fr": "Haliburton"
+  },
+  "on-166": {
+    "en": "Sioux Narrows",
+    "fr": "Sioux Narrows"
+  },
+  "on-167": {
+    "en": "Ear Falls",
+    "fr": "Ear Falls"
+  },
+  "on-168": {
+    "en": "Kawartha Lakes (Lindsay)",
+    "fr": "Kawartha Lakes (Lindsay)"
+  },
+  "on-169": {
+    "en": "Midland",
+    "fr": "Midland"
+  },
+  "on-17": {
+    "en": "Tillsonburg",
+    "fr": "Tillsonburg"
+  },
+  "on-170": {
+    "en": "Elliot Lake",
+    "fr": "Elliot Lake"
+  },
+  "on-171": {
+    "en": "Fort Severn",
+    "fr": "Fort Severn"
+  },
+  "on-172": {
+    "en": "Rodney",
+    "fr": "Rodney"
+  },
+  "on-173": {
+    "en": "Fort Albany",
+    "fr": "Fort Albany"
+  },
+  "on-174": {
+    "en": "Sudbury (Greater)",
+    "fr": "Sudbury (Grand)"
+  },
+  "on-18": {
+    "en": "Strathroy",
+    "fr": "Strathroy"
+  },
+  "on-19": {
+    "en": "Port Elgin",
+    "fr": "Port Elgin"
+  },
+  "on-21": {
+    "en": "Blind River",
+    "fr": "Blind River"
+  },
+  "on-22": {
+    "en": "Temiskaming Shores",
+    "fr": "Temiskaming Shores"
+  },
+  "on-23": {
+    "en": "Leamington",
+    "fr": "Leamington"
+  },
+  "on-24": {
+    "en": "Mississauga",
+    "fr": "Mississauga"
+  },
+  "on-25": {
+    "en": "Newmarket",
+    "fr": "Newmarket"
+  },
+  "on-26": {
+    "en": "Nipigon",
+    "fr": "Nipigon"
+  },
+  "on-27": {
+    "en": "Prince Edward (Picton)",
+    "fr": "Prince Edward (Picton)"
+  },
+  "on-28": {
+    "en": "Kincardine",
+    "fr": "Kincardine"
+  },
+  "on-29": {
+    "en": "Algonquin Park (Lake of Two Rivers)",
+    "fr": "Parc Algonquin (Lake of Two Rivers)"
+  },
+  "on-3": {
+    "en": "Belleville",
+    "fr": "Belleville"
+  },
+  "on-30": {
+    "en": "Apsley",
+    "fr": "Apsley"
+  },
+  "on-31": {
+    "en": "Burk's Falls",
+    "fr": "Burk's Falls"
+  },
+  "on-32": {
+    "en": "Caledon",
+    "fr": "Caledon"
+  },
+  "on-33": {
+    "en": "Cochrane",
+    "fr": "Cochrane"
+  },
+  "on-34": {
+    "en": "Dorion",
+    "fr": "Dorion"
+  },
+  "on-35": {
+    "en": "Dunchurch",
+    "fr": "Dunchurch"
+  },
+  "on-36": {
+    "en": "Dundalk",
+    "fr": "Dundalk"
+  },
+  "on-37": {
+    "en": "Gogama",
+    "fr": "Gogama"
+  },
+  "on-38": {
+    "en": "Gravenhurst",
+    "fr": "Gravenhurst"
+  },
+  "on-39": {
+    "en": "Greater Napanee",
+    "fr": "Greater Napanee"
+  },
+  "on-4": {
+    "en": "Brampton",
+    "fr": "Brampton"
+  },
+  "on-40": {
+    "en": "Greater Sudbury",
+    "fr": "Grand Sudbury"
+  },
+  "on-41": {
+    "en": "Gull Bay",
+    "fr": "Gull Bay"
+  },
+  "on-42": {
+    "en": "Haldimand County",
+    "fr": "Haldimand County"
+  },
+  "on-43": {
+    "en": "Kaladar",
+    "fr": "Kaladar"
+  },
+  "on-44": {
+    "en": "Kawartha Lakes (Fenelon Falls)",
+    "fr": "Kawartha Lakes (Fenelon Falls)"
+  },
+  "on-45": {
+    "en": "Lake Superior (Provincial Park)",
+    "fr": "Lac Supérieur (Parc provincial)"
+  },
+  "on-46": {
+    "en": "Lambton Shores",
+    "fr": "Lambton Shores"
+  },
+  "on-47": {
+    "en": "Lincoln",
+    "fr": "Lincoln"
+  },
+  "on-48": {
+    "en": "Mine Centre",
+    "fr": "Mine Centre"
+  },
+  "on-49": {
+    "en": "New Tecumseth",
+    "fr": "New Tecumseth"
+  },
+  "on-5": {
+    "en": "Guelph",
+    "fr": "Guelph"
+  },
+  "on-50": {
+    "en": "Norfolk",
+    "fr": "Norfolk"
+  },
+  "on-51": {
+    "en": "North Perth",
+    "fr": "North Perth"
+  },
+  "on-52": {
+    "en": "Ottawa (Richmond - Metcalfe)",
+    "fr": "Ottawa (Richmond - Metcalfe)"
+  },
+  "on-53": {
+    "en": "Oxtongue Lake",
+    "fr": "Oxtongue Lake"
+  },
+  "on-54": {
+    "en": "Pickering",
+    "fr": "Pickering"
+  },
+  "on-55": {
+    "en": "Pikangikum",
+    "fr": "Pikangikum"
+  },
+  "on-56": {
+    "en": "Port Carling",
+    "fr": "Port Carling"
+  },
+  "on-57": {
+    "en": "Quinte West",
+    "fr": "Quinte Ouest"
+  },
+  "on-58": {
+    "en": "Renfrew",
+    "fr": "Renfrew"
+  },
+  "on-59": {
+    "en": "Richmond Hill",
+    "fr": "Richmond Hill"
+  },
+  "on-60": {
+    "en": "Saugeen Shores",
+    "fr": "Saugeen Shores"
+  },
+  "on-61": {
+    "en": "Sharbot Lake",
+    "fr": "Sharbot Lake"
+  },
+  "on-62": {
+    "en": "South Bruce Peninsula",
+    "fr": "South Bruce Peninsula"
+  },
+  "on-63": {
+    "en": "Sydenham",
+    "fr": "Sydenham"
+  },
+  "on-64": {
+    "en": "Vaughan",
+    "fr": "Vaughan"
+  },
+  "on-65": {
+    "en": "West Nipissing",
+    "fr": "Nipissing Ouest"
+  },
+  "on-66": {
+    "en": "Westport",
+    "fr": "Westport"
+  },
+  "on-67": {
+    "en": "White River",
+    "fr": "White River"
+  },
+  "on-68": {
+    "en": "Halton Hills",
+    "fr": "Halton Hills"
+  },
+  "on-69": {
+    "en": "Kingston",
+    "fr": "Kingston"
+  },
+  "on-7": {
+    "en": "Owen Sound",
+    "fr": "Owen Sound"
+  },
+  "on-70": {
+    "en": "Greenstone (Geraldton)",
+    "fr": "Greenstone (Geraldton)"
+  },
+  "on-71": {
+    "en": "Hawkesbury",
+    "fr": "Hawkesbury"
+  },
+  "on-72": {
+    "en": "Dryden",
+    "fr": "Dryden"
+  },
+  "on-73": {
+    "en": "Hearst",
+    "fr": "Hearst"
+  },
+  "on-74": {
+    "en": "Kemptville",
+    "fr": "Kemptville"
+  },
+  "on-75": {
+    "en": "Cobourg",
+    "fr": "Cobourg"
+  },
+  "on-76": {
+    "en": "Kirkland Lake",
+    "fr": "Kirkland Lake"
+  },
+  "on-77": {
+    "en": "Hamilton",
+    "fr": "Hamilton"
+  },
+  "on-78": {
+    "en": "Hornepayne",
+    "fr": "Hornepayne"
+  },
+  "on-79": {
+    "en": "Oakville",
+    "fr": "Oakville"
+  },
+  "on-8": {
+    "en": "Brockville",
+    "fr": "Brockville"
+  },
+  "on-80": {
+    "en": "Port Colborne",
+    "fr": "Port Colborne"
+  },
+  "on-81": {
+    "en": "Cambridge",
+    "fr": "Cambridge"
+  },
+  "on-82": {
+    "en": "Kitchener-Waterloo",
+    "fr": "Kitchener-Waterloo"
+  },
+  "on-83": {
+    "en": "Deep River",
+    "fr": "Deep River"
+  },
+  "on-84": {
+    "en": "Shelburne",
+    "fr": "Shelburne"
+  },
+  "on-85": {
+    "en": "Markham",
+    "fr": "Markham"
+  },
+  "on-86": {
+    "en": "Brantford",
+    "fr": "Brantford"
+  },
+  "on-87": {
+    "en": "Lansdowne House",
+    "fr": "Lansdowne House"
+  },
+  "on-88": {
+    "en": "Huntsville",
+    "fr": "Huntsville"
+  },
+  "on-89": {
+    "en": "Mount Forest",
+    "fr": "Mount Forest"
+  },
+  "on-9": {
+    "en": "Bracebridge",
+    "fr": "Bracebridge"
+  },
+  "on-90": {
+    "en": "Gananoque",
+    "fr": "Gananoque"
+  },
+  "on-91": {
+    "en": "Chapleau",
+    "fr": "Chapleau"
+  },
+  "on-92": {
+    "en": "Morrisburg",
+    "fr": "Morrisburg"
+  },
+  "on-93": {
+    "en": "Muskoka",
+    "fr": "Muskoka"
+  },
+  "on-94": {
+    "en": "Windsor",
+    "fr": "Windsor"
+  },
+  "on-95": {
+    "en": "Burlington",
+    "fr": "Burlington"
+  },
+  "on-96": {
+    "en": "Kenora",
+    "fr": "Kenora"
+  },
+  "on-97": {
+    "en": "Greenstone (Nakina)",
+    "fr": "Greenstone (Nakina)"
+  },
+  "on-98": {
+    "en": "St. Thomas",
+    "fr": "St. Thomas"
+  },
+  "on-99": {
+    "en": "Peawanuck",
+    "fr": "Peawanuck"
+  },
+  "pe-1": {
+    "en": "North Cape",
+    "fr": "North Cape"
+  },
+  "pe-2": {
+    "en": "Maple Plains",
+    "fr": "Maple Plains"
+  },
+  "pe-3": {
+    "en": "Summerside",
+    "fr": "Summerside"
+  },
+  "pe-4": {
+    "en": "St. Peters Bay",
+    "fr": "St. Peters Bay"
+  },
+  "pe-5": {
+    "en": "Charlottetown",
+    "fr": "Charlottetown"
+  },
+  "pe-6": {
+    "en": "East Point",
+    "fr": "East Point"
+  },
+  "qc-100": {
+    "en": "La Grande-Quatre",
+    "fr": "La Grande-Quatre"
+  },
+  "qc-101": {
+    "en": "Gaspé",
+    "fr": "Gaspé"
+  },
+  "qc-102": {
+    "en": "Maniwaki",
+    "fr": "Maniwaki"
+  },
+  "qc-103": {
+    "en": "Îles-de-la-Madeleine",
+    "fr": "Îles-de-la-Madeleine"
+  },
+  "qc-104": {
+    "en": "Havre St-Pierre",
+    "fr": "Havre St-Pierre"
+  },
+  "qc-105": {
+    "en": "Kuujjuarapik",
+    "fr": "Kuujjuarapik"
+  },
+  "qc-106": {
+    "en": "Quaqtaq",
+    "fr": "Quaqtaq"
+  },
+  "qc-107": {
+    "en": "Tadoussac",
+    "fr": "Tadoussac"
+  },
+  "qc-108": {
+    "en": "Rivière-du-Loup",
+    "fr": "Rivière-du-Loup"
+  },
+  "qc-109": {
+    "en": "Longueuil",
+    "fr": "Longueuil"
+  },
+  "qc-11": {
+    "en": "La Malbaie",
+    "fr": "La Malbaie"
+  },
+  "qc-110": {
+    "en": "Nicolet",
+    "fr": "Nicolet"
+  },
+  "qc-111": {
+    "en": "New Carlisle",
+    "fr": "New Carlisle"
+  },
+  "qc-112": {
+    "en": "Ivujivik",
+    "fr": "Ivujivik"
+  },
+  "qc-113": {
+    "en": "Laurentides (Réserve faunique)",
+    "fr": "Laurentides (Réserve faunique)"
+  },
+  "qc-114": {
+    "en": "Parent",
+    "fr": "Parent"
+  },
+  "qc-115": {
+    "en": "Schefferville",
+    "fr": "Schefferville"
+  },
+  "qc-116": {
+    "en": "Waskaganish",
+    "fr": "Waskaganish"
+  },
+  "qc-117": {
+    "en": "Aupaluk",
+    "fr": "Aupaluk"
+  },
+  "qc-118": {
+    "en": "Kangiqsualujjuaq",
+    "fr": "Kangiqsualujjuaq"
+  },
+  "qc-119": {
+    "en": "Charlevoix",
+    "fr": "Charlevoix"
+  },
+  "qc-120": {
+    "en": "Cap Chat",
+    "fr": "Cap Chat"
+  },
+  "qc-121": {
+    "en": "Chibougamau",
+    "fr": "Chibougamau"
+  },
+  "qc-122": {
+    "en": "Umiujaq",
+    "fr": "Umiujaq"
+  },
+  "qc-123": {
+    "en": "Mirabel",
+    "fr": "Mirabel"
+  },
+  "qc-124": {
+    "en": "Montmagny",
+    "fr": "Montmagny"
+  },
+  "qc-125": {
+    "en": "Natashquan",
+    "fr": "Natashquan"
+  },
+  "qc-126": {
+    "en": "Gatineau",
+    "fr": "Gatineau"
+  },
+  "qc-127": {
+    "en": "Mont-Joli",
+    "fr": "Mont-Joli"
+  },
+  "qc-128": {
+    "en": "Salluit",
+    "fr": "Salluit"
+  },
+  "qc-129": {
+    "en": "Matagami",
+    "fr": "Matagami"
+  },
+  "qc-13": {
+    "en": "Saint-Jérôme",
+    "fr": "Saint-Jérôme"
+  },
+  "qc-130": {
+    "en": "Trois-Rivières",
+    "fr": "Trois-Rivières"
+  },
+  "qc-131": {
+    "en": "Inukjuak",
+    "fr": "Inukjuak"
+  },
+  "qc-132": {
+    "en": "Shawinigan",
+    "fr": "Shawinigan"
+  },
+  "qc-133": {
+    "en": "Québec",
+    "fr": "Québec"
+  },
+  "qc-134": {
+    "en": "Roberval",
+    "fr": "Roberval"
+  },
+  "qc-135": {
+    "en": "Sutton",
+    "fr": "Sutton"
+  },
+  "qc-136": {
+    "en": "Sherbrooke",
+    "fr": "Sherbrooke"
+  },
+  "qc-137": {
+    "en": "Joliette",
+    "fr": "Joliette"
+  },
+  "qc-138": {
+    "en": "Rimouski",
+    "fr": "Rimouski"
+  },
+  "qc-139": {
+    "en": "Témiscamingue",
+    "fr": "Témiscamingue"
+  },
+  "qc-14": {
+    "en": "Lachute",
+    "fr": "Lachute"
+  },
+  "qc-140": {
+    "en": "Farnham",
+    "fr": "Farnham"
+  },
+  "qc-141": {
+    "en": "Sept-Îles",
+    "fr": "Sept-Îles"
+  },
+  "qc-142": {
+    "en": "Port-Menier",
+    "fr": "Port-Menier"
+  },
+  "qc-143": {
+    "en": "Salaberry-de-Valleyfield",
+    "fr": "Salaberry-de-Valleyfield"
+  },
+  "qc-144": {
+    "en": "Alma",
+    "fr": "Alma"
+  },
+  "qc-145": {
+    "en": "Tasiujaq",
+    "fr": "Tasiujaq"
+  },
+  "qc-146": {
+    "en": "Amqui",
+    "fr": "Amqui"
+  },
+  "qc-147": {
+    "en": "Montréal",
+    "fr": "Montréal"
+  },
+  "qc-148": {
+    "en": "Rouyn-Noranda",
+    "fr": "Rouyn-Noranda"
+  },
+  "qc-149": {
+    "en": "Val-d'Or",
+    "fr": "Val-d'Or"
+  },
+  "qc-15": {
+    "en": "Matane",
+    "fr": "Matane"
+  },
+  "qc-150": {
+    "en": "Kuujjuaq",
+    "fr": "Kuujjuaq"
+  },
+  "qc-151": {
+    "en": "Matapedia",
+    "fr": "Matapédia"
+  },
+  "qc-152": {
+    "en": "Chevery",
+    "fr": "Chevery"
+  },
+  "qc-153": {
+    "en": "Manicouagan",
+    "fr": "Manicouagan"
+  },
+  "qc-154": {
+    "en": "La Tuque",
+    "fr": "La Tuque"
+  },
+  "qc-155": {
+    "en": "Kangiqsujuaq",
+    "fr": "Kangiqsujuaq"
+  },
+  "qc-156": {
+    "en": "L'Assomption",
+    "fr": "L'Assomption"
+  },
+  "qc-157": {
+    "en": "Victoriaville",
+    "fr": "Victoriaville"
+  },
+  "qc-158": {
+    "en": "La Grande Rivière",
+    "fr": "La Grande Rivière"
+  },
+  "qc-159": {
+    "en": "Kangirsuk",
+    "fr": "Kangirsuk"
+  },
+  "qc-16": {
+    "en": "Murdochville",
+    "fr": "Murdochville"
+  },
+  "qc-160": {
+    "en": "Baie-Comeau",
+    "fr": "Baie-Comeau"
+  },
+  "qc-161": {
+    "en": "Bagotville",
+    "fr": "Bagotville"
+  },
+  "qc-162": {
+    "en": "Varennes",
+    "fr": "Varennes"
+  },
+  "qc-163": {
+    "en": "Blanc-Sablon",
+    "fr": "Blanc-Sablon"
+  },
+  "qc-165": {
+    "en": "Baie-Saint-Paul",
+    "fr": "Baie-Saint-Paul"
+  },
+  "qc-166": {
+    "en": "Saguenay",
+    "fr": "Saguenay"
+  },
+  "qc-167": {
+    "en": "Mont-Tremblant",
+    "fr": "Mont-Tremblant"
+  },
+  "qc-168": {
+    "en": "Amos",
+    "fr": "Amos"
+  },
+  "qc-169": {
+    "en": "Grande-Vallée",
+    "fr": "Grande-Vallée"
+  },
+  "qc-17": {
+    "en": "Papineau",
+    "fr": "Papineau"
+  },
+  "qc-18": {
+    "en": "Percé",
+    "fr": "Percé"
+  },
+  "qc-19": {
+    "en": "Pontiac",
+    "fr": "Pontiac"
+  },
+  "qc-2": {
+    "en": "Drummondville",
+    "fr": "Drummondville"
+  },
+  "qc-20": {
+    "en": "Pointe-à-la-Croix",
+    "fr": "Pointe-à-la-Croix"
+  },
+  "qc-21": {
+    "en": "Richelieu",
+    "fr": "Richelieu"
+  },
+  "qc-22": {
+    "en": "Saint-Hyacinthe",
+    "fr": "Saint-Hyacinthe"
+  },
+  "qc-24": {
+    "en": "Trois-Pistoles",
+    "fr": "Trois-Pistoles"
+  },
+  "qc-25": {
+    "en": "Berthierville",
+    "fr": "Berthierville"
+  },
+  "qc-26": {
+    "en": "Escoumins",
+    "fr": "Escoumins"
+  },
+  "qc-27": {
+    "en": "Forestville",
+    "fr": "Forestville"
+  },
+  "qc-28": {
+    "en": "Saint-Jean-sur-Richelieu",
+    "fr": "Saint-Jean-sur-Richelieu"
+  },
+  "qc-29": {
+    "en": "Fermont",
+    "fr": "Fermont"
+  },
+  "qc-30": {
+    "en": "La Vérendrye (Réserve faunique)",
+    "fr": "La Vérendrye (Réserve faunique)"
+  },
+  "qc-33": {
+    "en": "Sainte-Agathe",
+    "fr": "Sainte-Agathe"
+  },
+  "qc-35": {
+    "en": "Temiscouata",
+    "fr": "Témiscouata"
+  },
+  "qc-36": {
+    "en": "Akulivik",
+    "fr": "Akulivik"
+  },
+  "qc-38": {
+    "en": "Val-des-Sources",
+    "fr": "Val-des-Sources"
+  },
+  "qc-40": {
+    "en": "Puvirnituq",
+    "fr": "Puvirnituq"
+  },
+  "qc-41": {
+    "en": "Vanier",
+    "fr": "Vanier"
+  },
+  "qc-42": {
+    "en": "Val-des-Monts",
+    "fr": "Val-des-Monts"
+  },
+  "qc-45": {
+    "en": "La Sarre",
+    "fr": "La Sarre"
+  },
+  "qc-46": {
+    "en": "Contrecoeur",
+    "fr": "Contrecoeur"
+  },
+  "qc-47": {
+    "en": "Mont-Laurier",
+    "fr": "Mont-Laurier"
+  },
+  "qc-48": {
+    "en": "Beauceville",
+    "fr": "Beauceville"
+  },
+  "qc-49": {
+    "en": "Beauharnois",
+    "fr": "Beauharnois"
+  },
+  "qc-5": {
+    "en": "Granby",
+    "fr": "Granby"
+  },
+  "qc-50": {
+    "en": "Bécancour",
+    "fr": "Bécancour"
+  },
+  "qc-51": {
+    "en": "Bernières",
+    "fr": "Bernières"
+  },
+  "qc-52": {
+    "en": "Blainville",
+    "fr": "Blainville"
+  },
+  "qc-53": {
+    "en": "Boisbriand",
+    "fr": "Boisbriand"
+  },
+  "qc-54": {
+    "en": "Bonaventure",
+    "fr": "Bonaventure"
+  },
+  "qc-55": {
+    "en": "Candiac",
+    "fr": "Candiac"
+  },
+  "qc-56": {
+    "en": "Carignan",
+    "fr": "Carignan"
+  },
+  "qc-57": {
+    "en": "Carleton-sur-Mer",
+    "fr": "Carleton-sur-Mer"
+  },
+  "qc-58": {
+    "en": "Chambly",
+    "fr": "Chambly"
+  },
+  "qc-59": {
+    "en": "Chelsea",
+    "fr": "Chelsea"
+  },
+  "qc-60": {
+    "en": "Coaticook",
+    "fr": "Coaticook"
+  },
+  "qc-61": {
+    "en": "Cowansville",
+    "fr": "Cowansville"
+  },
+  "qc-62": {
+    "en": "Delson",
+    "fr": "Delson"
+  },
+  "qc-63": {
+    "en": "Deux-Montagnes",
+    "fr": "Deux-Montagnes"
+  },
+  "qc-64": {
+    "en": "Dolbeau-Mistassini",
+    "fr": "Dolbeau-Mistassini"
+  },
+  "qc-65": {
+    "en": "Donnacona",
+    "fr": "Donnacona"
+  },
+  "qc-66": {
+    "en": "Vaudreuil-Dorion",
+    "fr": "Vaudreuil-Dorion"
+  },
+  "qc-67": {
+    "en": "Forillon",
+    "fr": "Forillon"
+  },
+  "qc-68": {
+    "en": "Huntingdon",
+    "fr": "Huntingdon"
+  },
+  "qc-69": {
+    "en": "Baie-James",
+    "fr": "Baie-James"
+  },
+  "qc-70": {
+    "en": "Kamouraska",
+    "fr": "Kamouraska"
+  },
+  "qc-71": {
+    "en": "La Prairie",
+    "fr": "La Prairie"
+  },
+  "qc-72": {
+    "en": "Lac-Mégantic",
+    "fr": "Lac-Mégantic"
+  },
+  "qc-73": {
+    "en": "Lac-Saint-Jean",
+    "fr": "Lac-Saint-Jean"
+  },
+  "qc-74": {
+    "en": "Lanaudière",
+    "fr": "Lanaudière"
+  },
+  "qc-76": {
+    "en": "Laval",
+    "fr": "Laval"
+  },
+  "qc-77": {
+    "en": "L'Islet",
+    "fr": "L'Islet"
+  },
+  "qc-78": {
+    "en": "Lévis",
+    "fr": "Lévis"
+  },
+  "qc-81": {
+    "en": "Lorraine",
+    "fr": "Lorraine"
+  },
+  "qc-83": {
+    "en": "Magog",
+    "fr": "Magog"
+  },
+  "qc-84": {
+    "en": "Marieville",
+    "fr": "Marieville"
+  },
+  "qc-85": {
+    "en": "Mascouche",
+    "fr": "Mascouche"
+  },
+  "qc-89": {
+    "en": "Mauricie",
+    "fr": "Mauricie"
+  },
+  "qc-90": {
+    "en": "Mingan",
+    "fr": "Mingan"
+  },
+  "qc-92": {
+    "en": "Mont-Saint-Hilaire",
+    "fr": "Mont-Saint-Hilaire"
+  },
+  "qc-93": {
+    "en": "Otterburn Park",
+    "fr": "Otterburn Park"
+  },
+  "qc-94": {
+    "en": "Gaspésie (Parc national)",
+    "fr": "Gaspésie (Parc national)"
+  },
+  "qc-95": {
+    "en": "Forillon (National Park)",
+    "fr": "Forillon ( Parc national)"
+  },
+  "qc-96": {
+    "en": "Pincourt",
+    "fr": "Pincourt"
+  },
+  "qc-97": {
+    "en": "Port-Cartier",
+    "fr": "Port-Cartier"
+  },
+  "qc-98": {
+    "en": "Prévost",
+    "fr": "Prévost"
+  },
+  "qc-99": {
+    "en": "Lac Raglan",
+    "fr": "Lac Raglan"
+  },
+  "qc-a0": {
+    "en": "Repentigny",
+    "fr": "Repentigny"
+  },
+  "qc-a1": {
+    "en": "Gouin (Réservoir)",
+    "fr": "Gouin (Réservoir)"
+  },
+  "qc-a2": {
+    "en": "Rigaud",
+    "fr": "Rigaud"
+  },
+  "qc-a3": {
+    "en": "Rosemère",
+    "fr": "Rosemère"
+  },
+  "qc-a5": {
+    "en": "Saint-Amable",
+    "fr": "Saint-Amable"
+  },
+  "qc-a6": {
+    "en": "Saint-Basile Le Grand",
+    "fr": "Saint-Basile Le Grand"
+  },
+  "qc-a7": {
+    "en": "Saint-Constant",
+    "fr": "Saint-Constant"
+  },
+  "qc-a8": {
+    "en": "Sainte-Anne-Des-Monts",
+    "fr": "Sainte-Anne-Des-Monts"
+  },
+  "qc-a9": {
+    "en": "Sainte-Anne-Des-Plaines",
+    "fr": "Sainte-Anne-Des-Plaines"
+  },
+  "qc-b0": {
+    "en": "Sainte-Catherine",
+    "fr": "Sainte-Catherine"
+  },
+  "qc-b1": {
+    "en": "Sainte-Julie",
+    "fr": "Sainte-Julie"
+  },
+  "qc-b2": {
+    "en": "Sainte-Sophie",
+    "fr": "Sainte-Sophie"
+  },
+  "qc-b3": {
+    "en": "Sainte-Thérèse",
+    "fr": "Sainte-Thérèse"
+  },
+  "qc-b4": {
+    "en": "Saint-Eustache",
+    "fr": "Saint-Eustache"
+  },
+  "qc-b5": {
+    "en": "Saint-Félicien",
+    "fr": "Saint-Félicien"
+  },
+  "qc-b6": {
+    "en": "Saint-Georges",
+    "fr": "Saint-Georges"
+  },
+  "qc-b7": {
+    "en": "Saint-Lazare",
+    "fr": "Saint-Lazare"
+  },
+  "qc-b8": {
+    "en": "Saint-Lin-Laurentides",
+    "fr": "Saint-Lin-Laurentides"
+  },
+  "qc-b9": {
+    "en": "Saint-Luc",
+    "fr": "Saint-Luc"
+  },
+  "qc-c0": {
+    "en": "Saint-Michel-des-Saints",
+    "fr": "Saint-Michel-des-Saints"
+  },
+  "qc-c1": {
+    "en": "Saint-Nicéphore",
+    "fr": "Saint-Nicéphore"
+  },
+  "qc-c2": {
+    "en": "Saint-Rémi",
+    "fr": "Saint-Rémi"
+  },
+  "qc-c3": {
+    "en": "Saint-Sauveur",
+    "fr": "Saint-Sauveur"
+  },
+  "qc-c4": {
+    "en": "Saint-Timothée",
+    "fr": "Saint-Timothée"
+  },
+  "qc-c6": {
+    "en": "Sorel-Tracy",
+    "fr": "Sorel-Tracy"
+  },
+  "qc-c7": {
+    "en": "Terrebonne",
+    "fr": "Terrebonne"
+  },
+  "qc-c8": {
+    "en": "Thetford Mines",
+    "fr": "Thetford Mines"
+  },
+  "qc-c9": {
+    "en": "Tracy",
+    "fr": "Tracy"
+  },
+  "qc-d0": {
+    "en": "Vallée de la Matapédia",
+    "fr": "Vallée de la Matapédia"
+  },
+  "qc-d2": {
+    "en": "Louiseville",
+    "fr": "Louiseville"
+  },
+  "qc-d3": {
+    "en": "Le Gardeur",
+    "fr": "Le Gardeur"
+  },
+  "qc-d4": {
+    "en": "Chandler",
+    "fr": "Chandler"
+  },
+  "sk-1": {
+    "en": "Rosthern",
+    "fr": "Rosthern"
+  },
+  "sk-10": {
+    "en": "Oxbow",
+    "fr": "Oxbow"
+  },
+  "sk-11": {
+    "en": "Shaunavon",
+    "fr": "Shaunavon"
+  },
+  "sk-12": {
+    "en": "Tisdale",
+    "fr": "Tisdale"
+  },
+  "sk-13": {
+    "en": "La Loche",
+    "fr": "La Loche"
+  },
+  "sk-14": {
+    "en": "Lucky Lake",
+    "fr": "Lucky Lake"
+  },
+  "sk-15": {
+    "en": "Waskesiu Lake",
+    "fr": "Waskesiu Lake"
+  },
+  "sk-16": {
+    "en": "Maple Creek",
+    "fr": "Maple Creek"
+  },
+  "sk-17": {
+    "en": "Hudson Bay",
+    "fr": "Hudson Bay"
+  },
+  "sk-18": {
+    "en": "Elbow",
+    "fr": "Elbow"
+  },
+  "sk-19": {
+    "en": "Wynyard",
+    "fr": "Wynyard"
+  },
+  "sk-2": {
+    "en": "Biggar",
+    "fr": "Biggar"
+  },
+  "sk-20": {
+    "en": "Key Lake",
+    "fr": "Key Lake"
+  },
+  "sk-21": {
+    "en": "Kindersley",
+    "fr": "Kindersley"
+  },
+  "sk-22": {
+    "en": "Meadow Lake",
+    "fr": "Meadow Lake"
+  },
+  "sk-23": {
+    "en": "Rosetown",
+    "fr": "Rosetown"
+  },
+  "sk-24": {
+    "en": "Moose Jaw",
+    "fr": "Moose Jaw"
+  },
+  "sk-25": {
+    "en": "Spiritwood",
+    "fr": "Spiritwood"
+  },
+  "sk-26": {
+    "en": "Scott",
+    "fr": "Scott"
+  },
+  "sk-27": {
+    "en": "Prince Albert",
+    "fr": "Prince Albert"
+  },
+  "sk-28": {
+    "en": "Val Marie",
+    "fr": "Val Marie"
+  },
+  "sk-29": {
+    "en": "Cypress Hills (Provincial Park)",
+    "fr": "Cypress Hills (Parc provincial)"
+  },
+  "sk-3": {
+    "en": "Canora",
+    "fr": "Canora"
+  },
+  "sk-30": {
+    "en": "Collins Bay",
+    "fr": "Collins Bay"
+  },
+  "sk-31": {
+    "en": "Weyburn",
+    "fr": "Weyburn"
+  },
+  "sk-32": {
+    "en": "Regina",
+    "fr": "Regina"
+  },
+  "sk-33": {
+    "en": "Yorkton",
+    "fr": "Yorkton"
+  },
+  "sk-34": {
+    "en": "North Battleford",
+    "fr": "North Battleford"
+  },
+  "sk-35": {
+    "en": "Last Mountain Lake (Sanctuary)",
+    "fr": "Last Mountain Lake (Sanctuaire)"
+  },
+  "sk-36": {
+    "en": "Stony Rapids",
+    "fr": "Stony Rapids"
+  },
+  "sk-37": {
+    "en": "Outlook",
+    "fr": "Outlook"
+  },
+  "sk-38": {
+    "en": "La Ronge",
+    "fr": "La Ronge"
+  },
+  "sk-39": {
+    "en": "Buffalo Narrows",
+    "fr": "Buffalo Narrows"
+  },
+  "sk-4": {
+    "en": "Carlyle",
+    "fr": "Carlyle"
+  },
+  "sk-40": {
+    "en": "Saskatoon",
+    "fr": "Saskatoon"
+  },
+  "sk-41": {
+    "en": "Swift Current",
+    "fr": "Swift Current"
+  },
+  "sk-42": {
+    "en": "Coronach",
+    "fr": "Coronach"
+  },
+  "sk-43": {
+    "en": "Indian Head",
+    "fr": "Indian Head"
+  },
+  "sk-44": {
+    "en": "Uranium City",
+    "fr": "Uranium City"
+  },
+  "sk-45": {
+    "en": "Eastend",
+    "fr": "Eastend"
+  },
+  "sk-46": {
+    "en": "Melfort",
+    "fr": "Melfort"
+  },
+  "sk-47": {
+    "en": "Nipawin",
+    "fr": "Nipawin"
+  },
+  "sk-48": {
+    "en": "Broadview",
+    "fr": "Broadview"
+  },
+  "sk-49": {
+    "en": "Watrous",
+    "fr": "Watrous"
+  },
+  "sk-5": {
+    "en": "Fort Qu'Appelle",
+    "fr": "Fort Qu'Appelle"
+  },
+  "sk-50": {
+    "en": "Southend Reindeer",
+    "fr": "Southend Reindeer"
+  },
+  "sk-51": {
+    "en": "Assiniboia",
+    "fr": "Assiniboia"
+  },
+  "sk-52": {
+    "en": "Leader",
+    "fr": "Leader"
+  },
+  "sk-53": {
+    "en": "Estevan",
+    "fr": "Estevan"
+  },
+  "sk-54": {
+    "en": "Rockglen",
+    "fr": "Rockglen"
+  },
+  "sk-55": {
+    "en": "Pelican Narrows",
+    "fr": "Pelican Narrows"
+  },
+  "sk-56": {
+    "en": "Lloydminster",
+    "fr": "Lloydminster"
+  },
+  "sk-6": {
+    "en": "Humboldt",
+    "fr": "Humboldt"
+  },
+  "sk-7": {
+    "en": "Kamsack",
+    "fr": "Kamsack"
+  },
+  "sk-8": {
+    "en": "Melville",
+    "fr": "Melville"
+  },
+  "sk-9": {
+    "en": "Moosomin",
+    "fr": "Moosomin"
+  },
+  "yt-1": {
+    "en": "Kluane Lake",
+    "fr": "Lac Kluane"
+  },
+  "yt-10": {
+    "en": "Mayo",
+    "fr": "Mayo"
+  },
+  "yt-11": {
+    "en": "Old Crow",
+    "fr": "Old Crow"
+  },
+  "yt-12": {
+    "en": "Faro",
+    "fr": "Faro"
+  },
+  "yt-13": {
+    "en": "Watson Lake",
+    "fr": "Watson Lake"
+  },
+  "yt-14": {
+    "en": "Teslin",
+    "fr": "Teslin"
+  },
+  "yt-15": {
+    "en": "Beaver Creek",
+    "fr": "Beaver Creek"
+  },
+  "yt-16": {
+    "en": "Whitehorse",
+    "fr": "Whitehorse"
+  },
+  "yt-17": {
+    "en": "Carmacks",
+    "fr": "Carmacks"
+  },
+  "yt-2": {
+    "en": "Carcross",
+    "fr": "Carcross"
+  },
+  "yt-3": {
+    "en": "Rancheria",
+    "fr": "Rancheria"
+  },
+  "yt-4": {
+    "en": "Dempster (Highway)",
+    "fr": "Dempster (Route)"
+  },
+  "yt-5": {
+    "en": "Haines Junction",
+    "fr": "Haines Junction"
+  },
+  "yt-6": {
+    "en": "Dawson",
+    "fr": "Dawson"
+  },
+  "yt-7": {
+    "en": "Burwash Landing",
+    "fr": "Burwash Landing"
+  },
+  "yt-8": {
+    "en": "Ross River",
+    "fr": "Ross River"
+  },
+  "yt-9": {
+    "en": "Rock River",
+    "fr": "Rock River"
+  }
+}

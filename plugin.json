@@ -94,6 +94,14 @@
       }
     },
     {
+      "id": "lookup_eas_zones",
+      "label": "NWS Zone Lookup — Find USA Zone Codes",
+      "description": "Enter a 2-letter US state code in the Zone Lookup field in Settings, then click this button to get a list of all NWS public zone codes and names for that state. Find your zone and paste it into NWS Alert Zones above.",
+      "button_label": "Zone Lookup",
+      "button_variant": "outline",
+      "button_color": "orange"
+    },
+    {
       "id": "enable_eas",
       "label": "Enable EAS — JAS Weather Alerts",
       "description": "Arms selected channels for EAS monitoring. No profile is cloned until a real NWS alert fires for your configured zones — channels stream normally until then. Can be enabled alongside any existing ticker type.",
@@ -135,6 +143,47 @@
       "button_color": "orange",
       "confirm": {
         "message": "This restores all EAS channels to their original passthrough profiles and removes the old always-on re-encode profiles. Channels will automatically switch to EAS overlay only when a real NWS alert fires. Continue?"
+      }
+    },
+    {
+      "id": "lookup_eas_ca",
+      "label": "Weather Canada City Lookup — Find City Codes",
+      "description": "Enter a city name (e.g. Toronto) or 2-letter province code (e.g. ON, QC, BC) in the City Lookup field in Settings, then click this button to get a list of matching city IDs. Paste the code you want into Weather Canada City IDs above.",
+      "button_label": "City Lookup",
+      "button_variant": "outline",
+      "button_color": "teal"
+    },
+    {
+      "id": "enable_eas_ca",
+      "label": "Enable Weather Canada Alerts",
+      "description": "Arms selected channels for Environment Canada alert monitoring. No profile is cloned until an active alert fires for your configured city IDs — channels stream normally until then. Can be enabled alongside NWS EAS or any existing ticker type.",
+      "button_label": "Enable",
+      "button_variant": "filled",
+      "button_color": "teal",
+      "confirm": {
+        "message": "Arms the selected channels for Weather Canada alerts. No profile is cloned yet — the overlay only activates when an active EC alert fires for your configured city IDs. Continue?"
+      }
+    },
+    {
+      "id": "test_eas_ca",
+      "label": "Test Weather Canada Alert",
+      "description": "Fires a fake Weather Canada alert on the enabled channels for the configured Test Alert Duration, then auto-restores. Use this to verify the overlay and NAAD attention tone without waiting for a real alert.",
+      "button_label": "Test Alert",
+      "button_variant": "outline",
+      "button_color": "teal",
+      "confirm": {
+        "message": "Fires a fake Weather Canada alert overlay on the selected channels for the configured duration, then auto-restores. Continue?"
+      }
+    },
+    {
+      "id": "disable_eas_ca",
+      "label": "Disable Weather Canada Alerts",
+      "description": "Disarms all Weather Canada-enabled channels and restores their original stream profiles. If an alert is currently active, the overlay is also removed.",
+      "button_label": "Disable",
+      "button_variant": "outline",
+      "button_color": "teal",
+      "confirm": {
+        "message": "This will restore the original stream profile and remove the Weather Canada alert overlay for the selected channel(s). Continue?"
       }
     },
     {
