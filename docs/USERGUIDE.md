@@ -487,13 +487,18 @@ Now Playing always runs in on-demand mode — no Trigger Mode setting. The overl
 | Channel | The individual channel to target |
 | Sort Start Number | Channel number to start from when sorting. Leave blank to auto-detect. |
 
+### EAS Settings (General)
+
+| Field | Description |
+|---|---|
+| EAS Transcode Quality | Output resolution during alerts: `full` (default), `1080p30`, `720p`, or `720p30`. Lower = less CPU. Applies to both NWS and Weather Canada alerts. |
+
 ### EAS Settings (USA — NWS)
 
 | Field | Description |
 |---|---|
-| EAS Transcode Quality | Output resolution during alerts: `full` (default), `1080p30`, `720p`, or `720p30`. Lower = less CPU. |
-| NWS Zone / County Codes | Comma-separated NWS zone or county codes (e.g. `OHZ001,OHC035`). Find yours at [weather.gov](https://www.weather.gov). |
-| Saved / Favorite Codes | Reference-only storage for frequently used codes. Not actively monitored. |
+| NWS Alert Zones | Comma-separated NWS zone or county codes (e.g. `OHZ001,OHC035`). Find yours at [weather.gov](https://www.weather.gov). |
+| Zone Lookup — US State Code | Enter a 2-letter state code here (e.g. `TX`), then run Actions → NWS Zone Lookup to get all zone codes for that state. This field is for lookup only and is not saved. |
 | USA — Apply To | Scope of channels to enable NWS EAS on. Independent from Weather Canada targeting. |
 | Channel Group / Group Names / Channel | Matching target field for the Apply To selection |
 | Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
@@ -520,6 +525,7 @@ These settings apply to both NWS and Weather Canada alerts.
 | Poll Interval (seconds) | How often Tickarr checks for alerts from both sources. Default 60s, minimum 15s. |
 | Siren Tone Interval (seconds) | Seconds between attention tone repetitions. NWS uses the 853+960 Hz EAS dual tone; Weather Canada uses the NAAD attention signal. Set to 0 to disable. |
 | Test Alert Duration (seconds) | How long test alert actions run before auto-restoring. Default 60, range 10–600. |
+| Saved / Favorite Codes | Reference-only storage for NWS zone codes you use often. Not actively monitored — just a convenient place to keep codes you look up frequently. |
 
 ### Custom Text Settings
 
@@ -597,11 +603,11 @@ Each section has its own button color so you can identify which overlay type an 
 
 | Action | Description |
 |---|---|
-| Enable EAS Silent Ticker | Arms selected channels for NWS EAS. No profile is cloned until a real alert fires. |
+| Enable EAS — JAS Weather Alerts | Arms selected channels for NWS EAS. No profile is cloned until a real alert fires. |
 | Test EAS Alert | Fires a fake NWS EAS overlay for the configured Test Alert Duration, then auto-restores. |
 | Disable EAS Ticker | Restores original profiles and disarms all NWS EAS-enabled channels. |
 | Migrate EAS to Dynamic Mode | One-time migration for users upgrading from an older version of Tickarr that used always-on EAS profiles. |
-| NWS Zone Lookup | Enter a 2-letter US state code in Zone Lookup State in Settings, then click to get all NWS zone codes for that state. |
+| NWS Zone Lookup — Find USA Zone Codes | Enter a 2-letter US state code in Zone Lookup State in Settings, then click to get all NWS zone codes for that state. |
 
 ### Weather Canada Alerts
 
