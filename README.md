@@ -1,6 +1,6 @@
 # Tickarr
 
-![Version](https://img.shields.io/badge/version-0.3.01-blue)
+![Version](https://img.shields.io/badge/version-0.3.02-blue)
 
 A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects dynamic text overlays into IPTV channels via FFmpeg. Tickarr clones the channel's existing stream profile, injects overlay parameters, and restores the original profile on disable — the source profile is never modified.
 
@@ -14,7 +14,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Audio-only channels receive an injected 1280x720 black video background
 - On-Demand mode: overlay activates when a viewer tunes in, restores to passthrough when idle
 
-**EAS/JAS Weather Alerts**
+**EAS/JAS Weather Alerts — USA (NOAA/NWS)**
 - Monitors NOAA/NWS for active weather alerts in your configured zones
 - Automatically activates a full-width broadcast-style alert bar when an alert fires
 - Scrolling crawl with alert details, colored severity label, and optional attention tone
@@ -27,6 +27,15 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 > **JAS — jesmannstl Alert System.**
 > Dedicated to jesmannstl, a weather fanatic and beloved member of the Dispatcharr community.
 > Every alert that fires is a reminder of him. Rest in peace.
+
+**Weather Canada Alerts (Environment Canada)**
+- Monitors Environment Canada for active alerts in your configured city IDs
+- Same broadcast-style overlay as NWS — full-width alert bar, colored severity label, scrolling crawl
+- NAAD attention signal (Canadian alerting tone) plays at the configured interval during active alerts
+- Severity mapped to Canada's color system: Yellow (Watch/Moderate), Orange (Warning/Severe), Red (Emergency/Extreme)
+- Bilingual area names — alert location displayed in English or French based on your language setting
+- Can run simultaneously with NWS EAS — independent channel targeting for each source
+- Separate city lookup action: enter a city name or province code to find your city IDs
 
 **Custom Text**
 - User-defined static or scrolling text overlay on any channel
@@ -106,7 +115,8 @@ Each section of the Actions tab has its own button color. Filled buttons activat
 | Color | Section |
 |---|---|
 | Cyan | Satellite Radio — Now Playing and Channel Setup |
-| Orange | EAS / JAS Weather Alerts |
+| Orange | EAS / JAS Weather Alerts (USA — NWS) |
+| Teal | Weather Canada Alerts (Environment Canada) |
 | Blue | Custom Text |
 | Green | Sports Ticker |
 | Violet | Manage |

@@ -9,12 +9,13 @@ Tickarr is a plugin for [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr
 1. [Installation](#installation)
 2. [Before You Start — Universal Requirements](#before-you-start--universal-requirements)
 3. [Satellite Radio Now Playing](#satellite-radio-now-playing)
-4. [EAS/JAS Weather Alerts](#easjas-weather-alerts)
-5. [Custom Text](#custom-text)
-6. [Sports Ticker](#sports-ticker)
-7. [Settings Reference](#settings-reference)
-8. [Actions Reference](#actions-reference)
-9. [Troubleshooting](#troubleshooting)
+4. [EAS/JAS Weather Alerts — USA](#easjas-weather-alerts--usa)
+5. [Weather Canada Alerts](#weather-canada-alerts)
+6. [Custom Text](#custom-text)
+7. [Sports Ticker](#sports-ticker)
+8. [Settings Reference](#settings-reference)
+9. [Actions Reference](#actions-reference)
+10. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -140,7 +141,7 @@ Run **Actions → Disable Now Playing**. All cloned profiles are deleted and ori
 
 ---
 
-## EAS/JAS Weather Alerts
+## EAS/JAS Weather Alerts — USA
 
 > **JAS — jesmannstl Alert System.**
 > Dedicated to jesmannstl, a weather fanatic and beloved member of the Dispatcharr community.
@@ -237,6 +238,67 @@ This fires a fake alert on your enabled channel(s) for the duration set in **Tes
 ### Disabling
 
 Run **Actions → Disable EAS Ticker**. All EAS-armed channels return to their original profiles. If an alert is currently active, the EAS clone is also deleted.
+
+---
+
+## Weather Canada Alerts
+
+### What it does
+
+Tickarr monitors Environment Canada (EC) for active weather alerts in your configured cities. When an alert fires, it activates the same broadcast-style overlay used for NWS alerts — a full-width alert bar with a scrolling crawl, colored severity label, and the Canadian NAAD attention tone. When the alert clears, channels silently return to passthrough.
+
+Weather Canada uses Canada's three-level color system: **Yellow** (Watch / Moderate), **Orange** (Warning / Severe), **Red** (Emergency / Extreme).
+
+Weather Canada and NWS EAS are independent — they have separate channel targeting and can run simultaneously. A user monitoring both US and Canadian borders can arm the same channels for both sources at the same time.
+
+---
+
+### Step 1 — Find your city IDs
+
+Run **Actions → City Lookup** (teal outline button). Enter a city name (e.g. `Toronto`) or a 2-letter province code (e.g. `ON`, `QC`, `BC`) in the **City Lookup** field in Settings, then click the button. Tickarr returns a list of matching city names and their IDs.
+
+City IDs look like `on-143` (Ontario city 143 = Toronto) or `qc-147` (Quebec city 147 = Montreal). Copy the ID you want into **Weather Canada City IDs**.
+
+You can enter multiple city IDs comma-separated to monitor more than one location.
+
+---
+
+### Step 2 — Configure Weather Canada settings
+
+In Tickarr settings, scroll to the **Weather Canada** section:
+
+1. **Weather Canada City IDs** — Comma-separated city ID codes (e.g. `on-143, qc-147`). Use City Lookup to find these.
+
+2. **Alert Language** — Language for alert area names and descriptions:
+   - **English** — All text in English.
+   - **French** — All text in French.
+   - **Both** — Shows bilingual area names (e.g. "Toronto / Toronto" when names differ).
+
+3. **Canada — Apply To** — Scope of channels to arm for Weather Canada alerts. Independent from the NWS EAS channel targeting.
+
+4. Shared settings (**Minimum Severity**, **Alert Overlay Style**, **Poll Interval**, **Siren Tone Interval**, **Test Alert Duration**) are shared between NWS and Weather Canada and appear in the **Shared EAS Settings** section below the Canada block.
+
+---
+
+### Step 3 — Enable Weather Canada Alerts
+
+Run **Actions → Enable Weather Canada Alerts** (teal filled button).
+
+Tickarr arms the selected channels. No profile is cloned yet — the overlay only activates when an active EC alert fires for your configured city IDs.
+
+---
+
+### Step 4 — Test your setup
+
+Run **Actions → Test Weather Canada Alert** (teal outline button).
+
+This fires a fake Canadian alert on your enabled channels for the configured Test Alert Duration, plays the NAAD attention tone, then auto-restores. Use this to confirm the overlay, tone, and severity color all look correct.
+
+---
+
+### Disabling
+
+Run **Actions → Disable Weather Canada Alerts**. All Weather Canada-armed channels return to their original profiles.
 
 ---
 
@@ -402,7 +464,7 @@ Run **Actions → Disable Sports Ticker**. All cloned profiles are deleted and o
 
 ## Settings Reference
 
-The Settings panel displays sections in this order: **Now Playing → Satellite Radio Channel Setup → EAS Weather Alerts → Custom Text → Sports Ticker → Active Tickers**.
+The Settings panel displays sections in this order: **Now Playing → Satellite Radio Channel Setup → EAS Weather Alerts (USA) → Weather Canada Alerts → Shared EAS Settings → Custom Text → Sports Ticker → Active Tickers**.
 
 ### Now Playing Settings
 
@@ -425,21 +487,39 @@ Now Playing always runs in on-demand mode — no Trigger Mode setting. The overl
 | Channel | The individual channel to target |
 | Sort Start Number | Channel number to start from when sorting. Leave blank to auto-detect. |
 
-### EAS Settings
+### EAS Settings (USA — NWS)
 
 | Field | Description |
 |---|---|
 | EAS Transcode Quality | Output resolution during alerts: `full` (default), `1080p30`, `720p`, or `720p30`. Lower = less CPU. |
 | NWS Zone / County Codes | Comma-separated NWS zone or county codes (e.g. `OHZ001,OHC035`). Find yours at [weather.gov](https://www.weather.gov). |
 | Saved / Favorite Codes | Reference-only storage for frequently used codes. Not actively monitored. |
-| Minimum Severity | Minimum severity to trigger: Watch (Moderate+), Warning (Severe+), or Emergency (Extreme only). Default: Watch. |
-| Alert Overlay Style | `TV Broadcast` — news ticker bar (recommended). `Tickarr Custom` — simpler flashing overlay. |
-| Poll Interval (seconds) | How often Tickarr checks NWS for alerts. Default 60s, minimum 15s. |
-| Siren Tone Interval (seconds) | Seconds between EAS attention tone repetitions (853+960 Hz). Set to 0 to disable. |
-| Test Alert Duration (seconds) | How long the Test EAS Alert action runs before auto-restoring. Default 60, range 10–600. |
-| Apply To | Scope of channels to enable EAS on |
+| USA — Apply To | Scope of channels to enable NWS EAS on. Independent from Weather Canada targeting. |
 | Channel Group / Group Names / Channel | Matching target field for the Apply To selection |
 | Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
+
+### Weather Canada Settings
+
+| Field | Description |
+|---|---|
+| Weather Canada City IDs | Comma-separated EC city ID codes (e.g. `on-143, qc-147`). Use the City Lookup action to find IDs. |
+| City Lookup | Enter a city name or 2-letter province code here, then run Actions → City Lookup to find matching city IDs. |
+| Alert Language | Language for area names: English, French, or Both (bilingual). |
+| Canada — Apply To | Scope of channels to enable Weather Canada alerts on. Independent from NWS EAS targeting. |
+| Channel Group / Group Names / Channel | Matching target field for the Apply To selection |
+| Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
+
+### Shared EAS Settings
+
+These settings apply to both NWS and Weather Canada alerts.
+
+| Field | Description |
+|---|---|
+| Minimum Severity | Minimum severity to trigger: Watch/Yellow (Moderate+), Warning/Orange (Severe+), or Emergency/Red (Extreme only). Default: Watch. |
+| Alert Overlay Style | `TV Broadcast` — news ticker bar (recommended). `Tickarr Custom` — simpler flashing overlay. |
+| Poll Interval (seconds) | How often Tickarr checks for alerts from both sources. Default 60s, minimum 15s. |
+| Siren Tone Interval (seconds) | Seconds between attention tone repetitions. NWS uses the 853+960 Hz EAS dual tone; Weather Canada uses the NAAD attention signal. Set to 0 to disable. |
+| Test Alert Duration (seconds) | How long test alert actions run before auto-restoring. Default 60, range 10–600. |
 
 ### Custom Text Settings
 
@@ -488,7 +568,8 @@ Each section has its own button color so you can identify which overlay type an 
 | Color | Section |
 |---|---|
 | Cyan | Satellite Radio — Now Playing and Channel Setup |
-| Orange | EAS / JAS Weather Alerts |
+| Orange | EAS / JAS Weather Alerts (USA — NWS) |
+| Teal | Weather Canada Alerts (Environment Canada) |
 | Blue | Custom Text |
 | Green | Sports Ticker |
 | Violet | Manage |
@@ -512,14 +593,24 @@ Each section has its own button color so you can identify which overlay type an 
 | Fill EPG + Sort | Runs Full EPG fill and Sort together. |
 | Fill EPG + Sort + Logos | Runs Full EPG fill, Sort, and Logos together. Recommended for first-time setup. |
 
-### EAS/JAS Weather Alerts
+### EAS/JAS Weather Alerts (USA — NWS)
 
 | Action | Description |
 |---|---|
-| Enable EAS Silent Ticker | Arms selected channels for EAS. No profile is cloned until a real alert fires. |
-| Test EAS Alert | Fires a fake EAS overlay for the configured Test Alert Duration, then auto-restores. Use this to verify your overlay looks correct without waiting for a real alert. |
-| Disable EAS Ticker | Restores original profiles and disarms all EAS-enabled channels. |
-| Migrate EAS to Dynamic Mode | One-time migration for users upgrading from an older version of Tickarr that used always-on EAS profiles. Restores all EAS channels to passthrough and re-arms them in dynamic mode. |
+| Enable EAS Silent Ticker | Arms selected channels for NWS EAS. No profile is cloned until a real alert fires. |
+| Test EAS Alert | Fires a fake NWS EAS overlay for the configured Test Alert Duration, then auto-restores. |
+| Disable EAS Ticker | Restores original profiles and disarms all NWS EAS-enabled channels. |
+| Migrate EAS to Dynamic Mode | One-time migration for users upgrading from an older version of Tickarr that used always-on EAS profiles. |
+| NWS Zone Lookup | Enter a 2-letter US state code in Zone Lookup State in Settings, then click to get all NWS zone codes for that state. |
+
+### Weather Canada Alerts
+
+| Action | Description |
+|---|---|
+| Enable Weather Canada Alerts | Arms selected channels for Weather Canada alerts. No profile is cloned until an active EC alert fires. |
+| Test Weather Canada Alert | Fires a fake Weather Canada alert overlay for the configured Test Alert Duration, then auto-restores. |
+| Disable Weather Canada Alerts | Restores original profiles and disarms all Weather Canada-enabled channels. |
+| City Lookup | Enter a city name or 2-letter province code in City Lookup in Settings, then click to get matching city IDs. |
 
 ### Custom Text
 

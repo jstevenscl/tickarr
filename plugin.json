@@ -1,6 +1,6 @@
 {
   "name": "Tickarr",
-  "version": "0.3.01",
+  "version": "0.3.02",
   "logo": "logo.png",
   "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
@@ -326,5 +326,5 @@
       }
     }
   ],
-  "checksum": "ce9782eff36e4a8432e17420353dc9ce42de581b9afe4ee5c005635799812405"
+  "checksum": "0f04aa4309aed4ccb97b672c29c9fd353701ba78981067b85b93706a65c7fe10"
 }
