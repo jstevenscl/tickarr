@@ -1,17 +1,6 @@
 {
-  "generated_at": "2026-07-04T13:09:33Z",
+  "generated_at": "2026-07-04T16:57:33Z",
   "events": [
-    {
-      "slug": "f1",
-      "title": "F-1 Qualifying",
-      "description": "Formula 1 Racing and Analysis · F-1 Qualifying · Silverstone Circuit",
-      "start_utc": "2026-07-04T14:55:00Z",
-      "end_utc": "2026-07-04T16:55:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Washington Nationals @ Pittsburgh Pirates",
