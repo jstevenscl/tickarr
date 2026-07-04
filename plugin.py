@@ -413,6 +413,43 @@ def _inject_eas_tone(params, channel_id, interval_secs=300):
     return params
 
 
+def _inject_eas_tone_wav(params, wav_path, interval_secs=300):
+    """Mix a periodic attention tone from a WAV file into the audio stream.
+
+    Uses amovie with loop=2147483647 to stream the file continuously; a volume gate
+    silences it between bursts so the tone fires once per interval_secs.
+    """
+    vf_match = re.search(r'-vf\s+"([^"]+)"', params)
+    if not vf_match:
+        logger.warning("[Tickarr] EAS: no -vf in params — WAV tone skipped")
+        return params
+
+    vf_filter = vf_match.group(1)
+    # FFmpeg path escaping: backslashes → forward slashes, colons escaped
+    safe_path = wav_path.replace("\\", "/").replace(":", "\\:")
+    # Gate: tone fires for the first 20s of each interval (extended from 8s to survive
+    # stream startup buffering — by the time audio reaches the client, t may be 5-10s in)
+    # Build [WAV once → silence] cycle then aloop it.
+    # Avoids volume=if(...) expression which silences the tone on this FFmpeg build.
+    # WAV is 8.09s; pad to full cycle duration, then loop the cycle forever.
+    cycle_secs = max(10, interval_secs)
+    cycle_samples = cycle_secs * 48000  # WAV is 48 kHz
+    fc_graph = (
+        f"[0:v]{vf_filter}[vout];"
+        f"amovie={safe_path}:loop=1,apad=whole_dur={cycle_secs}[tcyc];"
+        f"[tcyc]aloop=loop=-1:size={cycle_samples}[tone];"
+        f"[0:a][tone]amix=inputs=2:duration=first:weights=1 1.5:normalize=0[aout]"
+    )
+    logger.info(f"[Tickarr] EAS CA tone inject: interval={interval_secs}s cycle={cycle_secs}s")
+    fc_clause = f'-filter_complex "{fc_graph}" -map "[vout]" -map "[aout]"'
+    params = params[:vf_match.start()] + fc_clause + params[vf_match.end():]
+    params = re.sub(r'\s*-map\s+0(?!:)', '', params)
+    params = re.sub(r'\s*-c:a\s+copy\b', ' -c:a aac -b:a 192k', params)
+    params = re.sub(r'\s*-acodec\s+copy\b', ' -c:a aac -b:a 192k', params)
+    params = re.sub(r'(\s+-c:a\s+aac\s+-b:a\s+192k){2,}', ' -c:a aac -b:a 192k', params)
+    return params
+
+
 _EAS_TRANSCODE_PREFIXES = {
     # Filter prefix prepended to the EAS overlay filter chain.
     # Applied at clone time; removed automatically when the alert clears and the
@@ -426,7 +463,7 @@ _EAS_TRANSCODE_PREFIXES = {
 
 def _clone_and_inject_eas(channel_id, original_profile, channel_name="", tone_interval=0,
                           overlay_style="tickarr", label_color="0xCC0000",
-                          transcode_mode="full"):
+                          transcode_mode="full", tone_wav=None):
     from core.models import StreamProfile
     raw_params = original_profile.parameters or ""
     cleaned_params, removed_flags = _strip_dangerous_flags(
@@ -444,7 +481,10 @@ def _clone_and_inject_eas(channel_id, original_profile, channel_name="", tone_in
         )
     params = _inject_drawtext(cleaned_params, eas_filter)
     if tone_interval > 0:
-        params = _inject_eas_tone(params, channel_id, tone_interval)
+        if tone_wav and os.path.exists(tone_wav):
+            params = _inject_eas_tone_wav(params, tone_wav, tone_interval)
+        else:
+            params = _inject_eas_tone(params, channel_id, tone_interval)
     profile = StreamProfile(
         name=f"{PROFILE_PREFIX}EAS [{original_profile.name}] [ch{channel_id}]",
         command=original_profile.command,
@@ -732,6 +772,70 @@ def _fetch_nws_alerts(zones, severity_threshold="Moderate"):
     return alerts
 
 
+_EC_ALERTS_BASE = "https://api.weather.gc.ca/collections/citypageweather-realtime/items"
+_EC_SEV_MAP = {
+    "Red":    "Extreme",
+    "Orange": "Severe",
+    "Yellow": "Moderate",
+    "Blue":   "Minor",
+}
+
+
+def _fetch_weather_canada_alerts(city_ids, severity_threshold="Moderate", language="en"):
+    min_sev = _EAS_SEV.get(severity_threshold, 2)
+    all_alerts = []
+
+    def _loc(val):
+        """Extract localised text from a bilingual EC dict based on language setting."""
+        if not isinstance(val, dict):
+            return val or ""
+        en = (val.get("en") or "").strip()
+        fr = (val.get("fr") or "").strip()
+        if language == "fr":
+            return fr or en
+        if language == "both":
+            if en and fr and en != fr:
+                return f"{en} / {fr}"
+            return en or fr
+        return en or fr  # default: English
+
+    for city_id in city_ids:
+        city_id = city_id.strip().lower()
+        if not city_id:
+            continue
+        url = f"{_EC_ALERTS_BASE}/{city_id}?lang=en"
+        try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": NWS_UA,
+                "Accept": "application/json",
+            })
+            with urllib.request.urlopen(req, timeout=15) as r:
+                data = json.loads(r.read())
+        except Exception as e:
+            logger.warning(f"[Tickarr] EAS: Weather Canada fetch failed for {city_id}: {e}")
+            continue
+        props = data.get("properties", {}) or {}
+        warnings = props.get("warnings") or []
+        if not warnings:
+            continue
+        for w in warnings:
+            ec_color = _loc(w.get("alertColourLevel")) or "yellow"
+            severity = _EC_SEV_MAP.get(ec_color.title(), "Moderate")
+            if _EAS_SEV.get(severity, 0) < min_sev:
+                continue
+            event = (_loc(w.get("description")) or _loc(w.get("type")) or "Weather Alert")
+            area  = _loc(props.get("displayName")) or _get_ca_city_name(city_id, language)
+            all_alerts.append({
+                "id":       f"ec-{city_id}-{event}",
+                "event":    event,
+                "area":     area,
+                "severity": severity,
+                "expires":  _loc(w.get("expiryTime")),
+                "source":   "EC",
+            })
+    return all_alerts
+
+
 _EAS_REDIS_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_result"
 _EAS_REDIS_LOCK   = f"tickarr:{_PLUGIN_KEY}:eas_poll_lock"
 _EAS_STATE_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_state"     # JSON {cid: event_name or null}
@@ -739,113 +843,114 @@ _EAS_OWNER_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_owner"     # nx lock — one wor
 _EAS_ALERTS_KEY   = f"tickarr:{_PLUGIN_KEY}:eas_alerts"    # fingerprint of current alert set
 _EAS_ROTATION_KEY = f"tickarr:{_PLUGIN_KEY}:eas_rotation"  # current rotation index
 _EAS_CACHE_TTL    = 50   # seconds — one worker polls, all others read from Redis
+_EAS_CA_REDIS_KEY  = f"tickarr:{_PLUGIN_KEY}:eas_ca_result"
+_EAS_CA_REDIS_LOCK = f"tickarr:{_PLUGIN_KEY}:eas_ca_poll_lock"
+_EAS_CA_TONE_FILE      = os.path.join(_PLUGIN_DIR, "eas_tone_ca.wav")
+_EAS_CA_CITY_NAMES     = os.path.join(_PLUGIN_DIR, "ca_city_names.json")
+
+_ca_city_name_cache = None
+def _get_ca_city_name(city_id, language="en"):
+    global _ca_city_name_cache
+    if _ca_city_name_cache is None:
+        try:
+            with open(_EAS_CA_CITY_NAMES, encoding="utf-8") as f:
+                _ca_city_name_cache = json.load(f)
+        except Exception:
+            _ca_city_name_cache = {}
+    names = _ca_city_name_cache.get(city_id) or {}
+    en = (names.get("en") or "").strip()
+    fr = (names.get("fr") or "").strip()
+    if language == "fr":
+        return fr or en or city_id
+    if language == "both":
+        if en and fr and en != fr:
+            return f"{en} / {fr}"
+        return en or fr or city_id
+    return en or fr or city_id
 
 def _eas_sweep():
     settings = _get_settings()
-    zones_raw = (settings.get("eas_zones") or "").strip()
-    zones = [z.strip() for z in zones_raw.split(",") if z.strip()]
-    # No zones configured — still need to clear any channels left in active EAS state
-    # (handles zones being removed while an alert was active)
-    if not zones:
-        rc = _get_redis_client()
-        current_state = {}
-        if rc:
-            try:
-                raw = rc.get(_EAS_STATE_KEY)
-                if raw:
-                    current_state = json.loads(raw)
-            except Exception:
-                pass
-        if not any(v for v in current_state.values()):
-            return  # nothing active, nothing to clear
-        mappings = _get_mappings()
-        from apps.channels.models import Channel
-        from core.models import StreamProfile
-        for cid, event in list(current_state.items()):
-            if not event:
-                continue
-            try:
-                mapping = mappings.get(cid, {}) or {}
-                channel = Channel.objects.filter(id=int(cid)).first()
-                if channel:
-                    _restore_profile(channel, mapping.get("original_profile_id"))
-                    eas_pid = mapping.get("eas_profile_id") or mapping.get("ticker_profile_id")
-                    if eas_pid:
-                        _delete_cloned_profile(eas_pid)
-                    mapping.pop("eas_profile_id", None)
-                    mapping.pop("ticker_profile_id", None)
-                    mappings[cid] = mapping
-                    _eas_clear(cid)
-                    _eas_restart_channel(str(channel.uuid))
-                    logger.info(f"[Tickarr] EAS: cleared ch {cid} — no zones configured")
-            except Exception as e:
-                logger.error(f"[Tickarr] EAS: clear failed ch {cid}: {e}")
-        _save_mappings(mappings)
-        if rc:
-            try:
-                rc.delete(_EAS_STATE_KEY)
-            except Exception:
-                pass
-        return
+    # eas_zones key kept for backward compat; ca_city_ids is new
+    zones_raw  = (settings.get("eas_zones") or "").strip()
+    zones      = [z.strip() for z in zones_raw.split(",") if z.strip()]
+    ca_ids_raw = (settings.get("eas_ca_city_ids") or "").strip()
+    ca_ids     = [c.strip().lower() for c in ca_ids_raw.split(",") if c.strip()]
+    ca_language = settings.get("eas_ca_language") or "en"
+
     severity_threshold = settings.get("eas_severity_filter") or "Moderate"
     try:
         tone_interval = max(30, int(settings.get("eas_tone_interval") or 300))
     except Exception:
         tone_interval = 300
     overlay_style = settings.get("eas_overlay_style") or "tickarr"
+    transcode_mode = settings.get("eas_transcode_mode") or "full"
+
     mappings = _get_mappings()
-    eas_cids = [cid for cid, m in mappings.items() if m and (m.get("type") == "eas" or m.get("eas_armed"))]
-    if not eas_cids:
+
+    # Channels armed per source
+    nws_cids = {cid for cid, m in mappings.items() if m and (
+        m.get("type") == "eas" or m.get("eas_armed")
+    )}
+    ca_cids = {cid for cid, m in mappings.items() if m and (
+        m.get("type") == "eas_ca" or m.get("eas_ca_armed")
+    )}
+    all_eas_cids = nws_cids | ca_cids
+
+    if not all_eas_cids:
         return
 
-    # One worker polls NWS; all others read from Redis cache.
-    alerts = None
     rc = _get_redis_client()
-    try:
-        if rc:
-            cached = rc.get(_EAS_REDIS_KEY)
-            if cached:
-                alerts = json.loads(cached)
-            else:
-                lock_acquired = rc.set(_EAS_REDIS_LOCK, "1", nx=True, ex=30)
-                if lock_acquired:
-                    try:
-                        alerts = _fetch_nws_alerts(zones, severity_threshold)
-                        rc.setex(_EAS_REDIS_KEY, _EAS_CACHE_TTL, json.dumps(alerts))
-                    except Exception as e:
-                        logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
-                        return
+
+    # ── Fetch NWS alerts ──────────────────────────────────────────────────────
+    # None = temporarily unavailable (another worker is fetching); [] = no alerts
+    nws_alerts = []
+    if nws_cids and zones:
+        try:
+            if rc:
+                cached = rc.get(_EAS_REDIS_KEY)
+                if cached:
+                    nws_alerts = json.loads(cached)
                 else:
-                    return  # another worker is fetching right now
-        else:
-            alerts = _fetch_nws_alerts(zones, severity_threshold)
-    except Exception as e:
-        logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
-        return
+                    if rc.set(_EAS_REDIS_LOCK, "1", nx=True, ex=30):
+                        try:
+                            nws_alerts = _fetch_nws_alerts(zones, severity_threshold)
+                            rc.setex(_EAS_REDIS_KEY, _EAS_CACHE_TTL, json.dumps(nws_alerts))
+                        except Exception as e:
+                            logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
+                            nws_alerts = None  # unavailable
+                    else:
+                        nws_alerts = None  # another worker is fetching
+            else:
+                nws_alerts = _fetch_nws_alerts(zones, severity_threshold)
+        except Exception as e:
+            logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
+            nws_alerts = None
 
-    # Sort all active alerts worst-first; rotation cycles through them each sweep
-    all_alerts = sorted(alerts or [], key=lambda a: _EAS_SEV.get(a["severity"], 0), reverse=True)
-    worst = all_alerts[0] if all_alerts else None
+    # ── Fetch Weather Canada alerts ───────────────────────────────────────────
+    ca_alerts = []
+    if ca_cids and ca_ids:
+        try:
+            if rc:
+                cached = rc.get(_EAS_CA_REDIS_KEY)
+                if cached:
+                    ca_alerts = json.loads(cached)
+                else:
+                    if rc.set(_EAS_CA_REDIS_LOCK, "1", nx=True, ex=30):
+                        try:
+                            ca_alerts = _fetch_weather_canada_alerts(ca_ids, severity_threshold, ca_language)
+                            rc.setex(_EAS_CA_REDIS_KEY, _EAS_CACHE_TTL, json.dumps(ca_alerts))
+                        except Exception as e:
+                            logger.warning(f"[Tickarr] EAS: Weather Canada fetch failed: {e}")
+                            ca_alerts = None  # unavailable
+                    else:
+                        ca_alerts = None  # another worker is fetching
+            else:
+                ca_alerts = _fetch_weather_canada_alerts(ca_ids, severity_threshold, ca_language)
+        except Exception as e:
+            logger.warning(f"[Tickarr] EAS: Weather Canada fetch failed: {e}")
+            ca_alerts = None
 
-    # Deduplicate by event type so each alert TYPE gets equal screen time.
-    # Multiple counties under the same event are merged into one combined area string.
-    event_groups = {}
-    for a in all_alerts:
-        ev = a["event"]
-        if ev not in event_groups:
-            event_groups[ev] = {"event": ev, "severity": a["severity"], "areas": []}
-        area = (a.get("area") or "").strip()
-        if area and area not in event_groups[ev]["areas"]:
-            event_groups[ev]["areas"].append(area)
-    unique_alerts = sorted(
-        [{"event": d["event"], "severity": d["severity"],
-          "area": "; ".join(d["areas"])} for d in event_groups.values()],
-        key=lambda a: _EAS_SEV.get(a["severity"], 0), reverse=True,
-    )
-
-    # No rotation — all alerts are written into one combined scroll text each sweep.
-
-    # Read persisted alert state (shared across all workers via Redis).
+    # ── Read persisted state and active viewers ───────────────────────────────
     current_state = {}
     if rc:
         try:
@@ -855,9 +960,6 @@ def _eas_sweep():
         except Exception:
             pass
 
-    # Channels currently being streamed (Redis channel_stream:{id} key exists).
-    # EAS only activates on channels with an active viewer; clears always run so
-    # profiles are restored even if the viewer stopped watching mid-alert.
     streaming_ids = set()
     if rc:
         try:
@@ -866,35 +968,58 @@ def _eas_sweep():
         except Exception:
             pass
 
-    # Determine which channels need a state transition.
-    # State is boolean (active/inactive) — not the event name — so rotating alerts
-    # between sweeps never triggers a spurious re-clone.
+    # ── Compute per-channel transitions ──────────────────────────────────────
     transitions = {}
-    for cid in eas_cids:
-        was_active = bool(current_state.get(cid))
-        now_active = bool(worst)
-        if was_active == now_active:
+    for cid in all_eas_cids:
+        has_nws = cid in nws_cids
+        has_ca  = cid in ca_cids
+
+        # If the only source we depend on is temporarily unavailable, skip this cycle
+        if has_nws and not has_ca and nws_alerts is None:
             continue
-        # Skip activation for channels nobody is watching right now.
-        # Clears always run so profiles are restored even after a viewer leaves.
+        if has_ca and not has_nws and ca_alerts is None:
+            continue
+
+        # Merge relevant alerts (treat None as [] for dual-armed channels)
+        channel_alerts = []
+        if has_nws:
+            channel_alerts += (nws_alerts or [])
+        if has_ca:
+            channel_alerts += (ca_alerts or [])
+
+        channel_worst = (
+            sorted(channel_alerts, key=lambda a: _EAS_SEV.get(a["severity"], 0), reverse=True)[0]
+            if channel_alerts else None
+        )
+
+        was_active = bool(current_state.get(cid))
+        now_active = bool(channel_worst)
+
+        if was_active == now_active:
+            # No transition — refresh banner text on already-active channels
+            if now_active:
+                try:
+                    _eas_write_alert(cid, _build_unique_alerts(channel_alerts), overlay_style)
+                except Exception:
+                    pass
+            continue
+
+        # Skip activation if nobody is watching; always allow clears
         if now_active and not was_active and cid not in streaming_ids:
             continue
-        transitions[cid] = (was_active, now_active)
 
-    label_color = _EAS_BROADCAST_COLORS.get(worst["severity"] if worst else "Severe", "0xCC0000")
+        # Determine which tone to use when firing
+        use_ca_tone = (
+            has_ca and
+            bool(ca_alerts) and
+            any(a.get("source") == "EC" for a in channel_alerts)
+        )
+        transitions[cid] = (was_active, now_active, channel_worst, channel_alerts, use_ca_tone)
 
     if not transitions:
-        # No profile changes — refresh banner text on already-active EAS channels
-        if worst:
-            for cid in eas_cids:
-                if current_state.get(cid):
-                    try:
-                        _eas_write_alert(cid, unique_alerts, overlay_style)
-                    except Exception:
-                        pass
         return
 
-    # Only one worker applies transitions — others skip this cycle.
+    # Only one worker applies transitions
     if rc and not rc.set(_EAS_OWNER_KEY, "1", nx=True, ex=120):
         return
 
@@ -904,20 +1029,23 @@ def _eas_sweep():
     new_state = dict(current_state)
     changed = False
 
-    for cid, (was_active, now_active) in transitions.items():
+    for cid, (was_active, now_active, channel_worst, channel_alerts, use_ca_tone) in transitions.items():
         mapping = mappings.get(cid, {})
         try:
             channel = Channel.objects.filter(id=int(cid)).first()
             if not channel:
                 continue
 
+            unique_alerts = _build_unique_alerts(channel_alerts)
+            label_color   = _EAS_BROADCAST_COLORS.get(
+                channel_worst["severity"] if channel_worst else "Severe", "0xCC0000"
+            )
+
             if now_active:
-                # Alert firing — migrate old static format if present, then clone fresh EAS profile.
                 if mapping.get("ticker_profile_id"):
                     _restore_profile(channel, mapping["original_profile_id"])
                     _delete_cloned_profile(mapping["ticker_profile_id"])
                     mapping.pop("ticker_profile_id", None)
-
                 if mapping.get("eas_profile_id"):
                     _delete_cloned_profile(mapping["eas_profile_id"])
                     mapping.pop("eas_profile_id", None)
@@ -927,20 +1055,26 @@ def _eas_sweep():
                     logger.warning(f"[Tickarr] EAS: original profile missing for ch {cid}")
                     continue
 
-                transcode_mode = settings.get("eas_transcode_mode") or "full"
-                eas_profile, _ = _clone_and_inject_eas(channel.id, orig, channel.name,
-                                                       tone_interval, overlay_style, label_color,
-                                                       transcode_mode)
+                tone_wav = None
+                if use_ca_tone and tone_interval > 0 and os.path.exists(_EAS_CA_TONE_FILE):
+                    tone_wav = _EAS_CA_TONE_FILE
+
+                eas_profile, _ = _clone_and_inject_eas(
+                    channel.id, orig, channel.name,
+                    tone_interval, overlay_style, label_color,
+                    transcode_mode, tone_wav=tone_wav,
+                )
                 _assign_profile(channel, eas_profile)
                 _eas_write_alert(cid, unique_alerts, overlay_style)
                 mapping["eas_profile_id"] = eas_profile.id
                 mappings[cid] = mapping
                 new_state[cid] = True
-                logger.info(f"[Tickarr] EAS ALERT: {worst['event']} — {worst['area'][:60]} (ch {cid})")
+                src = "EC" if use_ca_tone else "NWS"
+                logger.info(f"[Tickarr] EAS ALERT ({src}): {channel_worst['event']} — "
+                            f"{channel_worst.get('area', '')[:60]} (ch {cid})")
                 _eas_restart_channel(str(channel.uuid))
 
             else:
-                # Alert cleared — restore original passthrough profile.
                 eas_pid = mapping.get("eas_profile_id") or mapping.get("ticker_profile_id")
                 _restore_profile(channel, mapping["original_profile_id"])
                 if eas_pid:
@@ -955,7 +1089,7 @@ def _eas_sweep():
 
             with _eas_lock:
                 if now_active:
-                    _eas_active[cid] = worst["event"] if worst else "EAS"
+                    _eas_active[cid] = channel_worst["event"] if channel_worst else "EAS"
                 else:
                     _eas_active.pop(cid, None)
 
@@ -977,6 +1111,23 @@ def _eas_sweep():
             rc.delete(_EAS_OWNER_KEY)
         except Exception:
             pass
+
+
+def _build_unique_alerts(alerts):
+    """Deduplicate alerts by event type, merging areas. Returns sorted worst-first list."""
+    event_groups = {}
+    for a in sorted(alerts, key=lambda x: _EAS_SEV.get(x["severity"], 0), reverse=True):
+        ev = a["event"]
+        if ev not in event_groups:
+            event_groups[ev] = {"event": ev, "severity": a["severity"], "areas": []}
+        area = (a.get("area") or "").strip()
+        if area and area not in event_groups[ev]["areas"]:
+            event_groups[ev]["areas"].append(area)
+    return sorted(
+        [{"event": d["event"], "severity": d["severity"], "area": "; ".join(d["areas"])}
+         for d in event_groups.values()],
+        key=lambda a: _EAS_SEV.get(a["severity"], 0), reverse=True,
+    )
 
 
 def _eas_sweep_loop(stop_event):
@@ -2365,46 +2516,74 @@ class Plugin:
             {"id": "_eas_tribute",  "type": "info",
              "label": "JAS = jesmannstl Alert System. Dedicated to jesmannstl -- a weather fanatic and beloved member of the Dispatcharr community. Every alert that fires is a reminder of him. Rest in peace."},
             {"id": "_eas_about",    "type": "info",
-             "label": "Monitors NWS alerts for configured zones. When an alert fires, affected channels automatically switch to an EAS overlay profile (red flashing banner + siren tone) and restart. Channels return to normal passthrough when the alert clears."},
+             "label": "Monitors NWS (USA) and Environment Canada alerts for configured zones and cities. When an alert fires, affected channels automatically switch to an EAS overlay profile and restart. Channels return to normal passthrough when the alert clears."},
             {"id": "_eas_transcode_note", "type": "info",
-             "label": "⚠ TRANSCODING NOTE (active alerts only): EAS overlays require FFmpeg to decode and re-encode video while an alert is active. Channels return to their original profile automatically when the alert clears — transcoding only occurs during the alert itself. If you experience buffering or stuttering during an alert, lower the Transcode Quality setting below. High-framerate sources (59.94fps) use approximately twice the CPU of standard sources (29.97fps)."},
+             "label": "⚠ TRANSCODING NOTE (active alerts only): EAS overlays require FFmpeg to decode and re-encode video while an alert is active. Channels return to their original profile automatically when the alert clears — transcoding only occurs during the alert itself. If you experience buffering or stuttering during an alert, lower the Transcode Quality setting below."},
             {"id": "eas_transcode_mode", "type": "select", "label": "EAS Transcode Quality",
              "options": [
-                 {"value": "full",    "label": "Full quality — source resolution and framerate (default; best for capable CPUs or GPU-accelerated systems)"},
-                 {"value": "1080p30", "label": "1080p 30fps — full resolution, framerate capped at 30fps (moderate CPU reduction; try this first if you see buffering)"},
-                 {"value": "720p",    "label": "720p — scaled to 720p at source framerate (significant CPU reduction; resolution restores when alert clears)"},
-                 {"value": "720p30",  "label": "720p 30fps — scaled to 720p, capped at 30fps (maximum CPU reduction; use if other options still cause buffering)"},
+                 {"value": "full",    "label": "Full quality — source resolution and framerate (default)"},
+                 {"value": "1080p30", "label": "1080p 30fps — full resolution, framerate capped at 30fps"},
+                 {"value": "720p",    "label": "720p — scaled to 720p at source framerate"},
+                 {"value": "720p30",  "label": "720p 30fps — scaled to 720p, capped at 30fps (maximum CPU reduction)"},
              ]},
+            # ── USA NWS ──
+            {"id": "_eas_usa_section", "type": "info", "label": "---------- USA — NWS Alerts ----------"},
             {"id": "_eas_zone_help", "type": "info",
-             "label": "To find your zone or county code: visit weather.gov, select your state, then click your county. The code appears in the URL and alert details (e.g. TXC113 = Texas, County 113). You can enter multiple codes separated by commas to cover multiple counties."},
-            {"id": "eas_zones",     "type": "text",   "label": "NWS Zone / County Codes (Active -- triggers alerts)",
+             "label": "Enter your NWS zone or county codes below. Use the Zone Lookup action to search by US state — it will return all matching zone codes and names."},
+            {"id": "eas_zones",     "type": "text",   "label": "NWS Alert Zones — USA (Active — triggers alerts)",
              "placeholder": "e.g. TXC113,TXC121"},
-            {"id": "_eas_saved_help", "type": "info",
-             "label": "Saved Codes (reference only -- paste your commonly-used codes here so you don't have to look them up each time; not monitored):"},
-            {"id": "eas_saved_codes", "type": "text",   "label": "Saved / Favorite Codes",
-             "placeholder": "e.g. OKC111,OKC037,WAZ702"},
-            {"id": "eas_severity_filter", "type": "select", "label": "Minimum Severity",
+            {"id": "eas_zone_lookup_state", "type": "text", "label": "Zone Lookup — US State Code (lookup only, not saved)",
+             "placeholder": "e.g. TX, WA, FL, NY"},
+            {"id": "eas_target_type", "type": "select", "label": "USA — Apply To",
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_eas_allchannels_warn", "type": "info", "label": "ℹ EAS CO-ARM: EAS can be enabled alongside any other ticker type (Now Playing, Custom Text, Sports). Channels with existing tickers will have EAS armed on top — they continue running normally and only switch to the EAS overlay when a real alert fires."},
+            {"id": "_eas_target_note", "type": "info", "label": "Fill in only the field that matches your USA Apply To selection above — leave the others blank."},
+            {"id": "eas_channel_group_id",    "type": "select", "label": "USA — Channel Group (Single Group)",              "options": groups},
+            {"id": "eas_channel_group_names", "type": "text",   "label": "USA — Group Names (Multiple Groups — comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
+            {"id": "eas_channel_id",          "type": "select", "label": "USA — Channel (Single Channel)",                  "options": channels},
+            {"id": "eas_exclude_groups",      "type": "text",   "label": "USA — Exclude Groups (optional)",                 "placeholder": "e.g. SiriusXM, Satellite Radio"},
+            # ── Canada EC ──
+            {"id": "_eas_ca_section", "type": "info", "label": "---------- Canada — Environment Canada Alerts ----------"},
+            {"id": "_eas_ca_help", "type": "info",
+             "label": "Enter your Environment Canada city IDs below. Use the City Lookup action to search by city name or province code. Both USA and Canada can be active simultaneously on independent channel groups."},
+            {"id": "eas_ca_city_ids", "type": "text",   "label": "Weather Canada City IDs — Canada (Active — triggers alerts)",
+             "placeholder": "e.g. on-143 (Toronto), ns-19 (Halifax)"},
+            {"id": "eas_ca_lookup_query", "type": "text", "label": "City Lookup — City Name or Province Code (lookup only, not saved)",
+             "placeholder": "e.g. Toronto  or  ON  or  Montréal"},
+            {"id": "eas_ca_target_type", "type": "select", "label": "Canada — Apply To",
+             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
+            {"id": "_eas_ca_target_note", "type": "info", "label": "Fill in only the field that matches your Canada Apply To selection above — leave the others blank."},
+            {"id": "eas_ca_channel_group_id",    "type": "select", "label": "Canada — Channel Group (Single Group)",              "options": groups},
+            {"id": "eas_ca_channel_group_names", "type": "text",   "label": "Canada — Group Names (Multiple Groups — comma-separated)", "placeholder": "e.g. News, Local"},
+            {"id": "eas_ca_channel_id",          "type": "select", "label": "Canada — Channel (Single Channel)",                  "options": channels},
+            {"id": "eas_ca_exclude_groups",      "type": "text",   "label": "Canada — Exclude Groups (optional)",                 "placeholder": "e.g. SiriusXM, Satellite Radio"},
+            {"id": "eas_ca_language", "type": "select", "label": "Canada — Alert Language",
              "options": [
-                 {"value": "Moderate", "label": "Watch (Moderate and above)"},
-                 {"value": "Severe",   "label": "Warning (Severe and above)"},
-                 {"value": "Extreme",  "label": "Emergency (Extreme only)"},
+                 {"value": "en",   "label": "English"},
+                 {"value": "fr",   "label": "French"},
+                 {"value": "both", "label": "Both (English / French)"},
+             ],
+             "default": "en"},
+            # ── Shared Settings ──
+            {"id": "_eas_shared_section", "type": "info", "label": "---------- Shared Settings (USA + Canada) ----------"},
+            {"id": "eas_severity_filter", "type": "select", "label": "Minimum Severity — USA: Watch/Warning/Emergency · Canada: Yellow/Orange/Red",
+             "options": [
+                 {"value": "Moderate", "label": "Watch / Yellow (Moderate and above)"},
+                 {"value": "Severe",   "label": "Warning / Orange (Severe and above)"},
+                 {"value": "Extreme",  "label": "Emergency / Red (Extreme only)"},
              ]},
             {"id": "eas_overlay_style", "type": "select", "label": "Alert Overlay Style",
              "options": [
                  {"value": "broadcast", "label": "TV Broadcast (news ticker bar — label box + scrolling crawl)"},
                  {"value": "tickarr",   "label": "Tickarr Custom (flashing overlay boxes)"},
              ]},
-            {"id": "eas_poll_interval",   "type": "number", "label": "Poll Interval (seconds)", "min": 15},
-            {"id": "eas_tone_interval",   "type": "number", "label": "Siren Tone Interval (seconds) - how often the attention tone repeats during an active alert", "min": 30},
-            {"id": "eas_test_duration",   "type": "number", "label": "Test Alert Duration (seconds) - how long the Test EAS Alert action fires before auto-restoring (default 60)", "min": 10},
-            {"id": "eas_target_type",   "type": "select", "label": "Apply To",
-             "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "_eas_allchannels_warn", "type": "info", "label": "ℹ EAS CO-ARM: EAS can be enabled alongside any other ticker type (Now Playing, Custom Text, Sports). Channels with existing tickers will have EAS armed on top — they continue running normally and only switch to the EAS overlay when a real alert fires. The only channels skipped are those with an EAS alert actively firing right now. Use Exclude Groups if you want to intentionally leave certain groups unmonitored."},
-            {"id": "_eas_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
-            {"id": "eas_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
-            {"id": "eas_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
-            {"id": "eas_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
-            {"id": "eas_exclude_groups",      "type": "text",   "label": "Exclude Groups (optional) — comma-separated group names to skip, e.g. SiriusXM, Satellite Radio", "placeholder": "e.g. SiriusXM, Satellite Radio"},
+            {"id": "eas_poll_interval",  "type": "number", "label": "Poll Interval (seconds)", "min": 15},
+            {"id": "eas_tone_interval",  "type": "number", "label": "Siren Tone Interval (seconds) — how often the attention tone repeats during an active alert", "min": 30},
+            {"id": "eas_test_duration",  "type": "number", "label": "Test Alert Duration (seconds) — how long Test Alert fires before auto-restoring (default 60)", "min": 10},
+            {"id": "_eas_saved_help", "type": "info",
+             "label": "Saved Codes (reference only — paste commonly-used codes here so you do not have to look them up each time; not monitored):"},
+            {"id": "eas_saved_codes", "type": "text", "label": "Saved / Favorite Codes",
+             "placeholder": "e.g. OKC111,OKC037,WAZ702"},
             # ── Custom Text ───────────────────────────────────────────────
             {"id": "_custom_section",      "type": "info",   "label": "==========  CUSTOM TEXT  =========="},
             {"id": "_custom_transcode_note", "type": "info",
@@ -2579,6 +2758,11 @@ class Plugin:
             "disable_eas":          self._disable_eas,
             "test_eas":             self._test_eas,
             "migrate_eas":          self._migrate_eas,
+            "lookup_eas_zones":      self._lookup_eas_zones,
+            "lookup_eas_ca":         self._lookup_eas_ca,
+            "enable_eas_ca":        self._enable_eas_ca,
+            "disable_eas_ca":       self._disable_eas_ca,
+            "test_eas_ca":          self._test_eas_ca,
             "disable_all":          self._disable_all,
             "view_active":          self._view_active,
             "refresh_channels":     self._refresh_channels,
@@ -2593,6 +2777,8 @@ class Plugin:
             "reload_poller":        self._reload_poller,
             "restart_dispatcharr":  self._restart_dispatcharr,
         }
+        if action.startswith("_section_"):
+            return {"success": True, "message": ""}
         handler = dispatch.get(action)
         if not handler:
             return {"success": False, "message": f"Unknown action: {action}"}
@@ -2636,7 +2822,15 @@ class Plugin:
             try:
                 original_profile = channel.stream_profile
                 if not original_profile:
+                    try:
+                        original_profile = channel.get_stream_profile()
+                    except Exception:
+                        original_profile = None
+                if not original_profile:
                     skipped.append(f"{channel.name} (no stream profile assigned — go to Channels, open this channel, and assign any stream profile, then re-run)")
+                    continue
+                if not (original_profile.parameters or "").strip():
+                    skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
@@ -2737,7 +2931,15 @@ class Plugin:
             try:
                 original_profile = channel.stream_profile
                 if not original_profile:
+                    try:
+                        original_profile = channel.get_stream_profile()
+                    except Exception:
+                        original_profile = None
+                if not original_profile:
                     skipped.append(f"{channel.name} (no stream profile assigned — go to Channels, open this channel, and assign any stream profile, then re-run)")
+                    continue
+                if not (original_profile.parameters or "").strip():
+                    skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
@@ -2933,7 +3135,15 @@ class Plugin:
             try:
                 original_profile = channel.stream_profile
                 if not original_profile:
+                    try:
+                        original_profile = channel.get_stream_profile()
+                    except Exception:
+                        original_profile = None
+                if not original_profile:
                     skipped.append(f"{channel.name} (no stream profile assigned — go to Channels, open this channel, and assign any stream profile, then re-run)")
+                    continue
+                if not (original_profile.parameters or "").strip():
+                    skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
@@ -3163,7 +3373,15 @@ class Plugin:
                     continue
                 original_profile = channel.stream_profile
                 if not original_profile:
+                    try:
+                        original_profile = channel.get_stream_profile()
+                    except Exception:
+                        original_profile = None
+                if not original_profile:
                     skipped.append(f"{channel.name} (no stream profile assigned — assign one in Channels first)")
+                    continue
+                if not (original_profile.parameters or "").strip():
+                    skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
                     skipped.append(f"{channel.name} (already has a Tickarr profile — disable first)")
@@ -3227,6 +3445,283 @@ class Plugin:
         if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
+    def _lookup_eas_zones(self, params):
+        state = (params.get("eas_zone_lookup_state") or "").strip().upper()
+        if not state:
+            return {"success": False, "message": "Enter a 2-letter US state code in the Zone Lookup field above (e.g. TX, WA, FL)."}
+        if len(state) != 2 or not state.isalpha():
+            return {"success": False, "message": f"'{state}' is not a valid state code. Use the 2-letter abbreviation (e.g. TX, WA, FL, NY)."}
+        url = f"https://api.weather.gov/zones?type=public&area={state}"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": NWS_UA, "Accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                data = json.loads(r.read())
+        except Exception as e:
+            return {"success": False, "message": f"NWS API error: {e}"}
+        features = data.get("features") or []
+        if not features:
+            return {"success": False, "message": f"No public zones found for state: {state}. Check the state code and try again."}
+        features.sort(key=lambda x: (x.get("properties") or {}).get("id") or "")
+        lines = [f"NWS public zones for {state} — {len(features)} zones:"]
+        for f in features:
+            p = f.get("properties") or {}
+            lines.append(f"  {p.get('id','?')} — {p.get('name','')}")
+        lines.append(f"\nPaste the code(s) you want into NWS Alert Zones above, comma-separated (e.g. TXZ001,TXZ002).")
+        return {"success": True, "message": "\n".join(lines)}
+
+    def _lookup_eas_ca(self, params):
+        query = (params.get("eas_ca_lookup_query") or "").strip()
+        if not query:
+            return {"success": False, "message": "Enter a city name or province code in the City Lookup field above (e.g. Toronto, ON, Montréal)."}
+
+        if not os.path.exists(_EAS_CA_CITY_NAMES):
+            return {"success": False, "message": "City names reference file not found. Please update Tickarr to get the bundled city list."}
+        try:
+            with open(_EAS_CA_CITY_NAMES, encoding="utf-8") as f:
+                city_names = json.load(f)
+        except Exception as e:
+            return {"success": False, "message": f"Could not load city names file: {e}"}
+
+        q = query.lower().strip()
+
+        # Province code lookup: if query is 2 letters, treat as province prefix
+        if len(q) == 2 and q.isalpha():
+            matches = [
+                (cid, names) for cid, names in city_names.items()
+                if cid.startswith(f"{q}-")
+            ]
+            label = f"province '{query.upper()}'"
+        else:
+            # City name search — check both English and French names
+            matches = [
+                (cid, names) for cid, names in city_names.items()
+                if q in (names.get("en") or "").lower() or q in (names.get("fr") or "").lower()
+            ]
+            label = f"'{query}'"
+
+        if not matches:
+            return {"success": False, "message": f"No cities found matching {label}. Try a shorter search or use a 2-letter province code (e.g. ON, QC, BC, AB)."}
+
+        matches.sort(key=lambda x: x[0])
+        lines = [f"Weather Canada cities matching {label} — {len(matches)} result(s):"]
+        for cid, names in matches:
+            en = names.get("en") or ""
+            fr = names.get("fr") or ""
+            if en == fr or not fr:
+                lines.append(f"  {cid} — {en}")
+            else:
+                lines.append(f"  {cid} — {en} / {fr}")
+        lines.append(f"\nPaste the code(s) you want into Weather Canada City IDs above, comma-separated.")
+        return {"success": True, "message": "\n".join(lines)}
+
+    def _enable_eas_ca(self, params):
+        ca_ids = (params.get("eas_ca_city_ids") or "").strip()
+        if not ca_ids:
+            return {"success": False, "message": "No Weather Canada city IDs configured. Enter at least one city ID in EAS Weather Alerts > Weather Canada City IDs above."}
+
+        channels = self._resolve_channels(params, prefix="eas_ca_")
+        if not channels:
+            return {"success": False, "message": "No channels found. Set the Weather Canada — Apply To / Channel selector in Settings."}
+
+        mappings = _get_mappings()
+        enabled, skipped, failed = [], [], []
+
+        for channel in channels:
+            cid = str(channel.id)
+            try:
+                if cid in mappings:
+                    existing = mappings[cid]
+                    if existing.get("type") == "eas_ca" or existing.get("eas_ca_armed"):
+                        skipped.append(f"{channel.name} (Weather Canada EAS already armed)")
+                        continue
+                    if existing.get("eas_profile_id"):
+                        skipped.append(f"{channel.name} (EAS alert currently active — wait for it to clear)")
+                        continue
+                    existing["eas_ca_armed"] = True
+                    mappings[cid] = existing
+                    enabled.append(channel.name)
+                    continue
+                original_profile = channel.stream_profile
+                if not original_profile:
+                    try:
+                        original_profile = channel.get_stream_profile()
+                    except Exception:
+                        original_profile = None
+                if not original_profile:
+                    skipped.append(f"{channel.name} (no stream profile assigned — assign one in Channels first)")
+                    continue
+                if not (original_profile.parameters or "").strip():
+                    skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
+                    continue
+                if original_profile.name.startswith(PROFILE_PREFIX):
+                    skipped.append(f"{channel.name} (already has a Tickarr profile — disable first)")
+                    continue
+                mappings[cid] = {
+                    "original_profile_id": original_profile.id,
+                    "channel_name":        channel.name,
+                    "type":                "eas_ca",
+                }
+                enabled.append(channel.name)
+            except Exception as e:
+                logger.error(f"tickarr: enable EAS CA failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} ({e})")
+
+        _save_mappings(mappings)
+        parts = []
+        if enabled:
+            parts.append(f"Weather Canada EAS registered: {len(enabled)} channel(s)\n" + "\n".join(f"  - {e}" for e in enabled))
+            parts.append(f"Monitoring city IDs: {ca_ids}\nChannels continue using their normal profile. When a qualifying Environment Canada alert fires, they automatically switch to the EAS overlay. No re-encoding overhead until an actual alert occurs.")
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _disable_eas_ca(self, params):
+        channels = self._resolve_channels(params, prefix="eas_ca_")
+        if not channels:
+            return {"success": False, "message": "No channels found. Set the Weather Canada — Apply To / Channel selector in Settings."}
+        mappings = _get_mappings()
+        disabled, skipped, failed = [], [], []
+        for channel in channels:
+            cid = str(channel.id)
+            mapping = mappings.get(cid)
+            is_pure_ca = mapping and mapping.get("type") == "eas_ca"
+            is_coarmed = mapping and mapping.get("eas_ca_armed")
+            if not mapping or (not is_pure_ca and not is_coarmed):
+                skipped.append(f"{channel.name} (no Weather Canada EAS active)")
+                continue
+            try:
+                if mapping.get("eas_profile_id"):
+                    _restore_profile(channel, mapping["original_profile_id"])
+                    _delete_cloned_profile(mapping["eas_profile_id"])
+                _eas_clear(channel.id)
+                with _eas_lock:
+                    _eas_active.pop(cid, None)
+                if is_pure_ca:
+                    del mappings[cid]
+                else:
+                    mapping.pop("eas_ca_armed", None)
+                    mapping.pop("eas_profile_id", None)
+                    mappings[cid] = mapping
+                disabled.append(channel.name)
+            except Exception as e:
+                logger.error(f"tickarr: disable EAS CA failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} ({e})")
+        _save_mappings(mappings)
+        parts = []
+        if disabled: parts.append(f"Weather Canada EAS disabled: {len(disabled)} channel(s)")
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
+    def _test_eas_ca(self, params):
+        """Fire a fake Weather Canada alert on CA EAS-enabled channels for a configurable duration, then auto-restore."""
+        import threading as _threading
+        duration = 60
+        try:
+            duration = max(10, min(600, int(params.get("eas_test_duration") or 60)))
+        except (ValueError, TypeError):
+            pass
+
+        channels = self._resolve_channels(params, prefix="eas_ca_")
+        if not channels:
+            return {"success": False, "message": "No channels found. Set the Weather Canada — Apply To / Channel selector in Settings."}
+
+        mappings = _get_mappings()
+        settings = _get_settings()
+        fired, skipped, failed = [], [], []
+
+        for channel in channels:
+            cid = str(channel.id)
+            mapping = mappings.get(cid)
+            if not mapping or (mapping.get("type") != "eas_ca" and not mapping.get("eas_ca_armed")):
+                skipped.append(f"{channel.name} (no Weather Canada EAS active — enable it first)")
+                continue
+            if mapping.get("eas_profile_id"):
+                skipped.append(f"{channel.name} (EAS already active — clear it first)")
+                continue
+            try:
+                from core.models import StreamProfile
+                orig = StreamProfile.objects.filter(id=mapping["original_profile_id"]).first()
+                if not orig:
+                    failed.append(f"{channel.name} (original profile missing)")
+                    continue
+
+                tone_interval  = max(30, int(settings.get("eas_tone_interval") or 300))
+                overlay_style  = settings.get("eas_overlay_style")  or "tickarr"
+                label_color    = settings.get("eas_label_color")     or "0xCC0000"
+                transcode_mode = settings.get("eas_transcode_mode")  or "full"
+
+                tone_wav = None
+                if tone_interval > 0 and os.path.exists(_EAS_CA_TONE_FILE):
+                    tone_wav = _EAS_CA_TONE_FILE
+
+                eas_profile, _ = _clone_and_inject_eas(
+                    channel.id, orig, channel.name,
+                    tone_interval, overlay_style, label_color, transcode_mode,
+                    tone_wav=tone_wav,
+                )
+                _assign_profile(channel, eas_profile)
+
+                fake_alerts = [{
+                    "event":    "TEST — Weather Canada EAS Test Alert",
+                    "area":     "Test Zone — ceci n'est qu'un test / this is only a test",
+                    "severity": "Moderate",
+                    "source":   "EC",
+                }]
+                _eas_write_alert(cid, fake_alerts, overlay_style)
+                mapping["eas_profile_id"] = eas_profile.id
+                mappings[cid] = mapping
+                _eas_restart_channel(str(channel.uuid))
+                fired.append((cid, channel.name, eas_profile.id, str(channel.uuid)))
+
+            except Exception as e:
+                logger.error(f"tickarr: test_eas_ca failed for {channel.name}: {e}", exc_info=True)
+                failed.append(f"{channel.name} (error: {e})")
+
+        if fired:
+            _save_mappings(mappings)
+
+            def _auto_restore_ca(entries, delay):
+                import time as _t
+                _t.sleep(delay)
+                try:
+                    m = _get_mappings()
+                    from apps.channels.models import Channel as _Ch
+                    from core.models import StreamProfile as _SP
+                    for _cid, _name, _eid, _uuid in entries:
+                        _mapping = m.get(_cid)
+                        if not _mapping:
+                            continue
+                        try:
+                            _ch = _Ch.objects.filter(id=int(_cid)).first()
+                            if _ch:
+                                _restore_profile(_ch, _mapping.get("original_profile_id"))
+                            if _eid:
+                                _delete_cloned_profile(_eid)
+                            _mapping.pop("eas_profile_id", None)
+                            m[_cid] = _mapping
+                            _eas_clear(_cid)
+                            with _eas_lock:
+                                _eas_active.pop(_cid, None)
+                            if _ch:
+                                _eas_restart_channel(_uuid)
+                            logger.info(f"tickarr: test EAS CA auto-restored ch {_cid}")
+                        except Exception as _e:
+                            logger.error(f"tickarr: test EAS CA restore failed ch {_cid}: {_e}")
+                    _save_mappings(m)
+                except Exception as _e:
+                    logger.error(f"tickarr: test EAS CA auto-restore thread failed: {_e}")
+
+            _threading.Thread(target=_auto_restore_ca, args=(list(fired), duration), daemon=True).start()
+
+        parts = []
+        if fired:
+            names = [n for _, n, _, _ in fired]
+            parts.append(f"Weather Canada test alert fired on {len(fired)} channel(s): {', '.join(names)}\nOverlay will auto-restore in {duration} seconds.")
+        if skipped: parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:  parts.append("Failed:\n"  + "\n".join(f"  - {f}" for f in failed))
+        return {"success": bool(fired) and not failed, "message": "\n\n".join(parts) or "Nothing to do."}
+
     def _disable_all(self, params):
         from apps.channels.models import Channel
 
@@ -3249,11 +3744,11 @@ class Plugin:
                     _remove_custom_file(channel.id)
                 elif ticker_type == "sports":
                     _remove_sports_file(channel.id)
-                elif ticker_type == "eas":
+                elif ticker_type in ("eas", "eas_ca"):
                     _eas_clear(channel.id)
                     with _eas_lock:
                         _eas_active.pop(cid, None)
-                if mapping.get("eas_armed"):
+                if mapping.get("eas_armed") or mapping.get("eas_ca_armed"):
                     _eas_clear(channel.id)
                     with _eas_lock:
                         _eas_active.pop(cid, None)
@@ -3302,7 +3797,7 @@ class Plugin:
                     failed.append(f"{channel.name} (original profile missing)")
                     continue
 
-                tone_interval  = int(settings.get("eas_tone_interval") or 0)
+                tone_interval  = max(30, int(settings.get("eas_tone_interval") or 300))
                 overlay_style  = settings.get("eas_overlay_style")  or "tickarr"
                 label_color    = settings.get("eas_label_color")     or "0xCC0000"
                 transcode_mode = settings.get("eas_transcode_mode")  or "full"
@@ -3975,7 +4470,11 @@ class Plugin:
     def _clean_orphans(self, params):
         from core.models import StreamProfile
         mappings = _get_mappings()
-        active_ticker_ids = {m["ticker_profile_id"] for m in mappings.values()}
+        active_ticker_ids = set()
+        for m in mappings.values():
+            for key in ("ticker_profile_id", "eas_profile_id"):
+                if m.get(key):
+                    active_ticker_ids.add(m[key])
 
         # Primary sweep: profiles whose name starts with PROFILE_PREFIX
         named = list(StreamProfile.objects.filter(name__startswith=PROFILE_PREFIX))
