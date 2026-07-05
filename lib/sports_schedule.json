@@ -1,27 +1,6 @@
 {
-  "generated_at": "2026-07-05T13:18:05Z",
+  "generated_at": "2026-07-05T17:01:46Z",
   "events": [
-    {
-      "slug": "indycar",
-      "title": "INDY NXT Race",
-      "description": "SiriusXM INDYCAR Nation · INDY NXT Race · Mid-Ohio Sports Car Course",
-      "start_utc": "2026-07-05T13:55:00Z",
-      "end_utc": "2026-07-05T16:25:00Z",
-      "channels": [
-        "SiriusXM INDYCAR Nation"
-      ]
-    },
-    {
-      "slug": "f1",
-      "title": "British Grand Prix",
-      "description": "Formula 1 Racing and Analysis · British Grand Prix · Silverstone Circuit",
-      "start_utc": "2026-07-05T14:00:00Z",
-      "end_utc": "2026-07-05T16:00:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "indycar",
       "title": "Honda INDY 200 at Mid-Ohio",
