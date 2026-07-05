@@ -1,42 +1,6 @@
 {
-  "generated_at": "2026-07-05T17:01:46Z",
+  "generated_at": "2026-07-05T20:51:36Z",
   "events": [
-    {
-      "slug": "indycar",
-      "title": "Honda INDY 200 at Mid-Ohio",
-      "description": "SiriusXM INDYCAR Nation · Honda INDY 200 at Mid-Ohio · Mid-Ohio Sports Car Course",
-      "start_utc": "2026-07-05T16:00:00Z",
-      "end_utc": "2026-07-05T18:30:00Z",
-      "channels": [
-        "SiriusXM INDYCAR Nation"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Atlanta Braves @ New York Mets",
-      "description": "MLB · Atlanta Braves @ New York Mets",
-      "start_utc": "2026-07-05T16:30:00Z",
-      "end_utc": "2026-07-05T19:30:00Z",
-      "channels": [
-        "New York Mets",
-        "Atlanta Braves",
-        "MLB Play-by-Play 175",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Washington Nationals @ Pittsburgh Pirates",
-      "description": "MLB · Washington Nationals @ Pittsburgh Pirates",
-      "start_utc": "2026-07-05T17:00:00Z",
-      "end_utc": "2026-07-05T20:00:00Z",
-      "channels": [
-        "Pittsburgh Pirates",
-        "Washington Nationals",
-        "MLB Play-by-Play 184",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "pga",
       "title": "John Deere Classic",
@@ -46,32 +10,6 @@
       "channels": [
         "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cincinnati Reds @ Baltimore Orioles",
-      "description": "MLB · Cincinnati Reds @ Baltimore Orioles",
-      "start_utc": "2026-07-05T17:05:00Z",
-      "end_utc": "2026-07-05T20:05:00Z",
-      "channels": [
-        "Baltimore Orioles",
-        "Cincinnati Reds",
-        "MLB Play-by-Play 176",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Yankees @ Minnesota Twins",
-      "description": "MLB · New York Yankees @ Minnesota Twins",
-      "start_utc": "2026-07-05T17:35:00Z",
-      "end_utc": "2026-07-05T20:35:00Z",
-      "channels": [
-        "Minnesota Twins",
-        "New York Yankees",
-        "MLB Play-by-Play 177",
-        "MLB Network Radio"
       ]
     },
     {
@@ -115,6 +53,19 @@
     },
     {
       "slug": "mlb",
+      "title": "Houston Astros @ Tampa Bay Rays",
+      "description": "MLB · Houston Astros @ Tampa Bay Rays",
+      "start_utc": "2026-07-05T19:30:00Z",
+      "end_utc": "2026-07-05T22:30:00Z",
+      "channels": [
+        "Tampa Bay Rays",
+        "Houston Astros",
+        "MLB Play-by-Play 182",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
       "title": "Texas Rangers @ Detroit Tigers",
       "description": "MLB · Texas Rangers @ Detroit Tigers",
       "start_utc": "2026-07-05T19:30:00Z",
@@ -124,19 +75,6 @@
         "Texas Rangers",
         "MLB Play-by-Play 181",
         "MLB en Español 870",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Houston Astros @ Tampa Bay Rays",
-      "description": "MLB · Houston Astros @ Tampa Bay Rays",
-      "start_utc": "2026-07-05T19:30:00Z",
-      "end_utc": "2026-07-05T22:30:00Z",
-      "channels": [
-        "Tampa Bay Rays",
-        "Houston Astros",
-        "MLB Play-by-Play 182",
         "MLB Network Radio"
       ]
     },
