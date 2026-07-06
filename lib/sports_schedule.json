@@ -1,147 +1,6 @@
 {
-  "generated_at": "2026-07-05T20:51:36Z",
+  "generated_at": "2026-07-06T02:35:36Z",
   "events": [
-    {
-      "slug": "pga",
-      "title": "John Deere Classic",
-      "description": "SiriusXM PGA Tour Radio · John Deere Classic · TPC Deere Run",
-      "start_utc": "2026-07-05T17:00:00Z",
-      "end_utc": "2026-07-05T22:00:00Z",
-      "channels": [
-        "SiriusXM PGA TOUR Radio",
-        "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cleveland Guardians @ Chicago White Sox",
-      "description": "MLB · Cleveland Guardians @ Chicago White Sox",
-      "start_utc": "2026-07-05T18:00:00Z",
-      "end_utc": "2026-07-05T21:00:00Z",
-      "channels": [
-        "Chicago White Sox",
-        "Cleveland Guardians",
-        "MLB Play-by-Play 178",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago Cubs @ St. Louis Cardinals",
-      "description": "MLB · Chicago Cubs @ St. Louis Cardinals",
-      "start_utc": "2026-07-05T18:30:00Z",
-      "end_utc": "2026-07-05T21:30:00Z",
-      "channels": [
-        "St. Louis Cardinals",
-        "Chicago Cubs",
-        "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Kansas City Royals @ Philadelphia Phillies",
-      "description": "MLB · Kansas City Royals @ Philadelphia Phillies",
-      "start_utc": "2026-07-05T19:00:00Z",
-      "end_utc": "2026-07-05T22:00:00Z",
-      "channels": [
-        "Philadelphia Phillies",
-        "Kansas City Royals",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Houston Astros @ Tampa Bay Rays",
-      "description": "MLB · Houston Astros @ Tampa Bay Rays",
-      "start_utc": "2026-07-05T19:30:00Z",
-      "end_utc": "2026-07-05T22:30:00Z",
-      "channels": [
-        "Tampa Bay Rays",
-        "Houston Astros",
-        "MLB Play-by-Play 182",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Texas Rangers @ Detroit Tigers",
-      "description": "MLB · Texas Rangers @ Detroit Tigers",
-      "start_utc": "2026-07-05T19:30:00Z",
-      "end_utc": "2026-07-05T22:30:00Z",
-      "channels": [
-        "Detroit Tigers",
-        "Texas Rangers",
-        "MLB Play-by-Play 181",
-        "MLB en Español 870",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Arizona Diamondbacks @ Milwaukee Brewers",
-      "description": "MLB · Arizona Diamondbacks @ Milwaukee Brewers",
-      "start_utc": "2026-07-05T20:00:00Z",
-      "end_utc": "2026-07-05T23:00:00Z",
-      "channels": [
-        "Milwaukee Brewers",
-        "Arizona Diamondbacks",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Colorado Rockies @ San Francisco Giants",
-      "description": "MLB · Colorado Rockies @ San Francisco Giants",
-      "start_utc": "2026-07-05T20:00:00Z",
-      "end_utc": "2026-07-05T23:00:00Z",
-      "channels": [
-        "San Francisco Giants",
-        "Colorado Rockies",
-        "MLB Play-by-Play 183",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Brazil @ Norway",
-      "description": "SOCCER · Brazil @ Norway",
-      "start_utc": "2026-07-05T20:00:00Z",
-      "end_utc": "2026-07-05T22:00:00Z",
-      "channels": [
-        "Norway",
-        "Brazil",
-        "FOX Sports on SiriusXM",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Athletics @ Miami Marlins",
-      "description": "MLB · Athletics @ Miami Marlins",
-      "start_utc": "2026-07-05T20:30:00Z",
-      "end_utc": "2026-07-05T23:30:00Z",
-      "channels": [
-        "Miami Marlins",
-        "Athletics",
-        "MLB Play-by-Play 185",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Seattle Mariners @ Toronto Blue Jays",
-      "description": "MLB · Seattle Mariners @ Toronto Blue Jays",
-      "start_utc": "2026-07-05T21:00:00Z",
-      "end_utc": "2026-07-06T00:00:00Z",
-      "channels": [
-        "Toronto Blue Jays",
-        "Seattle Mariners",
-        "MLB Play-by-Play 186",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "nascar",
       "title": "eero 400",
@@ -153,33 +12,6 @@
         "Sports 997",
         "Sports 998",
         "Sports 999"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Los Angeles Dodgers @ San Diego Padres",
-      "description": "MLB · Los Angeles Dodgers @ San Diego Padres",
-      "start_utc": "2026-07-05T23:20:00Z",
-      "end_utc": "2026-07-06T02:20:00Z",
-      "channels": [
-        "San Diego Padres",
-        "Los Angeles Dodgers",
-        "MLB Network Radio",
-        "MLB Play-by-Play 175",
-        "MLB en Español 871"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Mexico @ England",
-      "description": "SOCCER · Mexico @ England",
-      "start_utc": "2026-07-06T00:00:00Z",
-      "end_utc": "2026-07-06T02:00:00Z",
-      "channels": [
-        "England",
-        "Mexico",
-        "FOX Sports on SiriusXM",
-        "SiriusXM FC"
       ]
     },
     {
@@ -236,12 +68,12 @@
     },
     {
       "slug": "soccer",
-      "title": "Switzerland @ To Be Determined",
-      "description": "SOCCER · Switzerland @ To Be Determined",
+      "title": "Switzerland @ Colombia",
+      "description": "SOCCER · Switzerland @ Colombia",
       "start_utc": "2026-07-07T20:00:00Z",
       "end_utc": "2026-07-07T22:00:00Z",
       "channels": [
-        "To Be Determined",
+        "Colombia",
         "Switzerland",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
@@ -260,13 +92,13 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "SOCCER · To Be Determined @ To Be Determined",
+      "title": "France @ Morocco",
+      "description": "SOCCER · France @ Morocco",
       "start_utc": "2026-07-09T20:00:00Z",
       "end_utc": "2026-07-09T22:00:00Z",
       "channels": [
-        "To Be Determined",
-        "To Be Determined",
+        "Morocco",
+        "France",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
@@ -328,13 +160,13 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "SOCCER · To Be Determined @ To Be Determined",
+      "title": "Norway @ To Be Determined",
+      "description": "SOCCER · Norway @ To Be Determined",
       "start_utc": "2026-07-11T21:00:00Z",
       "end_utc": "2026-07-11T23:00:00Z",
       "channels": [
         "To Be Determined",
-        "To Be Determined",
+        "Norway",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
