@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T08:14:47Z",
+  "generated_at": "2026-07-06T15:18:37Z",
   "events": [
     {
       "slug": "mlb",
@@ -237,12 +237,12 @@
     },
     {
       "slug": "soccer",
-      "title": "Norway @ To Be Determined",
-      "description": "SOCCER · Norway @ To Be Determined",
+      "title": "Norway @ England",
+      "description": "SOCCER · Norway @ England",
       "start_utc": "2026-07-11T21:00:00Z",
       "end_utc": "2026-07-11T23:00:00Z",
       "channels": [
-        "To Be Determined",
+        "England",
         "Norway",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
