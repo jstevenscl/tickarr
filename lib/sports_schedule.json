@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-07T14:15:01Z",
+  "generated_at": "2026-07-07T17:54:13Z",
   "events": [
     {
       "slug": "soccer",
@@ -368,7 +368,10 @@
       "start_utc": "2026-07-12T22:00:00Z",
       "end_utc": "2026-07-13T01:30:00Z",
       "channels": [
-        "SiriusXM NASCAR Radio"
+        "SiriusXM NASCAR Radio",
+        "Sports 997",
+        "Sports 998",
+        "Sports 999"
       ]
     },
     {
@@ -489,18 +492,8 @@
       "slug": "indycar",
       "title": "INDY NXT Race",
       "description": "SiriusXM INDYCAR Nation · INDY NXT Race · Nashville Superspeedway",
-      "start_utc": "2026-07-19T16:00:00Z",
-      "end_utc": "2026-07-19T18:30:00Z",
-      "channels": [
-        "SiriusXM INDYCAR Nation"
-      ]
-    },
-    {
-      "slug": "indycar",
-      "title": "Music City Grand Prix",
-      "description": "SiriusXM INDYCAR Nation · Music City Grand Prix · Nashville Superspeedway",
-      "start_utc": "2026-07-19T18:30:00Z",
-      "end_utc": "2026-07-19T21:00:00Z",
+      "start_utc": "2026-07-19T16:55:00Z",
+      "end_utc": "2026-07-19T19:25:00Z",
       "channels": [
         "SiriusXM INDYCAR Nation"
       ]
@@ -516,6 +509,16 @@
         "To Be Determined",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Music City Grand Prix",
+      "description": "SiriusXM INDYCAR Nation · Music City Grand Prix · Nashville Superspeedway",
+      "start_utc": "2026-07-19T21:00:00Z",
+      "end_utc": "2026-07-19T23:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
       ]
     },
     {
