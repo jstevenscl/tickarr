@@ -1,93 +1,16 @@
 {
-  "generated_at": "2026-07-07T21:17:58Z",
+  "generated_at": "2026-07-08T02:04:57Z",
   "events": [
     {
-      "slug": "soccer",
-      "title": "Switzerland @ Colombia",
-      "description": "SOCCER · Switzerland @ Colombia",
-      "start_utc": "2026-07-07T20:00:00Z",
-      "end_utc": "2026-07-07T22:00:00Z",
-      "channels": [
-        "Colombia",
-        "Switzerland",
-        "FOX Sports on SiriusXM",
-        "SiriusXM FC"
-      ]
-    },
-    {
       "slug": "mlb",
-      "title": "Baltimore Orioles @ Chicago Cubs",
-      "description": "MLB · Baltimore Orioles @ Chicago Cubs",
-      "start_utc": "2026-07-07T22:35:00Z",
-      "end_utc": "2026-07-08T01:35:00Z",
+      "title": "New York Mets @ Kansas City Royals",
+      "description": "MLB · New York Mets @ Kansas City Royals",
+      "start_utc": "2026-07-07T23:10:00Z",
+      "end_utc": "2026-07-08T02:10:00Z",
       "channels": [
-        "Chicago Cubs",
-        "Baltimore Orioles",
-        "MLB Play-by-Play 176",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Detroit Tigers @ Athletics",
-      "description": "MLB · Detroit Tigers @ Athletics",
-      "start_utc": "2026-07-07T22:40:00Z",
-      "end_utc": "2026-07-08T01:40:00Z",
-      "channels": [
-        "Athletics",
-        "Detroit Tigers",
-        "MLB Play-by-Play 177",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Tampa Bay Rays @ New York Yankees",
-      "description": "MLB · Tampa Bay Rays @ New York Yankees",
-      "start_utc": "2026-07-07T22:40:00Z",
-      "end_utc": "2026-07-08T01:40:00Z",
-      "channels": [
-        "New York Yankees",
-        "Tampa Bay Rays",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Miami Marlins @ Seattle Mariners",
-      "description": "MLB · Miami Marlins @ Seattle Mariners",
-      "start_utc": "2026-07-07T22:40:00Z",
-      "end_utc": "2026-07-08T01:40:00Z",
-      "channels": [
-        "Seattle Mariners",
-        "Miami Marlins",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Pittsburgh Pirates @ Atlanta Braves",
-      "description": "MLB · Pittsburgh Pirates @ Atlanta Braves",
-      "start_utc": "2026-07-07T22:40:00Z",
-      "end_utc": "2026-07-08T01:40:00Z",
-      "channels": [
-        "Atlanta Braves",
-        "Pittsburgh Pirates",
-        "MLB Play-by-Play 178",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Washington Nationals @ Houston Astros",
-      "description": "MLB · Washington Nationals @ Houston Astros",
-      "start_utc": "2026-07-07T22:45:00Z",
-      "end_utc": "2026-07-08T01:45:00Z",
-      "channels": [
-        "Houston Astros",
-        "Washington Nationals",
-        "MLB Play-by-Play 179",
+        "Kansas City Royals",
+        "New York Mets",
+        "MLB Play-by-Play 182",
         "MLB Network Radio"
       ]
     },
@@ -106,14 +29,14 @@
     },
     {
       "slug": "mlb",
-      "title": "New York Mets @ Kansas City Royals",
-      "description": "MLB · New York Mets @ Kansas City Royals",
-      "start_utc": "2026-07-07T23:10:00Z",
-      "end_utc": "2026-07-08T02:10:00Z",
+      "title": "Chicago White Sox @ Boston Red Sox",
+      "description": "MLB · Chicago White Sox @ Boston Red Sox",
+      "start_utc": "2026-07-07T23:40:00Z",
+      "end_utc": "2026-07-08T02:40:00Z",
       "channels": [
-        "Kansas City Royals",
-        "New York Mets",
-        "MLB Play-by-Play 182",
+        "Boston Red Sox",
+        "Chicago White Sox",
+        "MLB Play-by-Play 184",
         "MLB Network Radio"
       ]
     },
@@ -127,19 +50,6 @@
         "Cleveland Guardians",
         "Minnesota Twins",
         "MLB Play-by-Play 183",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago White Sox @ Boston Red Sox",
-      "description": "MLB · Chicago White Sox @ Boston Red Sox",
-      "start_utc": "2026-07-07T23:40:00Z",
-      "end_utc": "2026-07-08T02:40:00Z",
-      "channels": [
-        "Boston Red Sox",
-        "Chicago White Sox",
-        "MLB Play-by-Play 184",
         "MLB Network Radio"
       ]
     },
