@@ -126,6 +126,12 @@ In Tickarr settings, scroll to the **Now Playing** section (it is the first sect
    - **On-Demand (default, recommended)** — No profile is cloned until a viewer tunes in. The overlay activates on connect and restores to passthrough after about 30 seconds with no viewers. Saves a permanent profile per channel, but every connect requires Tickarr to swap profiles and restart the stream — most players handle this fine, but some (Plex is a known example) can be sensitive to a mid-connect restart.
    - **Always On** — The overlay profile is cloned and assigned permanently the moment you enable Now Playing, before anyone connects. There is no restart on connect — whoever tunes in gets the overlay from the very first frame. Recommended if you're seeing playback issues on a particular player when a channel is first opened. This creates one permanent cloned stream profile per enabled channel; unwatched channels still cost nothing (FFmpeg only runs while something is actually connected, regardless of trigger mode).
 
+### Always On and stream profile count
+
+If you enable Always On across a large satellite radio lineup (a full SiriusXM channel list is 400+ channels), you will see one cloned stream profile per channel in Dispatcharr's Stream Profiles list — for example, 424 channels means 424 cloned profiles. **This is expected and has no performance impact.** FFmpeg only runs while a channel is actively connected regardless of how many profiles exist; unwatched channels cost nothing whether they have a cloned profile sitting in the database or not. This was directly verified: bulk-enabling Always On across 424 channels completed in under 2 seconds with zero errors, and server load/CPU/memory were unaffected both during the operation and afterward.
+
+The reason it's one profile per channel at all is a current Dispatcharr limitation: stream profiles support `{streamUrl}` and `{userAgent}` substitution at stream-start, but not a per-channel identifier, so Tickarr has to bake each channel's ID into its own cloned profile to point the overlay at the right text file. An open Dispatcharr feature request — [`{channelId}` substitution token](https://github.com/Dispatcharr/Dispatcharr/issues/1252) — would let Tickarr use a **single shared profile** for every Now Playing channel instead, regardless of trigger mode. If and when that request is picked up by the Dispatcharr team, Tickarr will be updated immediately to take advantage of it and permanently eliminate the per-channel profile clones.
+
 ---
 
 ### Step 3 — Enable the overlay

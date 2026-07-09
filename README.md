@@ -13,7 +13,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Displays artist, song title, and channel name as a live-updating overlay
 - Audio-only channels receive an injected 1280x720 black video background — **the base profile must be genuinely audio-only (no `-c:v`/`-vcodec` flag, not even `-c:v copy`)** or the overlay will never render. See [Your base profile must be genuinely audio-only](docs/USERGUIDE.md#your-base-profile-must-be-genuinely-audio-only) in the User Guide.
 - On-Demand mode (default): overlay activates when a viewer tunes in, restores to passthrough when idle
-- Always On mode: overlay profile assigned permanently at enable time — no restart on connect, recommended for players sensitive to mid-stream restarts (e.g. Plex)
+- Always On mode: overlay profile assigned permanently at enable time — no restart on connect, recommended for players sensitive to mid-stream restarts (e.g. Plex). **Clones one stream profile per enabled channel** (this is a current Dispatcharr limitation, not a bug — see [Always On and stream profile count](docs/USERGUIDE.md#always-on-and-stream-profile-count) in the User Guide). No performance impact either way — FFmpeg only runs while a channel is actively connected, regardless of how many profiles exist.
 
 **EAS/JAS Weather Alerts — USA (NOAA/NWS)**
 - Monitors NOAA/NWS for active weather alerts in your configured zones
