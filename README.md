@@ -12,7 +12,8 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Auto-maps Dispatcharr channels to satellite radio stations
 - Displays artist, song title, and channel name as a live-updating overlay
 - Audio-only channels receive an injected 1280x720 black video background — **the base profile must be genuinely audio-only (no `-c:v`/`-vcodec` flag, not even `-c:v copy`)** or the overlay will never render. See [Your base profile must be genuinely audio-only](docs/USERGUIDE.md#your-base-profile-must-be-genuinely-audio-only) in the User Guide.
-- On-Demand mode: overlay activates when a viewer tunes in, restores to passthrough when idle
+- On-Demand mode (default): overlay activates when a viewer tunes in, restores to passthrough when idle
+- Always On mode: overlay profile assigned permanently at enable time — no restart on connect, recommended for players sensitive to mid-stream restarts (e.g. Plex)
 
 **EAS/JAS Weather Alerts — USA (NOAA/NWS)**
 - Monitors NOAA/NWS for active weather alerts in your configured zones
@@ -68,7 +69,9 @@ If you are using Favorite Teams and only following one or two teams, you can set
 
 Tickarr does not do anything to a channel until someone actually starts watching it. The moment a viewer tunes in, the Now Playing overlay activates — showing the current artist, song title, and channel name. If nobody has been watching for about 30 seconds, it quietly switches back to normal passthrough until the next time someone tunes in.
 
-This matters a lot if you have a large satellite radio lineup. Instead of re-encoding hundreds of channels around the clock whether anyone is watching or not, Tickarr only runs the overlay on the channels that are actually being watched right now.
+This matters a lot if you have a large satellite radio lineup. Instead of re-encoding hundreds of channels around the clock whether anyone is watching or not, Tickarr only runs the overlay on the channels that are actually being watched right now. FFmpeg only runs while a channel is actively connected either way — the trigger mode doesn't change that.
+
+Switching a channel's stream profile always requires a brief restart to take effect. On-demand mode does this the moment a viewer connects, which most players handle fine — but some (Plex is a known example) are sensitive to a restart landing mid-connect. If you're seeing playback issues on first tune-in with a specific player, switch that channel's Trigger Mode to **Always On**: the overlay profile is assigned before anyone ever connects, so there's nothing to restart.
 
 ### Custom Text
 
