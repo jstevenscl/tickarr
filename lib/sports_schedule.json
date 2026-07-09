@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T10:48:43Z",
+  "generated_at": "2026-07-09T14:42:35Z",
   "events": [
     {
       "slug": "pga",
@@ -53,6 +53,19 @@
     },
     {
       "slug": "mlb",
+      "title": "Baltimore Orioles @ Chicago Cubs",
+      "description": "MLB · Baltimore Orioles @ Chicago Cubs",
+      "start_utc": "2026-07-09T17:35:00Z",
+      "end_utc": "2026-07-09T20:35:00Z",
+      "channels": [
+        "Chicago Cubs",
+        "Baltimore Orioles",
+        "MLB Play-by-Play 180",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
       "title": "Minnesota Twins @ Cleveland Guardians",
       "description": "MLB · Minnesota Twins @ Cleveland Guardians",
       "start_utc": "2026-07-09T17:40:00Z",
@@ -88,19 +101,6 @@
         "France",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Baltimore Orioles @ Chicago Cubs",
-      "description": "MLB · Baltimore Orioles @ Chicago Cubs",
-      "start_utc": "2026-07-09T22:35:00Z",
-      "end_utc": "2026-07-10T01:35:00Z",
-      "channels": [
-        "Chicago Cubs",
-        "Baltimore Orioles",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
       ]
     },
     {
