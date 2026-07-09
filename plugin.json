@@ -1,6 +1,6 @@
 {
   "name": "Tickarr",
-  "version": "0.3.02",
+  "version": "0.3.03",
   "logo": "logo.png",
   "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
@@ -8,12 +8,12 @@
     {
       "id": "enable_nowplaying",
       "label": "Enable Now Playing",
-      "description": "Registers targeted channels for the Satellite Radio Now Playing overlay. The overlay activates on-demand when a viewer tunes in and restores to passthrough when the channel goes idle.",
+      "description": "Registers targeted channels for the Satellite Radio Now Playing overlay. In On-Demand mode, the overlay activates when a viewer tunes in and restores to passthrough when the channel goes idle (requires one restart per connect). In Always On mode, the overlay profile is assigned permanently at enable time — no restart ever happens on connect, at the cost of a heavier encode for any connection (viewer or otherwise) once the channel is watched.",
       "button_label": "Enable",
       "button_variant": "filled",
       "button_color": "cyan",
       "confirm": {
-        "message": "This will register the selected channels for Now Playing. The overlay activates on-demand when a viewer tunes in. Channels already enabled will be skipped. Continue?"
+        "message": "This will register the selected channels for Now Playing. Channels already enabled will be skipped. Continue?"
       }
     },
     {

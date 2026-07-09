@@ -503,8 +503,8 @@ def _assign_profile(channel, profile):
     channel.save(update_fields=["stream_profile"])
     try:
         channel.update_stream_profile(profile.id)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"tickarr: update_stream_profile failed for {channel.name}: {e}")
 
 
 def _assign_logo(channel, logo_url, channel_display_name):
@@ -687,6 +687,10 @@ def _eas_clear(channel_id):
     _atomic_write(f"eas_{channel_id}_area.txt",   "")
 
 
+_RESTART_GRACE_SECONDS = 5.0
+_RESTART_ACTIVE_WAIT_SECONDS = 20.0
+
+
 def _restart_channel_stream(channel_uuid, label=""):
     """Stop an active channel so clients reconnect with the updated stream profile.
 
@@ -695,6 +699,12 @@ def _restart_channel_stream(channel_uuid, label=""):
     rejects ALL reconnect attempts before FFmpeg even starts — causing the 10-second
     stall loop. We delete the key after ~2s (enough for FFmpeg teardown to finish)
     so clients can reconnect immediately with the new profile.
+
+    We wait for the channel to reach 'active' (buffer filled, client receiving data)
+    before restarting — but restarting the instant it goes active is the worst
+    possible timing: that's exactly when the client transitions from buffering to
+    playing. So after detecting 'active' we wait _RESTART_GRACE_SECONDS more,
+    giving the client real playback before pulling the stream out from under it.
     """
     import time as _time
     tag = f" [{label}]" if label else ""
@@ -704,13 +714,17 @@ def _restart_channel_stream(channel_uuid, label=""):
         from apps.channels.models import RedisClient
         rc = RedisClient.get_client()
         meta_key = RedisKeys.channel_metadata(channel_uuid)
-        deadline = _time.time() + 8.0
+        deadline = _time.time() + _RESTART_ACTIVE_WAIT_SECONDS
+        went_active = False
         while _time.time() < deadline:
             raw = rc.hget(meta_key, "state")
             state_val = (raw.decode() if isinstance(raw, bytes) else raw) if raw else ""
             if state_val == "active":
+                went_active = True
                 break
             _time.sleep(0.25)
+        if went_active:
+            _time.sleep(_RESTART_GRACE_SECONDS)
         result = ChannelService.stop_channel(channel_uuid)
         if result.get("status") != "success":
             return
@@ -2171,7 +2185,7 @@ def _channel_is_stale(channel_id, now):
     try:
         return (now - os.path.getmtime(path)) > STALE_THRESHOLD
     except OSError:
-        return False  # file doesn't exist yet — not our problem to force-refresh
+        return False  # file doesn't exist yet — channel hasn't been polled, not our problem to force
 
 
 def _sweep_loop(stop_event):
@@ -2394,7 +2408,50 @@ def _sports_sweep_loop(stop_event):
         stop_event.wait(timeout=SWEEP_SLEEP)
 
 
+_POLLER_LOCK_KEY = "tickarr:poller:owner"
+_POLLER_LOCK_TTL = 15  # seconds
+
+
+def _try_acquire_poller_lock():
+    """Cross-process leader election so only one Dispatcharr worker process runs
+    Tickarr's background loops. Without this, every uWSGI worker independently
+    detects the same viewer connect and races to clone+restart the channel —
+    confirmed in production logs as two overlapping restarts firing 5ms apart.
+    Falls back to True (old per-worker behavior) if Redis is unreachable, since
+    there's no way to coordinate without it anyway.
+    """
+    try:
+        from apps.channels.models import RedisClient
+        rc = RedisClient.get_client()
+        return bool(rc.set(_POLLER_LOCK_KEY, str(os.getpid()), nx=True, ex=_POLLER_LOCK_TTL))
+    except Exception:
+        return True
+
+
+def _renew_poller_lock(stop_event):
+    """Keeps this worker's ownership alive. If the owning worker dies, the key
+    expires and another worker acquires it on its next attempt (see caller)."""
+    try:
+        from apps.channels.models import RedisClient
+        rc = RedisClient.get_client()
+        token = str(os.getpid())
+        while not stop_event.wait(timeout=_POLLER_LOCK_TTL / 3):
+            try:
+                rc.set(_POLLER_LOCK_KEY, token, xx=True, ex=_POLLER_LOCK_TTL)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
 def _poll_loop(stop_event):
+    if not _try_acquire_poller_lock():
+        logger.info(f"tickarr: poller not started on PID {os.getpid()} — already owned by another worker")
+        return
+    logger.info(f"tickarr: poller lock acquired by PID {os.getpid()}")
+    renew_t = threading.Thread(target=_renew_poller_lock, args=(stop_event,), daemon=True)
+    renew_t.start()
+
     try:
         _get_channel_data()
     except Exception:
@@ -2501,6 +2558,11 @@ class Plugin:
             {"id": "np_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
             {"id": "np_channel_id",          "type": "select", "label": "Channel (Single Channel)",                 "options": channels},
             {"id": "np_exclude_groups",      "type": "text",   "label": "Exclude Groups (optional) — comma-separated group names to skip, e.g. News, Sports, Entertainment", "placeholder": "e.g. News, Sports TV"},
+            {"id": "np_trigger_mode", "type": "select", "label": "Trigger Mode",
+             "options": [
+                 {"value": "on_demand", "label": "On-Demand (default) — overlay activates when a viewer tunes in, restores to passthrough when idle"},
+                 {"value": "always",    "label": "Always On — overlay profile assigned permanently, no restart on connect (recommended for Plex or other players sensitive to mid-stream restarts)"},
+             ]},
             # ── Satellite Radio Channel Setup ─────────────────────────────
             {"id": "_ch_section", "type": "info", "label": "==========  SATELLITE RADIO CHANNEL SETUP  =========="},
             {"id": "_ch_about",   "type": "info",
@@ -2802,7 +2864,7 @@ class Plugin:
     def _enable_nowplaying(self, params):
         from apps.channels.models import Channel, ChannelGroup
 
-        trigger_mode = "on_demand"
+        trigger_mode = (params.get("np_trigger_mode") or "on_demand").strip()
 
         channels = self._resolve_channels(params, prefix="np_")
         if not channels:
@@ -4577,6 +4639,18 @@ class Plugin:
                 id_to_name = {c[0]: c[2] for c in ch_list}
                 for cid in sorted(matched):
                     lines.append(f"  - [{cid}] {id_to_name.get(cid, '?')}")
+
+        # Show which worker PID currently owns the background poller loops
+        try:
+            from apps.channels.models import RedisClient
+            rc = RedisClient.get_client()
+            owner = rc.get(_POLLER_LOCK_KEY)
+            owner_str = owner.decode() if isinstance(owner, bytes) else owner
+            ttl = rc.ttl(_POLLER_LOCK_KEY)
+            lines.append(f"\npoller lock: owned by PID {owner_str or '(none)'}, expires in {ttl}s"
+                         if owner_str else "\npoller lock: not currently held (will be claimed on next tick)")
+        except Exception as e:
+            lines.append(f"\npoller lock check error: {e}")
 
         return {"success": True, "message": "\n".join(lines)}
 

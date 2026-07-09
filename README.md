@@ -1,6 +1,6 @@
 # Tickarr
 
-![Version](https://img.shields.io/badge/version-0.3.02-blue)
+![Version](https://img.shields.io/badge/version-0.3.03-blue)
 
 A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects dynamic text overlays into IPTV channels via FFmpeg. Tickarr clones the channel's existing stream profile, injects overlay parameters, and restores the original profile on disable — the source profile is never modified.
 
@@ -11,7 +11,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 **Satellite Radio Now Playing**
 - Auto-maps Dispatcharr channels to satellite radio stations
 - Displays artist, song title, and channel name as a live-updating overlay
-- Audio-only channels receive an injected 1280x720 black video background
+- Audio-only channels receive an injected 1280x720 black video background — **the base profile must be genuinely audio-only (no `-c:v`/`-vcodec` flag, not even `-c:v copy`)** or the overlay will never render. See [Your base profile must be genuinely audio-only](docs/USERGUIDE.md#your-base-profile-must-be-genuinely-audio-only) in the User Guide.
 - On-Demand mode: overlay activates when a viewer tunes in, restores to passthrough when idle
 
 **EAS/JAS Weather Alerts — USA (NOAA/NWS)**

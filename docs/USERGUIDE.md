@@ -66,6 +66,23 @@ Tickarr fetches the currently playing track for each satellite radio station fro
 
 The overlay updates automatically as tracks change — no interaction needed after setup.
 
+### Your base profile must be genuinely audio-only
+
+Satellite radio channels have no video signal at all. To show the Now Playing overlay, Tickarr has to generate video from nothing — it draws a black canvas and writes the artist/song text onto it, then encodes that as a new video stream alongside your existing audio. This only works if Tickarr can tell your channel truly has no video to begin with.
+
+Tickarr decides this by checking whether the stream profile's FFmpeg parameters contain a video codec flag (`-c:v` or `-vcodec`) at all. **If your profile includes `-c:v copy` — even as unused boilerplate copied from a video profile template — Tickarr will assume the channel has real video and try to draw the overlay onto it instead of generating its own canvas.** Since there's no actual video track for `-c:v copy` to pass through, the overlay will never appear, and FFmpeg does unnecessary extra work trying to encode video that doesn't exist.
+
+**If you don't already have a dedicated audio-only profile, create one:**
+
+1. In Dispatcharr, go to **Settings → Stream Profiles → Add**.
+2. Use parameters like the following — no `-c:v` or `-vcodec` flag anywhere:
+   ```
+   -fflags +genpts -i {streamUrl} -vn -c:a libfdk_aac -b:a 256k -ac 2 -f mpegts -avoid_negative_ts make_zero pipe:1
+   ```
+3. Save, then assign this profile to your satellite radio channel group before enabling Now Playing (see [Before You Start](#before-you-start--universal-requirements)).
+
+The `-vn` flag (discard video) makes the intent explicit and guarantees Tickarr detects the channel correctly, even though there's no video track to discard in the first place.
+
 ---
 
 ### Step 1 — Set up your satellite radio channels in Dispatcharr
@@ -91,8 +108,6 @@ All four actions below use the same **Apply To** target you configure in the **S
 
 In Tickarr settings, scroll to the **Now Playing** section (it is the first section at the top of the settings panel) and fill in the following fields **in order**:
 
-> **Note:** Now Playing always runs in on-demand mode — the overlay activates automatically when a viewer tunes in and restores to passthrough when the channel goes idle. There is no always-on option for Now Playing.
-
 1. **Apply To** — Choose the scope:
    - **All Channels** — Enables Now Playing on every channel Tickarr can see. Use this only if your entire channel library is satellite radio.
    - **Channel Group** — Enables Now Playing on every channel in a specific group. This is the recommended option for most installs where satellite radio channels are in their own group.
@@ -106,6 +121,10 @@ In Tickarr settings, scroll to the **Now Playing** section (it is the first sect
    - Leave all other target fields blank.
 
 3. **Exclude Groups (optional)** — If you chose **All Channels** or **Channel Group**, enter any group names you want skipped (e.g. `News, Sports`) as a comma-separated list.
+
+4. **Trigger Mode** — Controls when the overlay profile is active:
+   - **On-Demand (default, recommended)** — No profile is cloned until a viewer tunes in. The overlay activates on connect and restores to passthrough after about 30 seconds with no viewers. Saves a permanent profile per channel, but every connect requires Tickarr to swap profiles and restart the stream — most players handle this fine, but some (Plex is a known example) can be sensitive to a mid-connect restart.
+   - **Always On** — The overlay profile is cloned and assigned permanently the moment you enable Now Playing, before anyone connects. There is no restart on connect — whoever tunes in gets the overlay from the very first frame. Recommended if you're seeing playback issues on a particular player when a channel is first opened. This creates one permanent cloned stream profile per enabled channel; unwatched channels still cost nothing (FFmpeg only runs while something is actually connected, regardless of trigger mode).
 
 ---
 
@@ -475,8 +494,7 @@ The Settings panel displays sections in this order: **Now Playing → Satellite 
 | Group Names | Comma-separated group names (visible when Apply To is Multiple Groups) |
 | Channel | The individual channel to enable (visible when Apply To is Single Channel) |
 | Exclude Groups | Comma-separated group names to skip when using All Channels or Channel Group scope. |
-
-Now Playing always runs in on-demand mode — no Trigger Mode setting. The overlay activates when a viewer tunes in and restores to passthrough when idle.
+| Trigger Mode | On-Demand (default) or Always On |
 
 ### Satellite Radio Channel Setup Settings
 
