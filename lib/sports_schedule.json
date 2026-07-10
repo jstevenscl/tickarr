@@ -1,56 +1,6 @@
 {
-  "generated_at": "2026-07-10T01:17:23Z",
+  "generated_at": "2026-07-10T02:24:42Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Detroit Tigers @ Athletics",
-      "description": "MLB · Detroit Tigers @ Athletics",
-      "start_utc": "2026-07-09T22:40:00Z",
-      "end_utc": "2026-07-10T01:40:00Z",
-      "channels": [
-        "Athletics",
-        "Detroit Tigers",
-        "MLB Play-by-Play 181",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Miami Marlins @ Seattle Mariners",
-      "description": "MLB · Miami Marlins @ Seattle Mariners",
-      "start_utc": "2026-07-09T22:40:00Z",
-      "end_utc": "2026-07-10T01:40:00Z",
-      "channels": [
-        "Seattle Mariners",
-        "Miami Marlins",
-        "MLB Play-by-Play 182",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "nba",
-      "title": "Golden State Warriors @ Dallas Mavericks",
-      "description": "NBA · Golden State Warriors @ Dallas Mavericks",
-      "start_utc": "2026-07-09T23:00:00Z",
-      "end_utc": "2026-07-10T01:30:00Z",
-      "channels": [
-        "Dallas Mavericks",
-        "Golden State Warriors",
-        "SiriusXM NBA Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cincinnati Reds @ Philadelphia Phillies",
-      "description": "MLB · Cincinnati Reds @ Philadelphia Phillies",
-      "start_utc": "2026-07-09T23:10:00Z",
-      "end_utc": "2026-07-10T02:10:00Z",
-      "channels": [
-        "Philadelphia Phillies",
-        "Cincinnati Reds",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "St. Louis Cardinals @ Milwaukee Brewers",
