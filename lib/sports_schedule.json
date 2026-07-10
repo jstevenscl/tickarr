@@ -1,30 +1,6 @@
 {
-  "generated_at": "2026-07-10T17:43:01Z",
+  "generated_at": "2026-07-10T21:01:54Z",
   "events": [
-    {
-      "slug": "pga",
-      "title": "Genesis Scottish Open",
-      "description": "SiriusXM PGA Tour Radio · Genesis Scottish Open · Renaissance Club",
-      "start_utc": "2026-07-10T12:00:00Z",
-      "end_utc": "2026-07-10T17:00:00Z",
-      "channels": [
-        "SiriusXM PGA TOUR Radio",
-        "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Spain @ Belgium",
-      "description": "SOCCER · Spain @ Belgium",
-      "start_utc": "2026-07-10T19:00:00Z",
-      "end_utc": "2026-07-10T21:00:00Z",
-      "channels": [
-        "Belgium",
-        "Spain",
-        "FOX Sports on SiriusXM",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Pittsburgh Pirates @ Milwaukee Brewers",
