@@ -1,32 +1,6 @@
 {
-  "generated_at": "2026-07-09T21:17:12Z",
+  "generated_at": "2026-07-10T01:17:23Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Chicago White Sox @ Boston Red Sox",
-      "description": "MLB · Chicago White Sox @ Boston Red Sox",
-      "start_utc": "2026-07-09T18:10:00Z",
-      "end_utc": "2026-07-09T21:10:00Z",
-      "channels": [
-        "Boston Red Sox",
-        "Chicago White Sox",
-        "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "France @ Morocco",
-      "description": "SOCCER · France @ Morocco",
-      "start_utc": "2026-07-09T20:00:00Z",
-      "end_utc": "2026-07-09T22:00:00Z",
-      "channels": [
-        "Morocco",
-        "France",
-        "FOX Sports on SiriusXM",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Detroit Tigers @ Athletics",

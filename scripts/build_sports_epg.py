@@ -415,9 +415,19 @@ def build_channel_segments(ch_name, ch_desc, ev_list, window_start, window_end, 
     """
     sorted_evs = sorted(ev_list, key=lambda x: x[1])
 
-    # No events — one programme for the entire window (avoids hundreds of hourly filler entries)
+    # No events — chunk into block_delta-sized segments (24h each) rather than one
+    # programme spanning the full window. A single multi-day block is outside what
+    # EPG clients expect — TiviMate silently fails to render 336h+ programmes while
+    # displaying normally-segmented (sports) channels fine; confirmed by direct
+    # comparison. Still far short of "hundreds of hourly filler entries" at 24h blocks.
     if not sorted_evs:
-        return [(window_start, window_end, ch_name, ch_desc or None)]
+        segments = []
+        slot = window_start
+        while slot < window_end:
+            slot_end = min(slot + block_delta, window_end)
+            segments.append((slot, slot_end, ch_name, ch_desc or None))
+            slot = slot_end
+        return segments
 
     segments   = []
     current    = window_start
