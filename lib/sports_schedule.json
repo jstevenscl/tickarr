@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T07:29:43Z",
+  "generated_at": "2026-07-10T10:47:33Z",
   "events": [
     {
       "slug": "pga",
@@ -337,13 +337,13 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "SOCCER · To Be Determined @ To Be Determined",
+      "title": "France @ To Be Determined",
+      "description": "SOCCER · France @ To Be Determined",
       "start_utc": "2026-07-14T19:00:00Z",
       "end_utc": "2026-07-14T21:00:00Z",
       "channels": [
         "To Be Determined",
-        "To Be Determined",
+        "France",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
