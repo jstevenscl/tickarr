@@ -1,40 +1,6 @@
 {
-  "generated_at": "2026-07-11T16:48:28Z",
+  "generated_at": "2026-07-11T20:41:10Z",
   "events": [
-    {
-      "slug": "pga",
-      "title": "Genesis Scottish Open",
-      "description": "SiriusXM PGA Tour Radio · Genesis Scottish Open · Renaissance Club",
-      "start_utc": "2026-07-11T14:00:00Z",
-      "end_utc": "2026-07-11T19:00:00Z",
-      "channels": [
-        "SiriusXM PGA TOUR Radio",
-        "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Pittsburgh Pirates @ Milwaukee Brewers",
-      "description": "MLB · Pittsburgh Pirates @ Milwaukee Brewers",
-      "start_utc": "2026-07-11T16:05:00Z",
-      "end_utc": "2026-07-11T19:05:00Z",
-      "channels": [
-        "Milwaukee Brewers",
-        "Pittsburgh Pirates",
-        "MLB Play-by-Play 178",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "nascar",
-      "title": "LiUNA! 150",
-      "description": "SiriusXM NASCAR Radio · LiUNA! 150 · Lime Rock Park",
-      "start_utc": "2026-07-11T16:30:00Z",
-      "end_utc": "2026-07-11T20:00:00Z",
-      "channels": [
-        "SiriusXM NASCAR Radio"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Chicago White Sox @ Athletics",
@@ -63,19 +29,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Washington Nationals @ New York Yankees",
-      "description": "MLB · Washington Nationals @ New York Yankees",
-      "start_utc": "2026-07-11T20:05:00Z",
-      "end_utc": "2026-07-11T23:05:00Z",
-      "channels": [
-        "New York Yankees",
-        "Washington Nationals",
-        "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "Pittsburgh Pirates @ Milwaukee Brewers",
       "description": "MLB · Pittsburgh Pirates @ Milwaukee Brewers",
       "start_utc": "2026-07-11T20:05:00Z",
@@ -91,6 +44,19 @@
     },
     {
       "slug": "mlb",
+      "title": "Washington Nationals @ New York Yankees",
+      "description": "MLB · Washington Nationals @ New York Yankees",
+      "start_utc": "2026-07-11T20:05:00Z",
+      "end_utc": "2026-07-11T23:05:00Z",
+      "channels": [
+        "New York Yankees",
+        "Washington Nationals",
+        "MLB Play-by-Play 179",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
       "title": "San Francisco Giants @ Colorado Rockies",
       "description": "MLB · San Francisco Giants @ Colorado Rockies",
       "start_utc": "2026-07-11T20:05:00Z",
@@ -99,6 +65,19 @@
         "Colorado Rockies",
         "San Francisco Giants",
         "MLB Play-by-Play 177",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "New York Mets @ Boston Red Sox",
+      "description": "MLB · New York Mets @ Boston Red Sox",
+      "start_utc": "2026-07-11T20:10:00Z",
+      "end_utc": "2026-07-11T23:10:00Z",
+      "channels": [
+        "Boston Red Sox",
+        "New York Mets",
+        "MLB Play-by-Play 180",
         "MLB Network Radio"
       ]
     },
@@ -125,19 +104,6 @@
         "Cleveland Guardians",
         "Miami Marlins",
         "MLB Play-by-Play 183",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Mets @ Boston Red Sox",
-      "description": "MLB · New York Mets @ Boston Red Sox",
-      "start_utc": "2026-07-11T20:10:00Z",
-      "end_utc": "2026-07-11T23:10:00Z",
-      "channels": [
-        "Boston Red Sox",
-        "New York Mets",
-        "MLB Play-by-Play 180",
         "MLB Network Radio"
       ]
     },
@@ -188,19 +154,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Baltimore Orioles @ Kansas City Royals",
-      "description": "MLB · Baltimore Orioles @ Kansas City Royals",
-      "start_utc": "2026-07-11T23:05:00Z",
-      "end_utc": "2026-07-12T02:05:00Z",
-      "channels": [
-        "Kansas City Royals",
-        "Baltimore Orioles",
-        "MLB Play-by-Play 185",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "Texas Rangers @ Houston Astros",
       "description": "MLB · Texas Rangers @ Houston Astros",
       "start_utc": "2026-07-11T23:05:00Z",
@@ -210,6 +163,19 @@
         "Texas Rangers",
         "MLB Play-by-Play 184",
         "MLB en Español 870",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Baltimore Orioles @ Kansas City Royals",
+      "description": "MLB · Baltimore Orioles @ Kansas City Royals",
+      "start_utc": "2026-07-11T23:05:00Z",
+      "end_utc": "2026-07-12T02:05:00Z",
+      "channels": [
+        "Kansas City Royals",
+        "Baltimore Orioles",
+        "MLB Play-by-Play 185",
         "MLB Network Radio"
       ]
     },
