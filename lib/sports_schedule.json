@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T09:45:47Z",
+  "generated_at": "2026-07-12T13:04:51Z",
   "events": [
     {
       "slug": "pga",
@@ -235,12 +235,12 @@
     },
     {
       "slug": "soccer",
-      "title": "France @ To Be Determined",
-      "description": "SOCCER · France @ To Be Determined",
+      "title": "France @ Spain",
+      "description": "SOCCER · France @ Spain",
       "start_utc": "2026-07-14T19:00:00Z",
       "end_utc": "2026-07-14T21:00:00Z",
       "channels": [
-        "To Be Determined",
+        "Spain",
         "France",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
@@ -248,13 +248,13 @@
     },
     {
       "slug": "soccer",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "SOCCER · To Be Determined @ To Be Determined",
+      "title": "England @ Argentina",
+      "description": "SOCCER · England @ Argentina",
       "start_utc": "2026-07-15T19:00:00Z",
       "end_utc": "2026-07-15T21:00:00Z",
       "channels": [
-        "To Be Determined",
-        "To Be Determined",
+        "Argentina",
+        "England",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
       ]
