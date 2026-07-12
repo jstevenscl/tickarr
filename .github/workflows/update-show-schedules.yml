@@ -1,0 +1,65 @@
+name: Update Satellite Radio Show Schedules
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Once daily — show lineups don't change nearly as often
+                          # as sports schedules (rain delays, overtime, etc.),
+                          # which is why that job stays on its own 4h cadence.
+  workflow_dispatch:       # Allow manual trigger
+
+jobs:
+  update-show-schedules:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Scrape SiriusXM show schedules
+        run: |
+          mkdir -p lib
+          python scripts/scrape_show_schedules.py
+
+      - name: Commit and push if changed
+        if: success()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add lib/show_schedules.json
+          if git diff --staged -- lib/show_schedules.json | grep -q .; then
+            git commit -m "chore: update satellite radio show schedules"
+            git push
+          else
+            echo "Show schedules unchanged -- nothing to commit"
+          fi
+
+      - name: Create issue on workflow failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          gh label create show-schedules --color 0075ca --description "Show schedule scrape alerts" 2>/dev/null || true
+          gh issue create \
+            --title "Show schedule scrape failed -- ${DATE}" \
+            --body "## Tickarr Show Schedule scrape failed
+
+          The \`update-show-schedules\` workflow failed on ${DATE}.
+
+          **Workflow run:** ${RUN_URL}
+
+          **Likely causes:**
+          - Network error fetching channel pages
+          - SiriusXM page structure changed (parser needs updating)
+          - Python exception in scrape script
+
+          Check the run logs above. The last successfully scraped \`show_schedules.json\` remains in place until fixed -- the EPG generator's existing generic-fill logic covers any channel missing from it in the meantime." \
+            --label "show-schedules" || true

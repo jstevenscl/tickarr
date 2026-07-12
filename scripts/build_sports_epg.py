@@ -495,6 +495,96 @@ def build_channel_segments(ch_name, ch_desc, ev_list, window_start, window_end, 
     return segments
 
 
+def load_show_schedules():
+    """
+    Load lib/show_schedules.json (produced by scrape_show_schedules.py,
+    run separately on a daily cadence — see that script and
+    update-show-schedules.yml). Returns {channel_name: [(start_dt, end_dt,
+    show_name), ...]}, sorted. Missing/malformed file -> {} (silently) so
+    a scrape failure never breaks the sports EPG build; every channel
+    just falls back to today's existing generic-fill behavior, same as
+    if this feature didn't exist.
+    """
+    path = ROOT / "lib" / "show_schedules.json"
+    if not path.exists():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except Exception as e:
+        print(f"  Warning: could not load show_schedules.json: {e}", file=sys.stderr)
+        return {}
+
+    out = {}
+    for ch_name, slots in data.get("channels", {}).items():
+        parsed = []
+        for s in slots:
+            try:
+                sd = datetime.strptime(s["start_utc"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+                ed = datetime.strptime(s["end_utc"],   "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+            except Exception:
+                continue
+            if ed > sd:
+                parsed.append((sd, ed, s.get("show_name") or ch_name))
+        parsed.sort()
+        if parsed:
+            out[ch_name] = parsed
+    return out
+
+
+def build_show_segments(ch_name, ch_desc, show_slots, window_start, window_end, block_delta):
+    """
+    Build EPG segments for a channel using real scraped show-schedule
+    data — real show names/times wherever SiriusXM's own schedule page
+    covers, generic block_delta-chunked fill for any gap between shows
+    and for the remainder of the window beyond however far the scraped
+    data reaches (typically ~5-7 days of the full FILL_DAYS window).
+
+    Only called for channels with NO sports events (see main()) — a
+    channel with both would need events vs. show-slot collision
+    handling this v1 doesn't attempt; those channels keep using
+    build_channel_segments() unchanged, same as before this feature
+    existed.
+
+    show_slots: [(start_dt, end_dt, show_name), ...] sorted
+    Returns: [(start_dt, end_dt, title, description), ...]
+    """
+    usable = []
+    for s, e, name in show_slots:
+        if e <= window_start or s >= window_end:
+            continue
+        usable.append((max(s, window_start), min(e, window_end), name))
+
+    if not usable:
+        segments = []
+        slot = window_start
+        while slot < window_end:
+            slot_end = min(slot + block_delta, window_end)
+            segments.append((slot, slot_end, ch_name, ch_desc or None))
+            slot = slot_end
+        return segments
+
+    segments = []
+    current = window_start
+    for s, e, name in usable:
+        if s < current:
+            continue  # overlaps previous slot — keep the earlier one, skip
+        if s > current:
+            slot = current
+            while slot < s:
+                slot_end = min(slot + block_delta, s)
+                segments.append((slot, slot_end, ch_name, ch_desc or None))
+                slot = slot_end
+        segments.append((s, e, name, f"{name} on {ch_name}"))
+        current = e
+
+    while current < window_end:
+        slot_end = min(current + block_delta, window_end)
+        segments.append((current, slot_end, ch_name, ch_desc or None))
+        current = slot_end
+
+    return segments
+
+
 def xmltv_dt(dt):
     """Format a datetime object as XMLTV timestamp '20260517200000 +0000'."""
     return dt.strftime("%Y%m%d%H%M%S") + " +0000"
@@ -628,13 +718,38 @@ def main():
     if extra_logos:
         print(f"  + {extra_logos} additional logos matched in logos/ (total {len(ch_logos)})")
 
+    # Real scraped show schedules (music/talk/news channels — separate,
+    # daily-cadence pipeline, see scrape_show_schedules.py). Missing/stale
+    # file just means every channel below falls back to generic fill,
+    # exactly as if this feature didn't exist.
+    show_schedules = load_show_schedules()
+    if show_schedules:
+        print(f"Loaded show schedules for {len(show_schedules)} channel(s)")
+
     ch_segments = {}
+    show_schedule_ch_count = 0
     for ch_name in all_ch_names:
         ev_list  = ch_name_to_ev_list.get(ch_name, [])
         ch_desc  = ch_descs.get(ch_name, "")
-        ch_segments[ch_name] = build_channel_segments(
-            ch_name, ch_desc, ev_list, window_start, window_end, block_delta,
-        )
+        show_slots = show_schedules.get(ch_name)
+
+        # Channels with actual sports events keep the existing, unchanged
+        # Upcoming:/LIVE:/Post-game: behavior — real show data only
+        # enriches channels that have none, which is the vast majority
+        # of what scrape_show_schedules.py covers anyway.
+        if not ev_list and show_slots:
+            ch_segments[ch_name] = build_show_segments(
+                ch_name, ch_desc, show_slots, window_start, window_end, block_delta,
+            )
+            show_schedule_ch_count += 1
+        else:
+            ch_segments[ch_name] = build_channel_segments(
+                ch_name, ch_desc, ev_list, window_start, window_end, block_delta,
+            )
+
+    if show_schedule_ch_count:
+        print(f"  {show_schedule_ch_count} channel(s) built from real show schedules "
+              f"(rest: sports events or generic fill)")
 
     # Write satellite_radio_epg.xml  (all channels: sports segments + fill for every channel)
     xml_str = build_xmltv(all_events, ch_segments, ch_logos)
