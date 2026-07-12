@@ -515,19 +515,24 @@ def load_show_schedules():
         return {}
 
     out = {}
-    for ch_name, slots in data.get("channels", {}).items():
-        parsed = []
-        for s in slots:
-            try:
-                sd = datetime.strptime(s["start_utc"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
-                ed = datetime.strptime(s["end_utc"],   "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
-            except Exception:
-                continue
-            if ed > sd:
-                parsed.append((sd, ed, s.get("show_name") or ch_name))
-        parsed.sort()
-        if parsed:
-            out[ch_name] = parsed
+    try:
+        channels_data = data.get("channels", {})
+        for ch_name, slots in channels_data.items():
+            parsed = []
+            for s in slots:
+                try:
+                    sd = datetime.strptime(s["start_utc"], "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+                    ed = datetime.strptime(s["end_utc"],   "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+                except Exception:
+                    continue
+                if ed > sd:
+                    parsed.append((sd, ed, s.get("show_name") or ch_name))
+            parsed.sort()
+            if parsed:
+                out[ch_name] = parsed
+    except Exception as e:
+        print(f"  Warning: show_schedules.json has an unexpected structure: {e}", file=sys.stderr)
+        return {}
     return out
 
 
@@ -737,11 +742,26 @@ def main():
         # Upcoming:/LIVE:/Post-game: behavior — real show data only
         # enriches channels that have none, which is the vast majority
         # of what scrape_show_schedules.py covers anyway.
+        #
+        # build_show_segments() is new code exercising data scraped from
+        # a third-party page that can change shape without notice — an
+        # exception here must never be able to crash the whole build
+        # (which would also block the sports EPG, since it's the same
+        # script/process). Any failure falls back to the same proven
+        # generic-fill path this channel would have used before this
+        # feature existed, for that one channel only.
         if not ev_list and show_slots:
-            ch_segments[ch_name] = build_show_segments(
-                ch_name, ch_desc, show_slots, window_start, window_end, block_delta,
-            )
-            show_schedule_ch_count += 1
+            try:
+                ch_segments[ch_name] = build_show_segments(
+                    ch_name, ch_desc, show_slots, window_start, window_end, block_delta,
+                )
+                show_schedule_ch_count += 1
+            except Exception as e:
+                print(f"  Warning: build_show_segments failed for {ch_name!r}: {e} "
+                      f"-- falling back to generic fill", file=sys.stderr)
+                ch_segments[ch_name] = build_channel_segments(
+                    ch_name, ch_desc, [], window_start, window_end, block_delta,
+                )
         else:
             ch_segments[ch_name] = build_channel_segments(
                 ch_name, ch_desc, ev_list, window_start, window_end, block_delta,
