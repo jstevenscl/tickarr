@@ -1,31 +1,6 @@
 {
-  "generated_at": "2026-07-13T02:08:15Z",
+  "generated_at": "2026-07-13T06:48:08Z",
   "events": [
-    {
-      "slug": "nascar",
-      "title": "Quaker State 400",
-      "description": "SiriusXM NASCAR Radio · Quaker State 400 · EchoPark Speedway",
-      "start_utc": "2026-07-12T22:00:00Z",
-      "end_utc": "2026-07-13T01:30:00Z",
-      "channels": [
-        "SiriusXM NASCAR Radio",
-        "Sports 997",
-        "Sports 998",
-        "Sports 999"
-      ]
-    },
-    {
-      "slug": "nba",
-      "title": "San Antonio Spurs @ Milwaukee Bucks",
-      "description": "NBA · San Antonio Spurs @ Milwaukee Bucks",
-      "start_utc": "2026-07-13T01:00:00Z",
-      "end_utc": "2026-07-13T03:30:00Z",
-      "channels": [
-        "Milwaukee Bucks",
-        "San Antonio Spurs",
-        "SiriusXM NBA Radio"
-      ]
-    },
     {
       "slug": "soccer",
       "title": "France @ Spain",
