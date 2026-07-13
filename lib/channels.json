@@ -7897,17 +7897,6 @@
     "sxm_entity_id": "9560",
     "lookaround_channel_id": null
   },
-  "poplandia": {
-    "name": "Poplandia",
-    "description": "Poplandia is the soundtrack for pop culture junkies. Hear the hottest hits and exclusive interviews from your favorite artists. Movies, music, celebrity gossip, current events and more, Poplandia has you covered.",
-    "genre": "Canadian",
-    "sxm_number": 754,
-    "seasonal": null,
-    "logo_url": "https://stellartunerlog.com/logos/9511.png",
-    "sxm_logo_src": "if/d9/d9cc2fd60c833fb7960e0f7fc1afb381_1756126386.png",
-    "sxm_entity_id": "9511",
-    "lookaround_channel_id": "5721af4f-a1df-65fa-e127-01efe4a92eaa"
-  },
   "sports 392": {
     "name": "Sports 392",
     "description": "Live play-by-play of sports",
@@ -8645,6 +8634,17 @@
     "sxm_entity_id": "8266",
     "lookaround_channel_id": null
   },
+  "poplandia": {
+    "name": "Poplandia",
+    "description": "Poplandia is the soundtrack for pop culture junkies. Hear the hottest hits and exclusive interviews from your favorite artists. Movies, music, celebrity gossip, current events and more, Poplandia has you covered.",
+    "genre": "Canadian",
+    "sxm_number": 754,
+    "seasonal": null,
+    "logo_url": "https://stellartunerlog.com/logos/9511.png",
+    "sxm_logo_src": "if/d9/d9cc2fd60c833fb7960e0f7fc1afb381_1756126386.png",
+    "sxm_entity_id": "9511",
+    "lookaround_channel_id": "5721af4f-a1df-65fa-e127-01efe4a92eaa"
+  },
   "marky ramone's punk rock": {
     "name": "Marky Ramone's Punk Rock",
     "description": "Marky Ramone's Punk Rock Blitzkrieg is Classic Punk 24/7 hosted by long-time Ramones drummer Marky Ramone! You'll hear Sex Pistols, Black Flag, Social Distortion, The Clash and of course, The Ramones! All this plus- Songs from Marky's personal music collection, rare recordings, live performances & more! Whether it is Ska-influenced, surf guitar-oriented, Cowpunk, Proto-Punk, Hardcore, or Pop Punk, if it's Classic Punk it's on Marky Ramone’s Punk Rock Blitzkrieg!",
@@ -8654,17 +8654,6 @@
     "logo_url": "",
     "sxm_logo_src": "",
     "sxm_entity_id": "9470",
-    "lookaround_channel_id": null
-  },
-  "she's so funny": {
-    "name": "She's So Funny",
-    "description": "The funniest female comedians all in one place hand-curated just for you to keep you in stitches!",
-    "genre": "Comedy",
-    "sxm_number": 771,
-    "seasonal": null,
-    "logo_url": "",
-    "sxm_logo_src": "",
-    "sxm_entity_id": "9503",
     "lookaround_channel_id": null
   },
   "comedy classics": {
@@ -8678,6 +8667,17 @@
     "sxm_entity_id": "9542",
     "lookaround_channel_id": null
   },
+  "she's so funny": {
+    "name": "She's So Funny",
+    "description": "The funniest female comedians all in one place hand-curated just for you to keep you in stitches!",
+    "genre": "Comedy",
+    "sxm_number": 771,
+    "seasonal": null,
+    "logo_url": "",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "9503",
+    "lookaround_channel_id": null
+  },
   "the message_1258": {
     "name": "The Message",
     "description": "Praise and worship music",
@@ -8689,17 +8689,6 @@
     "sxm_entity_id": "4270",
     "lookaround_channel_id": "c5647ffa-5f13-5030-88f6-13ed47df40dc"
   },
-  "holly": {
-    "name": "Holly",
-    "description": "Merry and bright holiday hits featuring songs by Mariah Carey, Michael Bublé, Dean Martin, Kelly Clarkson, Pentatonix, Josh Groban, John Legend, Brenda Lee, Train, Gwen Stefani and more.",
-    "genre": "Holiday",
-    "sxm_number": 600,
-    "seasonal": null,
-    "logo_url": "",
-    "sxm_logo_src": "",
-    "sxm_entity_id": "9343",
-    "lookaround_channel_id": null
-  },
   "navidad": {
     "name": "Navidad",
     "description": "Latin holiday music and traditional sounds, including Ricky Martin, Gloria Estefan, José Feliciano, Tito El Bambino, Marco Antonio Solís and Fania All-Stars.",
@@ -8709,6 +8698,17 @@
     "logo_url": "",
     "sxm_logo_src": "",
     "sxm_entity_id": "9348",
+    "lookaround_channel_id": null
+  },
+  "holly": {
+    "name": "Holly",
+    "description": "Merry and bright holiday hits featuring songs by Mariah Carey, Michael Bublé, Dean Martin, Kelly Clarkson, Pentatonix, Josh Groban, John Legend, Brenda Lee, Train, Gwen Stefani and more.",
+    "genre": "Holiday",
+    "sxm_number": 600,
+    "seasonal": null,
+    "logo_url": "",
+    "sxm_logo_src": "",
+    "sxm_entity_id": "9343",
     "lookaround_channel_id": null
   }
 }
