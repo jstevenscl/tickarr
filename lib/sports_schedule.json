@@ -1,18 +1,6 @@
 {
-  "generated_at": "2026-07-15T01:50:34Z",
+  "generated_at": "2026-07-15T06:09:38Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "National League @ American Leauge",
-      "description": "MLB · National League @ American Leauge",
-      "start_utc": "2026-07-15T00:00:00Z",
-      "end_utc": "2026-07-15T03:00:00Z",
-      "channels": [
-        "American Leauge",
-        "National League",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "soccer",
       "title": "England @ Argentina",
@@ -35,6 +23,18 @@
       "channels": [
         "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Philadelphia Phillies @ New York Mets",
+      "description": "MLB · Philadelphia Phillies @ New York Mets",
+      "start_utc": "2026-07-16T23:10:00Z",
+      "end_utc": "2026-07-17T02:10:00Z",
+      "channels": [
+        "New York Mets",
+        "Philadelphia Phillies",
+        "MLB Network Radio"
       ]
     },
     {
