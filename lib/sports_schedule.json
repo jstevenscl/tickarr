@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-07-16T17:08:05Z",
+  "generated_at": "2026-07-16T20:51:14Z",
   "events": [
     {
       "slug": "mlb",
       "title": "Philadelphia Phillies @ New York Mets",
       "description": "MLB · Philadelphia Phillies @ New York Mets",
-      "start_utc": "2026-07-16T23:10:00Z",
-      "end_utc": "2026-07-17T02:10:00Z",
+      "start_utc": "2026-07-16T22:10:00Z",
+      "end_utc": "2026-07-17T01:10:00Z",
       "channels": [
         "New York Mets",
         "Philadelphia Phillies",
