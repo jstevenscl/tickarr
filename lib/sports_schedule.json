@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16T13:28:33Z",
+  "generated_at": "2026-07-16T17:08:05Z",
   "events": [
     {
       "slug": "mlb",
@@ -103,12 +103,12 @@
     },
     {
       "slug": "soccer",
-      "title": "France @ To Be Determined",
-      "description": "SOCCER · France @ To Be Determined",
+      "title": "France @ England",
+      "description": "SOCCER · France @ England",
       "start_utc": "2026-07-18T21:00:00Z",
       "end_utc": "2026-07-18T23:00:00Z",
       "channels": [
-        "To Be Determined",
+        "England",
         "France",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
@@ -158,12 +158,12 @@
     },
     {
       "slug": "soccer",
-      "title": "Spain @ To Be Determined",
-      "description": "SOCCER · Spain @ To Be Determined",
+      "title": "Spain @ Argentina",
+      "description": "SOCCER · Spain @ Argentina",
       "start_utc": "2026-07-19T19:00:00Z",
       "end_utc": "2026-07-19T21:00:00Z",
       "channels": [
-        "To Be Determined",
+        "Argentina",
         "Spain",
         "FOX Sports on SiriusXM",
         "SiriusXM FC"
