@@ -1,41 +1,6 @@
 {
-  "generated_at": "2026-07-18T16:49:59Z",
+  "generated_at": "2026-07-18T20:40:19Z",
   "events": [
-    {
-      "slug": "soccer",
-      "title": "Pittsburgh Riverhounds FC @ Louisville City FC",
-      "description": "SOCCER · Pittsburgh Riverhounds FC @ Louisville City FC",
-      "start_utc": "2026-07-18T16:00:00Z",
-      "end_utc": "2026-07-18T18:00:00Z",
-      "channels": [
-        "Louisville City FC",
-        "Pittsburgh Riverhounds FC",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "nascar",
-      "title": "Faith Fest 250",
-      "description": "SiriusXM NASCAR Radio · Faith Fest 250 · North Wilkesboro Speedway",
-      "start_utc": "2026-07-18T16:00:00Z",
-      "end_utc": "2026-07-18T19:30:00Z",
-      "channels": [
-        "SiriusXM NASCAR Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cleveland Guardians @ Pittsburgh Pirates",
-      "description": "MLB · Cleveland Guardians @ Pittsburgh Pirates",
-      "start_utc": "2026-07-18T17:10:00Z",
-      "end_utc": "2026-07-18T20:10:00Z",
-      "channels": [
-        "Pittsburgh Pirates",
-        "Cleveland Guardians",
-        "MLB Play-by-Play 181",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Chicago Cubs @ Minnesota Twins",
@@ -102,19 +67,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Milwaukee Brewers @ Miami Marlins",
-      "description": "MLB · Milwaukee Brewers @ Miami Marlins",
-      "start_utc": "2026-07-18T20:10:00Z",
-      "end_utc": "2026-07-18T23:10:00Z",
-      "channels": [
-        "Miami Marlins",
-        "Milwaukee Brewers",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "Boston Red Sox @ Tampa Bay Rays",
       "description": "MLB · Boston Red Sox @ Tampa Bay Rays",
       "start_utc": "2026-07-18T20:10:00Z",
@@ -123,6 +75,32 @@
         "Tampa Bay Rays",
         "Boston Red Sox",
         "MLB Play-by-Play 184",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Arizona Diamondbacks @ St. Louis Cardinals",
+      "description": "MLB · Arizona Diamondbacks @ St. Louis Cardinals",
+      "start_utc": "2026-07-18T20:10:00Z",
+      "end_utc": "2026-07-18T23:10:00Z",
+      "channels": [
+        "St. Louis Cardinals",
+        "Arizona Diamondbacks",
+        "MLB Play-by-Play 183",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Milwaukee Brewers @ Miami Marlins",
+      "description": "MLB · Milwaukee Brewers @ Miami Marlins",
+      "start_utc": "2026-07-18T20:10:00Z",
+      "end_utc": "2026-07-18T23:10:00Z",
+      "channels": [
+        "Miami Marlins",
+        "Milwaukee Brewers",
+        "MLB Play-by-Play 180",
         "MLB Network Radio"
       ]
     },
@@ -142,14 +120,13 @@
     },
     {
       "slug": "mlb",
-      "title": "Arizona Diamondbacks @ St. Louis Cardinals",
-      "description": "MLB · Arizona Diamondbacks @ St. Louis Cardinals",
+      "title": "Houston Astros @ Baltimore Orioles",
+      "description": "MLB · Houston Astros @ Baltimore Orioles",
       "start_utc": "2026-07-18T20:10:00Z",
       "end_utc": "2026-07-18T23:10:00Z",
       "channels": [
-        "St. Louis Cardinals",
-        "Arizona Diamondbacks",
-        "MLB Play-by-Play 183",
+        "Baltimore Orioles",
+        "Houston Astros",
         "MLB Network Radio"
       ]
     },
@@ -163,18 +140,6 @@
         "San Diego Padres",
         "Kansas City Royals",
         "MLB Play-by-Play 182",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Houston Astros @ Baltimore Orioles",
-      "description": "MLB · Houston Astros @ Baltimore Orioles",
-      "start_utc": "2026-07-18T20:10:00Z",
-      "end_utc": "2026-07-18T23:10:00Z",
-      "channels": [
-        "Baltimore Orioles",
-        "Houston Astros",
         "MLB Network Radio"
       ]
     },
