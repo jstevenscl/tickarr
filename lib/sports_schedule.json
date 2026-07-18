@@ -1,28 +1,6 @@
 {
-  "generated_at": "2026-07-18T13:00:02Z",
+  "generated_at": "2026-07-18T16:49:59Z",
   "events": [
-    {
-      "slug": "pga",
-      "title": "The Open",
-      "description": "SiriusXM PGA Tour Radio · The Open · Royal Birkdale",
-      "start_utc": "2026-07-18T08:00:00Z",
-      "end_utc": "2026-07-18T13:00:00Z",
-      "channels": [
-        "SiriusXM PGA TOUR Radio",
-        "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "f1",
-      "title": "F-1 Qualifying",
-      "description": "Formula 1 Racing and Analysis · F-1 Qualifying · Spa-Francorchamps",
-      "start_utc": "2026-07-18T13:55:00Z",
-      "end_utc": "2026-07-18T15:55:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "soccer",
       "title": "Pittsburgh Riverhounds FC @ Louisville City FC",
