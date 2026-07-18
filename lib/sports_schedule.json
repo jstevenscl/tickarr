@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-18T09:18:18Z",
+  "generated_at": "2026-07-18T13:00:02Z",
   "events": [
     {
       "slug": "pga",
@@ -10,17 +10,6 @@
       "channels": [
         "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "f1",
-      "title": "F-1 Practice 3",
-      "description": "Formula 1 Racing and Analysis · F-1 Practice 3 · Spa-Francorchamps",
-      "start_utc": "2026-07-18T10:25:00Z",
-      "end_utc": "2026-07-18T12:25:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
       ]
     },
     {
