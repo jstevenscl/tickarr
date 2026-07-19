@@ -1,28 +1,6 @@
 {
-  "generated_at": "2026-07-19T13:02:29Z",
+  "generated_at": "2026-07-19T16:51:07Z",
   "events": [
-    {
-      "slug": "pga",
-      "title": "The Open",
-      "description": "SiriusXM PGA Tour Radio · The Open · Royal Birkdale",
-      "start_utc": "2026-07-19T08:00:00Z",
-      "end_utc": "2026-07-19T13:00:00Z",
-      "channels": [
-        "SiriusXM PGA TOUR Radio",
-        "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "f1",
-      "title": "Belgian Grand Prix",
-      "description": "Formula 1 Racing and Analysis · Belgian Grand Prix · Spa-Francorchamps",
-      "start_utc": "2026-07-19T13:00:00Z",
-      "end_utc": "2026-07-19T15:00:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Toronto Blue Jays @ Chicago White Sox",
@@ -281,13 +259,13 @@
     },
     {
       "slug": "nba",
-      "title": "To Be Determined @ To Be Determined",
-      "description": "NBA · To Be Determined @ To Be Determined",
+      "title": "Golden State Warriors @ Memphis Grizzlies",
+      "description": "NBA · Golden State Warriors @ Memphis Grizzlies",
       "start_utc": "2026-07-20T01:00:00Z",
       "end_utc": "2026-07-20T03:30:00Z",
       "channels": [
-        "To Be Determined",
-        "To Be Determined",
+        "Memphis Grizzlies",
+        "Golden State Warriors",
         "SiriusXM NBA Radio"
       ]
     },
