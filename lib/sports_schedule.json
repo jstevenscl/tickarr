@@ -1,159 +1,6 @@
 {
-  "generated_at": "2026-07-19T20:39:41Z",
+  "generated_at": "2026-07-20T02:25:25Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Cleveland Guardians @ Pittsburgh Pirates",
-      "description": "MLB · Cleveland Guardians @ Pittsburgh Pirates",
-      "start_utc": "2026-07-19T17:40:00Z",
-      "end_utc": "2026-07-19T20:40:00Z",
-      "channels": [
-        "Pittsburgh Pirates",
-        "Cleveland Guardians",
-        "MLB Play-by-Play 178",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Milwaukee Brewers @ Miami Marlins",
-      "description": "MLB · Milwaukee Brewers @ Miami Marlins",
-      "start_utc": "2026-07-19T18:10:00Z",
-      "end_utc": "2026-07-19T21:10:00Z",
-      "channels": [
-        "Miami Marlins",
-        "Milwaukee Brewers",
-        "MLB Play-by-Play 181",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Kansas City Royals @ San Diego Padres",
-      "description": "MLB · Kansas City Royals @ San Diego Padres",
-      "start_utc": "2026-07-19T18:10:00Z",
-      "end_utc": "2026-07-19T21:10:00Z",
-      "channels": [
-        "San Diego Padres",
-        "Kansas City Royals",
-        "MLB Play-by-Play 182",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Houston Astros @ Baltimore Orioles",
-      "description": "MLB · Houston Astros @ Baltimore Orioles",
-      "start_utc": "2026-07-19T18:10:00Z",
-      "end_utc": "2026-07-19T21:10:00Z",
-      "channels": [
-        "Baltimore Orioles",
-        "Houston Astros",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago Cubs @ Minnesota Twins",
-      "description": "MLB · Chicago Cubs @ Minnesota Twins",
-      "start_utc": "2026-07-19T18:20:00Z",
-      "end_utc": "2026-07-19T21:20:00Z",
-      "channels": [
-        "Minnesota Twins",
-        "Chicago Cubs",
-        "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Spain @ Argentina",
-      "description": "SOCCER · Spain @ Argentina",
-      "start_utc": "2026-07-19T19:00:00Z",
-      "end_utc": "2026-07-19T21:00:00Z",
-      "channels": [
-        "Argentina",
-        "Spain",
-        "FOX Sports on SiriusXM",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Colorado Rockies @ Cincinnati Reds",
-      "description": "MLB · Colorado Rockies @ Cincinnati Reds",
-      "start_utc": "2026-07-19T19:10:00Z",
-      "end_utc": "2026-07-19T22:10:00Z",
-      "channels": [
-        "Cincinnati Reds",
-        "Colorado Rockies",
-        "MLB Play-by-Play 183",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Athletics @ Washington Nationals",
-      "description": "MLB · Athletics @ Washington Nationals",
-      "start_utc": "2026-07-19T20:05:00Z",
-      "end_utc": "2026-07-19T23:05:00Z",
-      "channels": [
-        "Washington Nationals",
-        "Athletics",
-        "MLB Play-by-Play 185",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Los Angeles Angels @ Detroit Tigers",
-      "description": "MLB · Los Angeles Angels @ Detroit Tigers",
-      "start_utc": "2026-07-19T20:07:00Z",
-      "end_utc": "2026-07-19T23:07:00Z",
-      "channels": [
-        "Detroit Tigers",
-        "Los Angeles Angels",
-        "MLB Play-by-Play 186",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Arizona Diamondbacks @ St. Louis Cardinals",
-      "description": "MLB · Arizona Diamondbacks @ St. Louis Cardinals",
-      "start_utc": "2026-07-19T20:10:00Z",
-      "end_utc": "2026-07-19T23:10:00Z",
-      "channels": [
-        "St. Louis Cardinals",
-        "Arizona Diamondbacks",
-        "MLB Play-by-Play 184",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Seattle Mariners @ San Francisco Giants",
-      "description": "MLB · Seattle Mariners @ San Francisco Giants",
-      "start_utc": "2026-07-19T20:10:00Z",
-      "end_utc": "2026-07-19T23:10:00Z",
-      "channels": [
-        "San Francisco Giants",
-        "Seattle Mariners",
-        "MLB Play-by-Play 187",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "indycar",
-      "title": "Music City Grand Prix",
-      "description": "SiriusXM INDYCAR Nation · Music City Grand Prix · Nashville Superspeedway",
-      "start_utc": "2026-07-19T21:00:00Z",
-      "end_utc": "2026-07-19T23:30:00Z",
-      "channels": [
-        "SiriusXM INDYCAR Nation"
-      ]
-    },
     {
       "slug": "nascar",
       "title": "Window World 250",
@@ -168,20 +15,6 @@
       ]
     },
     {
-      "slug": "mlb",
-      "title": "New York Yankees @ Los Angeles Dodgers",
-      "description": "MLB · New York Yankees @ Los Angeles Dodgers",
-      "start_utc": "2026-07-19T23:20:00Z",
-      "end_utc": "2026-07-20T02:20:00Z",
-      "channels": [
-        "Los Angeles Dodgers",
-        "New York Yankees",
-        "MLB Network Radio",
-        "MLB Play-by-Play 175",
-        "MLB en Español 870"
-      ]
-    },
-    {
       "slug": "nba",
       "title": "Golden State Warriors @ Memphis Grizzlies",
       "description": "NBA · Golden State Warriors @ Memphis Grizzlies",
@@ -191,6 +24,202 @@
         "Memphis Grizzlies",
         "Golden State Warriors",
         "SiriusXM NBA Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Cleveland Guardians @ Minnesota Twins",
+      "description": "MLB · Cleveland Guardians @ Minnesota Twins",
+      "start_utc": "2026-07-20T22:40:00Z",
+      "end_utc": "2026-07-21T01:40:00Z",
+      "channels": [
+        "Minnesota Twins",
+        "Cleveland Guardians",
+        "MLB Play-by-Play 175",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "New York Yankees @ Pittsburgh Pirates",
+      "description": "MLB · New York Yankees @ Pittsburgh Pirates",
+      "start_utc": "2026-07-20T23:05:00Z",
+      "end_utc": "2026-07-21T02:05:00Z",
+      "channels": [
+        "Pittsburgh Pirates",
+        "New York Yankees",
+        "MLB Play-by-Play 176",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Toronto Blue Jays @ Tampa Bay Rays",
+      "description": "MLB · Toronto Blue Jays @ Tampa Bay Rays",
+      "start_utc": "2026-07-20T23:07:00Z",
+      "end_utc": "2026-07-21T02:07:00Z",
+      "channels": [
+        "Tampa Bay Rays",
+        "Toronto Blue Jays",
+        "MLB Play-by-Play 177",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Boston Red Sox @ Baltimore Orioles",
+      "description": "MLB · Boston Red Sox @ Baltimore Orioles",
+      "start_utc": "2026-07-20T23:10:00Z",
+      "end_utc": "2026-07-21T02:10:00Z",
+      "channels": [
+        "Baltimore Orioles",
+        "Boston Red Sox",
+        "MLB Play-by-Play 178",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Philadelphia Phillies @ Los Angeles Dodgers",
+      "description": "MLB · Philadelphia Phillies @ Los Angeles Dodgers",
+      "start_utc": "2026-07-20T23:10:00Z",
+      "end_utc": "2026-07-21T02:10:00Z",
+      "channels": [
+        "Los Angeles Dodgers",
+        "Philadelphia Phillies",
+        "MLB Play-by-Play 179",
+        "MLB en Español 870",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Atlanta Braves @ San Diego Padres",
+      "description": "MLB · Atlanta Braves @ San Diego Padres",
+      "start_utc": "2026-07-20T23:15:00Z",
+      "end_utc": "2026-07-21T02:15:00Z",
+      "channels": [
+        "San Diego Padres",
+        "Atlanta Braves",
+        "MLB Play-by-Play 180",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Kansas City Royals @ San Francisco Giants",
+      "description": "MLB · Kansas City Royals @ San Francisco Giants",
+      "start_utc": "2026-07-20T23:40:00Z",
+      "end_utc": "2026-07-21T02:40:00Z",
+      "channels": [
+        "San Francisco Giants",
+        "Kansas City Royals",
+        "MLB Play-by-Play 182",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Milwaukee Brewers @ New York Mets",
+      "description": "MLB · Milwaukee Brewers @ New York Mets",
+      "start_utc": "2026-07-20T23:40:00Z",
+      "end_utc": "2026-07-21T02:40:00Z",
+      "channels": [
+        "New York Mets",
+        "Milwaukee Brewers",
+        "MLB Play-by-Play 181",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Texas Rangers @ Chicago White Sox",
+      "description": "MLB · Texas Rangers @ Chicago White Sox",
+      "start_utc": "2026-07-21T00:05:00Z",
+      "end_utc": "2026-07-21T03:05:00Z",
+      "channels": [
+        "Chicago White Sox",
+        "Texas Rangers",
+        "MLB Play-by-Play 183",
+        "MLB en Español 871",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Chicago Cubs @ Detroit Tigers",
+      "description": "MLB · Chicago Cubs @ Detroit Tigers",
+      "start_utc": "2026-07-21T00:05:00Z",
+      "end_utc": "2026-07-21T03:05:00Z",
+      "channels": [
+        "Detroit Tigers",
+        "Chicago Cubs",
+        "MLB Play-by-Play 185",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Houston Astros @ Miami Marlins",
+      "description": "MLB · Houston Astros @ Miami Marlins",
+      "start_utc": "2026-07-21T00:10:00Z",
+      "end_utc": "2026-07-21T03:10:00Z",
+      "channels": [
+        "Miami Marlins",
+        "Houston Astros",
+        "MLB Play-by-Play 186",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Colorado Rockies @ Washington Nationals",
+      "description": "MLB · Colorado Rockies @ Washington Nationals",
+      "start_utc": "2026-07-21T00:40:00Z",
+      "end_utc": "2026-07-21T03:40:00Z",
+      "channels": [
+        "Washington Nationals",
+        "Colorado Rockies",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Seattle Mariners @ Cincinnati Reds",
+      "description": "MLB · Seattle Mariners @ Cincinnati Reds",
+      "start_utc": "2026-07-21T01:40:00Z",
+      "end_utc": "2026-07-21T04:40:00Z",
+      "channels": [
+        "Cincinnati Reds",
+        "Seattle Mariners",
+        "MLB Play-by-Play 187",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Arizona Diamondbacks @ Athletics",
+      "description": "MLB · Arizona Diamondbacks @ Athletics",
+      "start_utc": "2026-07-21T01:40:00Z",
+      "end_utc": "2026-07-21T04:40:00Z",
+      "channels": [
+        "Athletics",
+        "Arizona Diamondbacks",
+        "MLB Play-by-Play 188",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Los Angeles Angels @ St. Louis Cardinals",
+      "description": "MLB · Los Angeles Angels @ St. Louis Cardinals",
+      "start_utc": "2026-07-21T02:10:00Z",
+      "end_utc": "2026-07-21T05:10:00Z",
+      "channels": [
+        "St. Louis Cardinals",
+        "Los Angeles Angels",
+        "MLB Play-by-Play 189",
+        "MLB Network Radio"
       ]
     },
     {
@@ -298,6 +327,76 @@
       "end_utc": "2026-07-26T20:30:00Z",
       "channels": [
         "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "INDY NXT Race",
+      "description": "SiriusXM INDYCAR Nation · INDY NXT Race · Portland International Raceway",
+      "start_utc": "2026-08-09T18:00:00Z",
+      "end_utc": "2026-08-09T20:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Grand Prix of Portland",
+      "description": "SiriusXM INDYCAR Nation · Grand Prix of Portland · Portland International Raceway",
+      "start_utc": "2026-08-09T20:00:00Z",
+      "end_utc": "2026-08-09T22:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Ontario Honda Dealers Indy at Markham",
+      "description": "SiriusXM INDYCAR Nation · Ontario Honda Dealers Indy at Markham · Streets of Markham",
+      "start_utc": "2026-08-16T16:00:00Z",
+      "end_utc": "2026-08-16T18:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Freedom 250 GP of Washington, DC",
+      "description": "SiriusXM INDYCAR Nation · Freedom 250 GP of Washington, DC · Streets of Washington, DC",
+      "start_utc": "2026-08-23T18:00:00Z",
+      "end_utc": "2026-08-23T20:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Milwaukee Mile Race 1",
+      "description": "SiriusXM INDYCAR Nation · Milwaukee Mile Race 1 · Milwaukee Mile",
+      "start_utc": "2026-08-29T18:30:00Z",
+      "end_utc": "2026-08-29T21:00:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "INDY NXT Race",
+      "description": "SiriusXM INDYCAR Nation · INDY NXT Race · Milwaukee Mile",
+      "start_utc": "2026-08-30T15:00:00Z",
+      "end_utc": "2026-08-30T17:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Milwaukee Mile Race 2",
+      "description": "SiriusXM INDYCAR Nation · Milwaukee Mile Race 2 · Milwaukee Mile",
+      "start_utc": "2026-08-30T17:00:00Z",
+      "end_utc": "2026-08-30T19:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
       ]
     }
   ]
