@@ -1,16 +1,6 @@
 {
-  "generated_at": "2026-07-20T17:30:30Z",
+  "generated_at": "2026-07-20T21:05:11Z",
   "events": [
-    {
-      "slug": "indycar",
-      "title": "Music City Grand Prix",
-      "description": "SiriusXM INDYCAR Nation · Music City Grand Prix · Nashville Superspeedway",
-      "start_utc": "2026-07-20T19:00:00Z",
-      "end_utc": "2026-07-20T21:30:00Z",
-      "channels": [
-        "SiriusXM INDYCAR Nation"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Cleveland Guardians @ Minnesota Twins",
@@ -356,6 +346,76 @@
       "channels": [
         "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "INDY NXT Race",
+      "description": "SiriusXM INDYCAR Nation · INDY NXT Race · Portland International Raceway",
+      "start_utc": "2026-08-09T18:00:00Z",
+      "end_utc": "2026-08-09T20:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Grand Prix of Portland",
+      "description": "SiriusXM INDYCAR Nation · Grand Prix of Portland · Portland International Raceway",
+      "start_utc": "2026-08-09T20:00:00Z",
+      "end_utc": "2026-08-09T22:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Ontario Honda Dealers Indy at Markham",
+      "description": "SiriusXM INDYCAR Nation · Ontario Honda Dealers Indy at Markham · Streets of Markham",
+      "start_utc": "2026-08-16T16:00:00Z",
+      "end_utc": "2026-08-16T18:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Freedom 250 GP of Washington, DC",
+      "description": "SiriusXM INDYCAR Nation · Freedom 250 GP of Washington, DC · Streets of Washington, DC",
+      "start_utc": "2026-08-23T18:00:00Z",
+      "end_utc": "2026-08-23T20:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Milwaukee Mile Race 1",
+      "description": "SiriusXM INDYCAR Nation · Milwaukee Mile Race 1 · Milwaukee Mile",
+      "start_utc": "2026-08-29T18:30:00Z",
+      "end_utc": "2026-08-29T21:00:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "INDY NXT Race",
+      "description": "SiriusXM INDYCAR Nation · INDY NXT Race · Milwaukee Mile",
+      "start_utc": "2026-08-30T15:00:00Z",
+      "end_utc": "2026-08-30T17:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "Milwaukee Mile Race 2",
+      "description": "SiriusXM INDYCAR Nation · Milwaukee Mile Race 2 · Milwaukee Mile",
+      "start_utc": "2026-08-30T17:00:00Z",
+      "end_utc": "2026-08-30T19:30:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
       ]
     }
   ]
