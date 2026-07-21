@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-21T17:09:50Z",
+  "generated_at": "2026-07-21T21:00:24Z",
   "events": [
     {
       "slug": "mlb",
@@ -25,19 +25,6 @@
         "Minnesota Twins",
         "Cleveland Guardians",
         "MLB Play-by-Play 176",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Yankees @ Pittsburgh Pirates",
-      "description": "MLB · New York Yankees @ Pittsburgh Pirates",
-      "start_utc": "2026-07-21T23:05:00Z",
-      "end_utc": "2026-07-22T02:05:00Z",
-      "channels": [
-        "Pittsburgh Pirates",
-        "New York Yankees",
-        "MLB Play-by-Play 177",
         "MLB Network Radio"
       ]
     },
@@ -107,6 +94,19 @@
     },
     {
       "slug": "mlb",
+      "title": "Chicago Cubs @ Detroit Tigers",
+      "description": "MLB · Chicago Cubs @ Detroit Tigers",
+      "start_utc": "2026-07-22T00:05:00Z",
+      "end_utc": "2026-07-22T03:05:00Z",
+      "channels": [
+        "Detroit Tigers",
+        "Chicago Cubs",
+        "MLB Play-by-Play 185",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
       "title": "Texas Rangers @ Chicago White Sox",
       "description": "MLB · Texas Rangers @ Chicago White Sox",
       "start_utc": "2026-07-22T00:05:00Z",
@@ -116,19 +116,6 @@
         "Texas Rangers",
         "MLB Play-by-Play 183",
         "MLB en Español 871",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago Cubs @ Detroit Tigers",
-      "description": "MLB · Chicago Cubs @ Detroit Tigers",
-      "start_utc": "2026-07-22T00:05:00Z",
-      "end_utc": "2026-07-22T03:05:00Z",
-      "channels": [
-        "Detroit Tigers",
-        "Chicago Cubs",
-        "MLB Play-by-Play 185",
         "MLB Network Radio"
       ]
     },
@@ -173,19 +160,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Arizona Diamondbacks @ Athletics",
-      "description": "MLB · Arizona Diamondbacks @ Athletics",
-      "start_utc": "2026-07-22T01:40:00Z",
-      "end_utc": "2026-07-22T04:40:00Z",
-      "channels": [
-        "Athletics",
-        "Arizona Diamondbacks",
-        "MLB Play-by-Play 189",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "Seattle Mariners @ Cincinnati Reds",
       "description": "MLB · Seattle Mariners @ Cincinnati Reds",
       "start_utc": "2026-07-22T01:40:00Z",
@@ -194,6 +168,19 @@
         "Cincinnati Reds",
         "Seattle Mariners",
         "MLB Play-by-Play 187",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Arizona Diamondbacks @ Athletics",
+      "description": "MLB · Arizona Diamondbacks @ Athletics",
+      "start_utc": "2026-07-22T01:40:00Z",
+      "end_utc": "2026-07-22T04:40:00Z",
+      "channels": [
+        "Athletics",
+        "Arizona Diamondbacks",
+        "MLB Play-by-Play 189",
         "MLB Network Radio"
       ]
     },
