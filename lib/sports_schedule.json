@@ -1,28 +1,6 @@
 {
-  "generated_at": "2026-07-24T13:23:43Z",
+  "generated_at": "2026-07-24T17:23:35Z",
   "events": [
-    {
-      "slug": "f1",
-      "title": "F-1 Practice 1",
-      "description": "Formula 1 Racing and Analysis · F-1 Practice 1 · Hungaroring",
-      "start_utc": "2026-07-24T11:25:00Z",
-      "end_utc": "2026-07-24T13:25:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
-    {
-      "slug": "f1",
-      "title": "F-1 Practice 2",
-      "description": "Formula 1 Racing and Analysis · F-1 Practice 2 · Hungaroring",
-      "start_utc": "2026-07-24T14:55:00Z",
-      "end_utc": "2026-07-24T16:55:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "pga",
       "title": "3M Open",
