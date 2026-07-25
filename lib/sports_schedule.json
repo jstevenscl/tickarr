@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-25T16:50:48Z",
+  "generated_at": "2026-07-25T20:42:21Z",
   "events": [
     {
       "slug": "pga",
@@ -10,18 +10,6 @@
       "channels": [
         "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Detroit Tigers @ Kansas City Royals",
-      "description": "MLB · Detroit Tigers @ Kansas City Royals",
-      "start_utc": "2026-07-25T17:10:00Z",
-      "end_utc": "2026-07-25T20:10:00Z",
-      "channels": [
-        "Kansas City Royals",
-        "Detroit Tigers",
-        "MLB Network Radio"
       ]
     },
     {
@@ -165,19 +153,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Milwaukee Brewers @ Colorado Rockies",
-      "description": "MLB · Milwaukee Brewers @ Colorado Rockies",
-      "start_utc": "2026-07-25T23:10:00Z",
-      "end_utc": "2026-07-26T02:10:00Z",
-      "channels": [
-        "Colorado Rockies",
-        "Milwaukee Brewers",
-        "MLB Play-by-Play 185",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "Chicago White Sox @ Houston Astros",
       "description": "MLB · Chicago White Sox @ Houston Astros",
       "start_utc": "2026-07-25T23:10:00Z",
@@ -186,6 +161,19 @@
         "Houston Astros",
         "Chicago White Sox",
         "MLB Play-by-Play 182",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Milwaukee Brewers @ Colorado Rockies",
+      "description": "MLB · Milwaukee Brewers @ Colorado Rockies",
+      "start_utc": "2026-07-25T23:10:00Z",
+      "end_utc": "2026-07-26T02:10:00Z",
+      "channels": [
+        "Colorado Rockies",
+        "Milwaukee Brewers",
+        "MLB Play-by-Play 185",
         "MLB Network Radio"
       ]
     },
