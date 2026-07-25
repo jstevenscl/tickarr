@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "tickarr",
+  "project_id": "33116862-0cac-4c10-ac85-3a846232ed62"
+}
