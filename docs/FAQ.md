@@ -167,3 +167,9 @@ Yes. Matching strips any existing station-number prefix before comparing against
 **Q: Two of my channels both matched the same station number. What happens?**
 
 Only the first one keeps that station's real absolute number; the other is placed in the fill pool instead of colliding on the same channel number, and both are named explicitly in the result message so you can investigate (usually a duplicate SD/HD channel from your provider, or two channels that are genuinely the same station).
+
+---
+
+**Q: Where do channels with no station match end up?**
+
+Right after your highest real matched station — never in the low numbers below it. SXM's own numbering starts at station 2, so those low slots are reserved for real stations and are never backfilled with unmatched or duplicate-loser content, even if they're technically free. This also applies to the losing side of a duplicate-name match above.
