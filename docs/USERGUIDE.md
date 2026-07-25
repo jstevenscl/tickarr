@@ -97,10 +97,12 @@ All four actions below use the same **Apply To** target you configure in the **S
 |---|---|---|
 | **Fill EPG — Full Satellite Radio Guide** | Downloads Tickarr's satellite radio EPG and assigns it to the selected channels. Sets tvg-id, channel name, and guide data. | Run this first if your SiriusXM channels have no EPG. |
 | **Fill EPG — TVG ID Only** | Sets only the tvg-id on selected channels so they match an EPG source you already have loaded. Does not download guide data. | Use instead of Full EPG if you have an existing EPG source. |
-| **Sort Channels** | Renumbers the selected channels by satellite radio lineup order. Fills in the Sort Start Number automatically if left blank. | Run after Fill EPG to put channels in the right order. |
+| **Sort Channels** | Renumbers the selected channels by satellite radio lineup order. Fills in the Sort Start Number automatically if left blank. Sequential mode (default) packs channels with no gaps; Absolute mode sets each channel's trailing digits to its real SXM station number — see Numbering Mode below. | Run after Fill EPG to put channels in the right order. |
 | **Assign Logos** | Sets channel logos from Tickarr's built-in satellite radio library. Channels with no match are skipped. | Run after sorting. |
 | **Fill EPG + Sort** | Runs Full EPG fill and Sort together. | Shortcut for the two most common steps. |
 | **Fill EPG + Sort + Logos** | Runs all three together. | Recommended for a full first-time setup. |
+
+> **What's in the guide:** Sports channels get real game-by-game listings (team matchups, race/event schedules) refreshed every 4 hours. Most other named channels (music, talk, news, comedy) now get their actual show lineup too — real program names and air times pulled from SiriusXM's own published schedules, refreshed daily — instead of one generic all-day block. Channels with no published schedule (app-exclusive Xtra channels, on-demand-only channels) still get a single all-day block with the channel name, same as before.
 
 ---
 
@@ -510,6 +512,10 @@ The Settings panel displays sections in this order: **Now Playing → Satellite 
 | Channel Group | The group to target for Channel Setup actions |
 | Channel | The individual channel to target |
 | Sort Start Number | Channel number to start from when sorting. Leave blank to auto-detect. |
+| Numbering Mode | Sequential (default, no gaps) or Absolute (channel number = Sort Start Number + SXM station number, e.g. 15000 + station 036 -> 15036). Absolute mode preserves gaps for stations missing from your lineup, so the trailing digits always match the real SXM station number. Set Sort Start Number explicitly every run when using Absolute — auto-detect is unreliable once channels carry gapped numbers. |
+| Numbering Block Size | **Required when Numbering Mode is Absolute.** Reserves Sort Start Number through Start+BlockSize-1 for this channel group, so channels with no station match never drift into whatever you numbered next. SiriusXM's full catalog runs up to station 1999, but real-world provider lineups are almost entirely ≤999 — confirmed against a live 431-channel provider feed, where 99.8% of matched channels fell at or below 999, with a single rare outlier near 1999. A block size of 1000 comfortably covers a typical lineup with zero overflow. A matched channel whose real station number falls outside your block still gets its correct absolute number (never silently moved) and is called out in the result message; unmatched channels that don't fit inside the block are placed just past it and flagged the same way — increase the block size if you see that. |
+| Prefix Channel Name With Station Number | When on, Sort Channels renames each channel with its SXM station number as a prefix, in the format chosen below. Safe to re-run — an existing prefix is replaced, not stacked. |
+| Station Number Prefix Format | Zero-Padded ("036 Alt Nation", minimum 3 digits, never truncated for 4+ digit stations like "1285 Southern Rock") or No Leading Zeros ("36 Alt Nation"). Only used when the prefix setting above is on. |
 
 ### EAS Settings (General)
 

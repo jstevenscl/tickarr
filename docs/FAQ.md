@@ -147,3 +147,23 @@ Yes. The Now Playing overlay is designed for audio-only channels (where it injec
 **Q: Why is the Now Playing info sometimes a track or two behind?**
 
 xmplaylist.com is a third-party service that scrapes SiriusXM. There is inherent delay between when a track starts playing and when xmplaylist reflects it, typically 30–60 seconds. This is a limitation of the data source, not Tickarr.
+
+---
+
+## Satellite Radio Channel Setup
+
+**Q: Why does Absolute numbering mode require a Numbering Block Size?**
+
+Absolute mode sets each channel's trailing digits to its real SXM station number — but SiriusXM's full catalog runs up to station 1999, and channels with no match need a reserved range to fill into that won't drift into whatever you numbered next. Rather than guess a default, Tickarr requires you to set it explicitly (1000 comfortably covers a typical lineup — real provider data shows ~99.8% of channels at or below 999). A matched channel whose real station number falls outside your block still gets its correct absolute number and is called out in the result message, never silently moved.
+
+---
+
+**Q: Is it safe to run Sort Channels multiple times with Prefix Channel Name enabled?**
+
+Yes. Matching strips any existing station-number prefix before comparing against the SXM dataset, so a channel already renamed to "036 Alt Nation" still matches "Alt Nation" and stays correctly positioned on every subsequent run — including Assign Logos and Fill EPG, which use the same matching.
+
+---
+
+**Q: Two of my channels both matched the same station number. What happens?**
+
+Only the first one keeps that station's real absolute number; the other is placed in the fill pool instead of colliding on the same channel number, and both are named explicitly in the result message so you can investigate (usually a duplicate SD/HD channel from your provider, or two channels that are genuinely the same station).

@@ -2573,6 +2573,31 @@ class Plugin:
             {"id": "ch_channel_id",       "type": "select", "label": "Channel",       "options": channels},
             {"id": "sort_start_number",   "type": "text",   "label": "Sort Start Number",
              "placeholder": "Leave blank to auto-detect from current channel numbers"},
+            {"id": "sort_numbering_mode", "type": "select", "label": "Numbering Mode",
+             "options": [
+                 {"value": "sequential", "label": "Sequential (default) — channels packed with no gaps, e.g. start 15000 -> 15000, 15001, 15002..."},
+                 {"value": "absolute",   "label": "Absolute — channel number = Sort Start Number + SXM station number, e.g. start 15000 + station 036 -> 15036 (preserves gaps from missing stations)"},
+             ], "help_text": "Absolute mode needs an explicit Sort Start Number every run — auto-detect reads the current minimum channel number, which drifts once channels carry absolute (gapped) numbers."},
+            {"id": "sort_block_size", "type": "text", "label": "Numbering Block Size (required for Absolute mode)",
+             "placeholder": "e.g. 1000",
+             "help_text": (
+                 "Reserves Sort Start Number through Start+BlockSize-1 for this group, so unmatched "
+                 "channels never drift into whatever you numbered next. Required when Numbering Mode "
+                 "is Absolute — Sort Channels refuses to run without it, since a silent default risks "
+                 "overlapping a neighboring channel group. SiriusXM's full catalog runs up to station "
+                 "1999, but a real 431-channel provider lineup we checked had 99.8% of channels at or "
+                 "below 999 (one rare event-channel outlier near 1999) — 1000 comfortably covers a "
+                 "typical lineup with no overflow. A matched channel whose real station number falls "
+                 "outside the block (like that outlier) still gets its correct absolute number and is "
+                 "called out in the result message, never silently renumbered."
+             )},
+            {"id": "sort_station_prefix", "type": "boolean", "label": "Prefix Channel Name With Station Number",
+             "help_text": "Renames each channel with its SXM station number as a prefix, format controlled below. Applied whenever Sort Channels runs."},
+            {"id": "sort_station_prefix_format", "type": "select", "label": "Station Number Prefix Format",
+             "options": [
+                 {"value": "zero_padded", "label": "Zero-Padded (036 Alt Nation) — minimum 3 digits, never truncated for 4+ digit stations (e.g. 1285 Southern Rock)"},
+                 {"value": "no_padding",  "label": "No Leading Zeros (36 Alt Nation)"},
+             ], "help_text": "Only used when Prefix Channel Name With Station Number is on."},
             # ── EAS ───────────────────────────────────────────────────────
             {"id": "_eas_section",  "type": "info", "label": "==========  EAS/JAS WEATHER ALERTS  =========="},
             {"id": "_eas_tribute",  "type": "info",
@@ -2898,14 +2923,17 @@ class Plugin:
                     skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
                     continue
 
-                xm_entry = _match_channel(channel.name, xm_channels, aliases)
+                # Strip any station-number prefix Sort may have already added — otherwise
+                # a channel named "036 Alt Nation" fails to match "Alt Nation" here.
+                match_name = re.sub(r'^\d+\s+', '', channel.name)
+                xm_entry = _match_channel(match_name, xm_channels, aliases)
                 deeplink = None
                 channel_description = ""
                 if xm_entry:
                     channel_description = xm_entry.get("description", "")
                     uuid = xm_entry.get("lookaround_channel_id")
                     station = (_match_station_by_uuid(uuid, stations) if uuid else None) or \
-                              _match_station_by_name(channel.name, stations)
+                              _match_station_by_name(match_name, stations)
                 else:
                     station = _match_station_by_name(channel.name, stations)
                 if station:
@@ -4270,7 +4298,10 @@ class Plugin:
             return {"success": False, "message": str(e)}
         filled, skipped, failed = [], [], []
         for ch in dispatch_channels:
-            xm = _match_channel(ch.name, channels_data, aliases)
+            # Strip any station-number prefix Sort may have already added — otherwise
+            # a channel named "036 Alt Nation" fails to match "Alt Nation" here.
+            match_name = re.sub(r'^\d+\s+', '', ch.name)
+            xm = _match_channel(match_name, channels_data, aliases)
             if not xm:
                 skipped.append(f"{ch.name} (no SiriusXM match)")
                 continue
@@ -4285,7 +4316,10 @@ class Plugin:
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _sort_channels(self, params):
-        """Renumber channels sequentially from sort_start_number, ordered by SXM channel number.
+        """Renumber channels from sort_start_number, ordered by SXM channel number.
+        Sequential mode (default) packs channels with no gaps. Absolute mode sets
+        channel_number = start_number + sxm_number, preserving gaps for missing
+        stations so the trailing digits match the real SXM station number.
         Auto-detects start number from the current minimum channel_number if not configured."""
         from apps.channels.models import Channel
         try:
@@ -4305,10 +4339,34 @@ class Plugin:
             nums = [ch.channel_number for ch in dispatch_channels if ch.channel_number is not None]
             start_number = int(min(nums)) if nums else 1
 
-        # Build ordered list: matched channels sorted by SXM number, unmatched at end
+        numbering_mode = (params.get("sort_numbering_mode") or "sequential").strip()
+        station_prefix = bool(params.get("sort_station_prefix"))
+        station_prefix_format = (params.get("sort_station_prefix_format") or "zero_padded").strip()
+
+        block_size = None
+        if numbering_mode == "absolute":
+            block_raw = (params.get("sort_block_size") or "").strip()
+            if not block_raw:
+                return {"success": False, "message": (
+                    "Numbering Block Size is required when Numbering Mode is Absolute — set the range "
+                    "you want to reserve for this group (e.g. 1000) so unmatched channels can't drift "
+                    "into whatever you numbered next."
+                )}
+            try:
+                block_size = int(block_raw)
+                if block_size <= 0:
+                    raise ValueError
+            except (ValueError, TypeError):
+                return {"success": False, "message": f"Invalid Numbering Block Size: {block_raw!r} - enter a positive whole number."}
+
+        # Build ordered list: matched channels sorted by SXM number, unmatched at end.
+        # Strip any station-number prefix a previous Sort run may have added before
+        # matching — otherwise a channel prefixed as "036 Alt Nation" fails to match
+        # "Alt Nation" in the dataset on the next run and drifts to the unmatched tail.
         matched, unmatched = [], []
         for ch in dispatch_channels:
-            xm = _match_channel(ch.name, channels_data, aliases)
+            match_name = re.sub(r'^\d+\s+', '', ch.name)
+            xm = _match_channel(match_name, channels_data, aliases)
             if xm and xm.get("sxm_number"):
                 matched.append((xm["sxm_number"], ch))
             else:
@@ -4324,20 +4382,86 @@ class Plugin:
                 ch.channel_number = None
                 ch.save(update_fields=["channel_number"])
 
+        # Assign target numbers — pair each channel with its SXM station number (if any)
+        assignments = []  # (channel, new_number, sxm_number-or-None)
+        out_of_block, overflowed, duplicate_matches = [], [], []
+        if numbering_mode == "absolute":
+            used = set()
+            seen_numbers = {}
+            extra_unmatched = []  # duplicate matches lose the number race, join the fill pool
+            for sxm_number, ch in matched:
+                if sxm_number in seen_numbers:
+                    duplicate_matches.append((ch.name, sxm_number, seen_numbers[sxm_number]))
+                    extra_unmatched.append(ch)
+                    continue
+                seen_numbers[sxm_number] = ch.name
+                new_num = start_number + sxm_number
+                assignments.append((ch, new_num, sxm_number))
+                used.add(new_num)
+                if sxm_number >= block_size:
+                    out_of_block.append((ch.name, sxm_number))
+
+            # Unmatched channels (plus any duplicate-match losers above) fill free slots
+            # inside the reserved block first — never past it just because one matched
+            # channel's real station number (e.g. a rare 1999-style outlier) falls outside.
+            pool = unmatched + extra_unmatched
+            free_slots = [n for n in range(start_number, start_number + block_size) if n not in used]
+            for i, ch in enumerate(pool):
+                if i < len(free_slots):
+                    assignments.append((ch, free_slots[i], None))
+                    used.add(free_slots[i])
+                else:
+                    overflowed.append(ch)
+            next_num = start_number + block_size
+            for ch in overflowed:
+                while next_num in used:
+                    next_num += 1
+                assignments.append((ch, next_num, None))
+                used.add(next_num)
+        else:
+            for i, ch in enumerate(ordered):
+                sxm_number = matched[i][0] if i < len(matched) else None
+                assignments.append((ch, start_number + i, sxm_number))
+
         updated, failed = 0, []
-        for i, ch in enumerate(ordered):
-            new_num = start_number + i
+        for ch, new_num, sxm_number in assignments:
             try:
+                update_fields = ["channel_number"]
                 ch.channel_number = new_num
-                ch.save(update_fields=["channel_number"])
+                if station_prefix and sxm_number:
+                    base_name = re.sub(r'^\d+\s+', '', ch.name)
+                    number_str = f"{sxm_number:03d}" if station_prefix_format == "zero_padded" else str(sxm_number)
+                    new_name = f"{number_str} {base_name}"
+                    if new_name != ch.name:
+                        ch.name = new_name
+                        update_fields.append("name")
+                ch.save(update_fields=update_fields)
                 updated += 1
             except Exception as e:
                 logger.warning(f"tickarr: sort failed for {ch.name}: {e}")
                 failed.append(ch.name)
 
         start_note = " (auto-detected)" if auto_detected else ""
-        parts = [f"Sort complete — {updated} channel(s) renumbered from {start_number}{start_note}"]
+        mode_note = f" [absolute, block size {block_size}]" if numbering_mode == "absolute" else ""
+        parts = [f"Sort complete — {updated} channel(s) renumbered from {start_number}{start_note}{mode_note}"]
         if unmatched: parts.append(f"No SXM match (placed at end): {', '.join(c.name for c in unmatched[:10])}")
+        if duplicate_matches:
+            parts.append(
+                "Duplicate channels matched the same station — only the first kept the real "
+                "absolute number, the rest were placed in the fill pool instead of colliding:\n"
+                + "\n".join(f"  - {name} (station {num}, same as {first})" for name, num, first in duplicate_matches[:10])
+            )
+        if out_of_block:
+            parts.append(
+                "Real station number outside the block (still given its correct absolute number, not moved):\n"
+                + "\n".join(f"  - {name} (station {num})" for name, num in out_of_block[:10])
+            )
+        if overflowed:
+            parts.append(
+                f"{len(overflowed)} unmatched channel(s) didn't fit inside the block and were placed past it — "
+                f"increase Numbering Block Size to bring them back in range:\n"
+                + "\n".join(f"  - {c.name}" for c in overflowed[:10])
+            )
         if failed:    parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts)}
 
@@ -4348,7 +4472,10 @@ class Plugin:
             return {"success": False, "message": str(e)}
         assigned, skipped, failed = [], [], []
         for ch in dispatch_channels:
-            xm = _match_channel(ch.name, channels_data, aliases)
+            # Strip any station-number prefix Sort may have already added — otherwise
+            # a channel named "036 Alt Nation" fails to match "Alt Nation" here.
+            match_name = re.sub(r'^\d+\s+', '', ch.name)
+            xm = _match_channel(match_name, channels_data, aliases)
             if not xm:
                 skipped.append(f"{ch.name} (no SiriusXM match)")
                 continue
@@ -4398,8 +4525,13 @@ class Plugin:
 
         sxm_src, _ = EPGSource.objects.get_or_create(
             name=TICKARR_SXM_SOURCE,
-            defaults={"source_type": "xmltv", "url": TICKARR_SXM_EPG_URL},
+            defaults={"source_type": "xmltv", "url": TICKARR_SXM_EPG_URL, "refresh_interval": 24},
         )
+        # Backfill: sources created before this field was set default to 0 (disabled),
+        # which leaves Dispatcharr's periodic refresh task permanently off.
+        if sxm_src.refresh_interval != 24:
+            sxm_src.refresh_interval = 24
+            sxm_src.save(update_fields=["refresh_interval"])
 
         now = datetime.now(timezone.utc)
         purge_before = now - timedelta(days=1)
@@ -4487,8 +4619,11 @@ class Plugin:
         matched, unmatched = 0, []
         with transaction.atomic():
             for ch in dispatch_channels:
-                key = _normalize(ch.name)
-                xm = _match_channel(ch.name, channels_data, aliases)
+                # Strip any station-number prefix Sort may have already added —
+                # otherwise a channel named "036 Alt Nation" fails to match here.
+                match_name = re.sub(r'^\d+\s+', '', ch.name)
+                key = _normalize(match_name)
+                xm = _match_channel(match_name, channels_data, aliases)
                 # Try alias-resolved name first, then direct
                 best = (epg_lookup.get(_normalize(xm["name"])) if xm else None) or epg_lookup.get(key)
                 if best:

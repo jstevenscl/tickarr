@@ -15,6 +15,11 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - On-Demand mode (default): overlay activates when a viewer tunes in, restores to passthrough when idle
 - Always On mode: overlay profile assigned permanently at enable time — no restart on connect, recommended for players sensitive to mid-stream restarts (e.g. Plex). **Clones one stream profile per enabled channel** (this is a current Dispatcharr limitation, not a bug — see [Always On and stream profile count](docs/USERGUIDE.md#always-on-and-stream-profile-count) in the User Guide). No performance impact either way — FFmpeg only runs while a channel is actively connected, regardless of how many profiles exist.
 
+**Satellite Radio EPG** (Fill EPG action in Satellite Radio Channel Setup)
+- Sports channels: real game-by-game listings (matchups, races, events), refreshed every 4 hours
+- Most other named channels (music, talk, news, comedy): real show lineup — actual program names and air times pulled from SiriusXM's own published schedules, refreshed daily — instead of one generic all-day block
+- Channels with no published schedule fall back to a single all-day block automatically, same as before this existed
+
 **EAS/JAS Weather Alerts — USA (NOAA/NWS)**
 - Monitors NOAA/NWS for active weather alerts in your configured zones
 - Automatically activates a full-width broadcast-style alert bar when an alert fires
