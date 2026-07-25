@@ -4402,10 +4402,14 @@ class Plugin:
                     out_of_block.append((ch.name, sxm_number))
 
             # Unmatched channels (plus any duplicate-match losers above) fill free slots
-            # inside the reserved block first — never past it just because one matched
-            # channel's real station number (e.g. a rare 1999-style outlier) falls outside.
+            # starting right after the highest real match, not from the bottom of the
+            # block — low absolute numbers are exactly where more real SXM stations are
+            # most likely to exist (SXM's own numbering starts at 2 and is densest in
+            # the low range), so backfilling gaps like start+0/start+1 with unrelated
+            # placeholder content put them ahead of genuinely-numbered channels.
             pool = unmatched + extra_unmatched
-            free_slots = [n for n in range(start_number, start_number + block_size) if n not in used]
+            floor = max(used) + 1 if used else start_number
+            free_slots = [n for n in range(floor, start_number + block_size) if n not in used]
             for i, ch in enumerate(pool):
                 if i < len(free_slots):
                     assignments.append((ch, free_slots[i], None))
