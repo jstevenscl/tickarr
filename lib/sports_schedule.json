@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-27T14:17:32Z",
+  "generated_at": "2026-07-27T17:37:47Z",
   "events": [
     {
       "slug": "mlb",
@@ -170,6 +170,28 @@
       ]
     },
     {
+      "slug": "pga",
+      "title": "Rocket Classic",
+      "description": "SiriusXM PGA Tour Radio · Rocket Classic · Detroit Golf Club",
+      "start_utc": "2026-07-30T16:00:00Z",
+      "end_utc": "2026-07-30T21:00:00Z",
+      "channels": [
+        "SiriusXM PGA TOUR Radio",
+        "SiriusXM PGA Tour Radio"
+      ]
+    },
+    {
+      "slug": "pga",
+      "title": "Rocket Classic",
+      "description": "SiriusXM PGA Tour Radio · Rocket Classic · Detroit Golf Club",
+      "start_utc": "2026-07-31T16:00:00Z",
+      "end_utc": "2026-07-31T21:00:00Z",
+      "channels": [
+        "SiriusXM PGA TOUR Radio",
+        "SiriusXM PGA Tour Radio"
+      ]
+    },
+    {
       "slug": "soccer",
       "title": "North Carolina Courage @ Orlando Pride",
       "description": "SOCCER · North Carolina Courage @ Orlando Pride",
@@ -205,8 +227,8 @@
       "slug": "indycar",
       "title": "INDY NXT Race",
       "description": "SiriusXM INDYCAR Nation · INDY NXT Race · Portland International Raceway",
-      "start_utc": "2026-08-09T18:00:00Z",
-      "end_utc": "2026-08-09T20:30:00Z",
+      "start_utc": "2026-08-09T17:55:00Z",
+      "end_utc": "2026-08-09T20:25:00Z",
       "channels": [
         "SiriusXM INDYCAR Nation"
       ]
@@ -225,8 +247,8 @@
       "slug": "indycar",
       "title": "Grand Prix of Portland",
       "description": "SiriusXM INDYCAR Nation · Grand Prix of Portland · Portland International Raceway",
-      "start_utc": "2026-08-09T20:00:00Z",
-      "end_utc": "2026-08-09T22:30:00Z",
+      "start_utc": "2026-08-09T19:30:00Z",
+      "end_utc": "2026-08-09T22:00:00Z",
       "channels": [
         "SiriusXM INDYCAR Nation"
       ]
