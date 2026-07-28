@@ -893,7 +893,8 @@ def _eas_sweep():
 
     severity_threshold = settings.get("eas_severity_filter") or "Moderate"
     try:
-        tone_interval = max(30, int(settings.get("eas_tone_interval") or 300))
+        tone_interval = int(settings.get("eas_tone_interval") or 300)
+        tone_interval = max(30, tone_interval) if tone_interval > 0 else 0
     except Exception:
         tone_interval = 300
     overlay_style = settings.get("eas_overlay_style") or "tickarr"
@@ -2665,7 +2666,7 @@ class Plugin:
                  {"value": "tickarr",   "label": "Tickarr Custom (flashing overlay boxes)"},
              ]},
             {"id": "eas_poll_interval",  "type": "number", "label": "Poll Interval (seconds)", "min": 15},
-            {"id": "eas_tone_interval",  "type": "number", "label": "Siren Tone Interval (seconds) — how often the attention tone repeats during an active alert", "min": 30},
+            {"id": "eas_tone_interval",  "type": "number", "label": "Siren Tone Interval (seconds) — how often the attention tone repeats during an active alert. Set to 0 to disable the tone entirely.", "min": 0},
             {"id": "eas_test_duration",  "type": "number", "label": "Test Alert Duration (seconds) — how long Test Alert fires before auto-restoring (default 60)", "min": 10},
             {"id": "_eas_saved_help", "type": "info",
              "label": "Saved Codes (reference only — paste commonly-used codes here so you do not have to look them up each time; not monitored):"},
@@ -3736,7 +3737,8 @@ class Plugin:
                     failed.append(f"{channel.name} (original profile missing)")
                     continue
 
-                tone_interval  = max(30, int(settings.get("eas_tone_interval") or 300))
+                tone_interval  = int(settings.get("eas_tone_interval") or 300)
+                tone_interval  = max(30, tone_interval) if tone_interval > 0 else 0
                 overlay_style  = settings.get("eas_overlay_style")  or "tickarr"
                 label_color    = settings.get("eas_label_color")     or "0xCC0000"
                 transcode_mode = settings.get("eas_transcode_mode")  or "full"
@@ -3887,7 +3889,8 @@ class Plugin:
                     failed.append(f"{channel.name} (original profile missing)")
                     continue
 
-                tone_interval  = max(30, int(settings.get("eas_tone_interval") or 300))
+                tone_interval  = int(settings.get("eas_tone_interval") or 300)
+                tone_interval  = max(30, tone_interval) if tone_interval > 0 else 0
                 overlay_style  = settings.get("eas_overlay_style")  or "tickarr"
                 label_color    = settings.get("eas_label_color")     or "0xCC0000"
                 transcode_mode = settings.get("eas_transcode_mode")  or "full"

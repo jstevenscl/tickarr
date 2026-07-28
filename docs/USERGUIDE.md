@@ -56,6 +56,14 @@ If a channel is skipped with the message **"stream profile is Proxy or Redirect 
 
 **If many channels are affected:** The most likely cause is that Dispatcharr's system-wide default stream profile is set to Proxy or Redirect, and those channels have no explicit profile assigned. To fix all of them at once, go to Dispatcharr **Settings → Streams** and change the default stream profile to an FFmpeg-based one. After saving, re-run the Tickarr enable action.
 
+### Auto-synced channels can silently revert Tickarr's overlay profile
+
+If your channels come from an M3U playlist and that M3U account's **channel group** has a default **Stream Profile** configured (a Dispatcharr auto-sync setting), Dispatcharr resets the channel's stream profile back to that default every time the M3U refreshes — undoing whatever profile Tickarr cloned and assigned, with no error shown to you. The overlay will work right after you enable it, then silently stop appearing after the next scheduled M3U sync, even though Tickarr's settings still show the channel as enabled.
+
+**How to tell if this affects you:** In Dispatcharr, open the M3U account that owns your channels, find the group your Tickarr-enabled channels belong to, and check whether a **Stream Profile** is set for that group.
+
+**Fix:** Clear the Stream Profile override for that group (leave it unset) so auto-sync stops reasserting a profile over Tickarr's clone. Assign stream profiles per-channel instead, the normal way (see above) — Tickarr will keep managing them correctly from there. This applies to every Tickarr overlay type (Now Playing, EAS, Sports Ticker, Custom Text), not just one feature, since they all clone and assign a stream profile the same way.
+
 ---
 
 ## Satellite Radio Now Playing
@@ -282,11 +290,17 @@ Weather Canada and NWS EAS are independent — they have separate channel target
 
 ### Step 1 — Find your city IDs
 
-Run **Actions → City Lookup** (teal outline button). Enter a city name (e.g. `Toronto`) or a 2-letter province code (e.g. `ON`, `QC`, `BC`) in the **City Lookup** field in Settings, then click the button. Tickarr returns a list of matching city names and their IDs.
+Unlike NWS zone codes (which Environment Canada has no public equivalent lookup page for — see below), you have two ways to find your Weather Canada city IDs:
+
+**Option A — In-app lookup:** Run **Actions → City Lookup** (teal outline button). Enter a city name (e.g. `Toronto`) or a 2-letter province code (e.g. `ON`, `QC`, `BC`) in the **City Lookup** field in Settings, then click the button. Tickarr returns a list of matching city names and their IDs.
+
+**Option B — Browse the full list:** See [Weather Canada City Codes](CANADA_CITY_CODES.md) — every city Tickarr can monitor, grouped by province, generated from the same data the in-app lookup uses.
 
 City IDs look like `on-143` (Ontario city 143 = Toronto) or `qc-147` (Quebec city 147 = Montreal). Copy the ID you want into **Weather Canada City IDs**.
 
 You can enter multiple city IDs comma-separated to monitor more than one location.
+
+> **Why isn't there a link to an Environment Canada site, the way the USA section links to weather.gov?** Environment Canada's current site (weather.gc.ca) uses coordinate-based URLs (`?coords=lat,lng`) and no longer exposes these city codes anywhere in its pages — they only exist in EC's underlying `citypageweather` data feed, which Tickarr reads directly. There's no public page to send you to, so the list above (and the in-app lookup) are the only ways to find your code.
 
 ---
 
@@ -693,6 +707,10 @@ Each section has its own button color so you can identify which overlay type an 
 ### Overlay shows stale or wrong content
 
 Run **Actions → Reload Poller**. If still stale after 30 seconds, disable and re-enable the channel. The disable/enable cycle re-clones the profile with current parameters and forces a fresh data fetch.
+
+### Overlay worked, then stopped appearing on its own
+
+If the channel is on an auto-synced M3U playlist, check whether its channel group has a default **Stream Profile** configured on the M3U account side — see [Auto-synced channels can silently revert Tickarr's overlay profile](#before-you-start--universal-requirements). Dispatcharr's periodic M3U sync reasserts that default profile on every refresh, overwriting Tickarr's cloned profile with no error message. Clear the group's Stream Profile override to fix it.
 
 ### "No games scheduled" in the sports ticker
 
