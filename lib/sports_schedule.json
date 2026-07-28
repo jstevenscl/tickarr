@@ -1,16 +1,17 @@
 {
-  "generated_at": "2026-07-28T17:22:02Z",
+  "generated_at": "2026-07-28T21:02:29Z",
   "events": [
     {
       "slug": "mlb",
-      "title": "Cincinnati Reds @ Cleveland Guardians",
-      "description": "MLB · Cincinnati Reds @ Cleveland Guardians",
-      "start_utc": "2026-07-28T17:40:00Z",
-      "end_utc": "2026-07-28T20:40:00Z",
+      "title": "Tampa Bay Rays @ Texas Rangers",
+      "description": "MLB · Tampa Bay Rays @ Texas Rangers",
+      "start_utc": "2026-07-28T22:40:00Z",
+      "end_utc": "2026-07-29T01:40:00Z",
       "channels": [
-        "Cleveland Guardians",
-        "Cincinnati Reds",
-        "MLB Play-by-Play 180",
+        "Texas Rangers",
+        "Tampa Bay Rays",
+        "MLB Play-by-Play 178",
+        "MLB en Español 870",
         "MLB Network Radio"
       ]
     },
@@ -55,20 +56,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Tampa Bay Rays @ Texas Rangers",
-      "description": "MLB · Tampa Bay Rays @ Texas Rangers",
-      "start_utc": "2026-07-28T22:40:00Z",
-      "end_utc": "2026-07-29T01:40:00Z",
-      "channels": [
-        "Texas Rangers",
-        "Tampa Bay Rays",
-        "MLB Play-by-Play 178",
-        "MLB en Español 870",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "Washington Nationals @ Toronto Blue Jays",
       "description": "MLB · Washington Nationals @ Toronto Blue Jays",
       "start_utc": "2026-07-28T22:45:00Z",
@@ -77,18 +64,6 @@
         "Toronto Blue Jays",
         "Washington Nationals",
         "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Mets @ Atlanta Braves",
-      "description": "MLB · New York Mets @ Atlanta Braves",
-      "start_utc": "2026-07-28T23:10:00Z",
-      "end_utc": "2026-07-29T02:10:00Z",
-      "channels": [
-        "Atlanta Braves",
-        "New York Mets",
         "MLB Network Radio"
       ]
     },
@@ -107,19 +82,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Minnesota Twins @ Kansas City Royals",
-      "description": "MLB · Minnesota Twins @ Kansas City Royals",
-      "start_utc": "2026-07-28T23:40:00Z",
-      "end_utc": "2026-07-29T02:40:00Z",
-      "channels": [
-        "Kansas City Royals",
-        "Minnesota Twins",
-        "MLB Play-by-Play 182",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "Chicago White Sox @ New York Yankees",
       "description": "MLB · Chicago White Sox @ New York Yankees",
       "start_utc": "2026-07-28T23:40:00Z",
@@ -128,6 +90,19 @@
         "New York Yankees",
         "Chicago White Sox",
         "MLB Play-by-Play 183",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Minnesota Twins @ Kansas City Royals",
+      "description": "MLB · Minnesota Twins @ Kansas City Royals",
+      "start_utc": "2026-07-28T23:40:00Z",
+      "end_utc": "2026-07-29T02:40:00Z",
+      "channels": [
+        "Kansas City Royals",
+        "Minnesota Twins",
+        "MLB Play-by-Play 182",
         "MLB Network Radio"
       ]
     },
@@ -159,19 +134,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Athletics @ Boston Red Sox",
-      "description": "MLB · Athletics @ Boston Red Sox",
-      "start_utc": "2026-07-29T01:40:00Z",
-      "end_utc": "2026-07-29T04:40:00Z",
-      "channels": [
-        "Boston Red Sox",
-        "Athletics",
-        "MLB Play-by-Play 186",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "San Diego Padres @ Colorado Rockies",
       "description": "MLB · San Diego Padres @ Colorado Rockies",
       "start_utc": "2026-07-29T01:40:00Z",
@@ -180,6 +142,19 @@
         "Colorado Rockies",
         "San Diego Padres",
         "MLB Play-by-Play 187",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Athletics @ Boston Red Sox",
+      "description": "MLB · Athletics @ Boston Red Sox",
+      "start_utc": "2026-07-29T01:40:00Z",
+      "end_utc": "2026-07-29T04:40:00Z",
+      "channels": [
+        "Boston Red Sox",
+        "Athletics",
+        "MLB Play-by-Play 186",
         "MLB Network Radio"
       ]
     },
