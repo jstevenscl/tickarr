@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-29T13:54:23Z",
+  "generated_at": "2026-07-29T17:08:31Z",
   "events": [
     {
       "slug": "mlb",
@@ -307,16 +307,16 @@
       "slug": "nascar",
       "title": "NCS Pole Qualifying",
       "description": "SiriusXM NASCAR Radio · NCS Pole Qualifying · Richmond Raceway",
-      "start_utc": "2026-08-14T19:30:00Z",
-      "end_utc": "2026-08-14T23:00:00Z",
+      "start_utc": "2026-08-14T19:00:00Z",
+      "end_utc": "2026-08-14T22:30:00Z",
       "channels": [
         "SiriusXM NASCAR Radio"
       ]
     },
     {
       "slug": "nascar",
-      "title": "NASCAR Craftsman Truck Series Race at Richmond",
-      "description": "SiriusXM NASCAR Radio · NASCAR Craftsman Truck Series Race at Richmond · Richmond Raceway",
+      "title": "Black&#x27;s Tire 250",
+      "description": "SiriusXM NASCAR Radio · Black&#x27;s Tire 250 · Richmond Raceway",
       "start_utc": "2026-08-14T23:00:00Z",
       "end_utc": "2026-08-15T02:30:00Z",
       "channels": [
@@ -420,8 +420,8 @@
     },
     {
       "slug": "nascar",
-      "title": "NASCAR Cup Series Race at New Hampshire",
-      "description": "SiriusXM NASCAR Radio · NASCAR Cup Series Race at New Hampshire · New Hampshire Motor Speedway",
+      "title": "Dollar Tree 301",
+      "description": "SiriusXM NASCAR Radio · Dollar Tree 301 · New Hampshire Motor Speedway",
       "start_utc": "2026-08-23T18:00:00Z",
       "end_utc": "2026-08-23T21:30:00Z",
       "channels": [
