@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-31T13:48:58Z",
+  "generated_at": "2026-07-31T17:22:42Z",
   "events": [
     {
       "slug": "pga",
@@ -65,19 +65,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Cleveland Guardians @ Arizona Diamondbacks",
-      "description": "MLB · Cleveland Guardians @ Arizona Diamondbacks",
-      "start_utc": "2026-07-31T23:10:00Z",
-      "end_utc": "2026-08-01T02:10:00Z",
-      "channels": [
-        "Arizona Diamondbacks",
-        "Cleveland Guardians",
-        "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "New York Mets @ Miami Marlins",
       "description": "MLB · New York Mets @ Miami Marlins",
       "start_utc": "2026-07-31T23:10:00Z",
@@ -99,6 +86,19 @@
         "Chicago White Sox",
         "Tampa Bay Rays",
         "MLB Play-by-Play 180",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Cleveland Guardians @ Arizona Diamondbacks",
+      "description": "MLB · Cleveland Guardians @ Arizona Diamondbacks",
+      "start_utc": "2026-07-31T23:10:00Z",
+      "end_utc": "2026-08-01T02:10:00Z",
+      "channels": [
+        "Arizona Diamondbacks",
+        "Cleveland Guardians",
+        "MLB Play-by-Play 179",
         "MLB Network Radio"
       ]
     },
@@ -195,6 +195,20 @@
     },
     {
       "slug": "mlb",
+      "title": "Los Angeles Dodgers @ Boston Red Sox",
+      "description": "MLB · Los Angeles Dodgers @ Boston Red Sox",
+      "start_utc": "2026-08-01T02:10:00Z",
+      "end_utc": "2026-08-01T05:10:00Z",
+      "channels": [
+        "Boston Red Sox",
+        "Los Angeles Dodgers",
+        "MLB Play-by-Play 187",
+        "MLB en Español 871",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
       "title": "Seattle Mariners @ Minnesota Twins",
       "description": "MLB · Seattle Mariners @ Minnesota Twins",
       "start_utc": "2026-08-01T02:10:00Z",
@@ -206,17 +220,17 @@
       ]
     },
     {
-      "slug": "mlb",
-      "title": "Los Angeles Dodgers @ Boston Red Sox",
-      "description": "MLB · Los Angeles Dodgers @ Boston Red Sox",
-      "start_utc": "2026-08-01T02:10:00Z",
-      "end_utc": "2026-08-01T05:10:00Z",
+      "slug": "nfl",
+      "title": "Arizona Cardinals @ Carolina Panthers",
+      "description": "NFL · Arizona Cardinals @ Carolina Panthers",
+      "start_utc": "2026-08-07T00:00:00Z",
+      "end_utc": "2026-08-07T03:00:00Z",
       "channels": [
-        "Boston Red Sox",
-        "Los Angeles Dodgers",
-        "MLB Play-by-Play 187",
-        "MLB en Español 871",
-        "MLB Network Radio"
+        "Carolina Panthers",
+        "Arizona Cardinals",
+        "SiriusXM NFL Radio",
+        "NFL Play-by-Play 225",
+        "NFL Play-by-Play 226"
       ]
     },
     {
