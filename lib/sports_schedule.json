@@ -1,107 +1,6 @@
 {
-  "generated_at": "2026-07-31T20:57:42Z",
+  "generated_at": "2026-08-01T02:10:50Z",
   "events": [
-    {
-      "slug": "pga",
-      "title": "Rocket Classic",
-      "description": "SiriusXM PGA Tour Radio · Rocket Classic · Detroit Golf Club",
-      "start_utc": "2026-07-31T16:00:00Z",
-      "end_utc": "2026-07-31T21:00:00Z",
-      "channels": [
-        "SiriusXM PGA TOUR Radio",
-        "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago Cubs @ New York Yankees",
-      "description": "MLB · Chicago Cubs @ New York Yankees",
-      "start_utc": "2026-07-31T18:20:00Z",
-      "end_utc": "2026-07-31T21:20:00Z",
-      "channels": [
-        "New York Yankees",
-        "Chicago Cubs",
-        "MLB Play-by-Play 175",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cincinnati Reds @ Pittsburgh Pirates",
-      "description": "MLB · Cincinnati Reds @ Pittsburgh Pirates",
-      "start_utc": "2026-07-31T22:10:00Z",
-      "end_utc": "2026-08-01T01:10:00Z",
-      "channels": [
-        "Pittsburgh Pirates",
-        "Cincinnati Reds",
-        "MLB Play-by-Play 176",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Baltimore Orioles @ Philadelphia Phillies",
-      "description": "MLB · Baltimore Orioles @ Philadelphia Phillies",
-      "start_utc": "2026-07-31T23:05:00Z",
-      "end_utc": "2026-08-01T02:05:00Z",
-      "channels": [
-        "Philadelphia Phillies",
-        "Baltimore Orioles",
-        "MLB Play-by-Play 177",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Toronto Blue Jays @ St. Louis Cardinals",
-      "description": "MLB · Toronto Blue Jays @ St. Louis Cardinals",
-      "start_utc": "2026-07-31T23:07:00Z",
-      "end_utc": "2026-08-01T02:07:00Z",
-      "channels": [
-        "St. Louis Cardinals",
-        "Toronto Blue Jays",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Mets @ Miami Marlins",
-      "description": "MLB · New York Mets @ Miami Marlins",
-      "start_utc": "2026-07-31T23:10:00Z",
-      "end_utc": "2026-08-01T02:10:00Z",
-      "channels": [
-        "Miami Marlins",
-        "New York Mets",
-        "MLB Play-by-Play 181",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Tampa Bay Rays @ Chicago White Sox",
-      "description": "MLB · Tampa Bay Rays @ Chicago White Sox",
-      "start_utc": "2026-07-31T23:10:00Z",
-      "end_utc": "2026-08-01T02:10:00Z",
-      "channels": [
-        "Chicago White Sox",
-        "Tampa Bay Rays",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cleveland Guardians @ Arizona Diamondbacks",
-      "description": "MLB · Cleveland Guardians @ Arizona Diamondbacks",
-      "start_utc": "2026-07-31T23:10:00Z",
-      "end_utc": "2026-08-01T02:10:00Z",
-      "channels": [
-        "Arizona Diamondbacks",
-        "Cleveland Guardians",
-        "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Atlanta Braves @ Washington Nationals",
@@ -113,18 +12,6 @@
         "Atlanta Braves",
         "MLB Play-by-Play 178",
         "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "North Carolina Courage @ Orlando Pride",
-      "description": "SOCCER · North Carolina Courage @ Orlando Pride",
-      "start_utc": "2026-08-01T00:00:00Z",
-      "end_utc": "2026-08-01T02:00:00Z",
-      "channels": [
-        "Orlando Pride",
-        "North Carolina Courage",
-        "SiriusXM FC"
       ]
     },
     {
@@ -195,6 +82,18 @@
     },
     {
       "slug": "mlb",
+      "title": "Seattle Mariners @ Minnesota Twins",
+      "description": "MLB · Seattle Mariners @ Minnesota Twins",
+      "start_utc": "2026-08-01T02:10:00Z",
+      "end_utc": "2026-08-01T05:10:00Z",
+      "channels": [
+        "Minnesota Twins",
+        "Seattle Mariners",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
       "title": "Los Angeles Dodgers @ Boston Red Sox",
       "description": "MLB · Los Angeles Dodgers @ Boston Red Sox",
       "start_utc": "2026-08-01T02:10:00Z",
@@ -208,15 +107,124 @@
       ]
     },
     {
-      "slug": "mlb",
-      "title": "Seattle Mariners @ Minnesota Twins",
-      "description": "MLB · Seattle Mariners @ Minnesota Twins",
-      "start_utc": "2026-08-01T02:10:00Z",
-      "end_utc": "2026-08-01T05:10:00Z",
+      "slug": "pga",
+      "title": "Rocket Classic",
+      "description": "SiriusXM PGA Tour Radio · Rocket Classic · Detroit Golf Club",
+      "start_utc": "2026-08-01T17:00:00Z",
+      "end_utc": "2026-08-01T22:00:00Z",
       "channels": [
-        "Minnesota Twins",
-        "Seattle Mariners",
-        "MLB Network Radio"
+        "SiriusXM PGA TOUR Radio",
+        "SiriusXM PGA Tour Radio"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Inter Miami CF @ Columbus Crew SC",
+      "description": "SOCCER · Inter Miami CF @ Columbus Crew SC",
+      "start_utc": "2026-08-01T23:30:00Z",
+      "end_utc": "2026-08-02T01:30:00Z",
+      "channels": [
+        "Columbus Crew SC",
+        "Inter Miami CF",
+        "Soccer en Español",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "LA Galaxy @ FC Dallas",
+      "description": "SOCCER · LA Galaxy @ FC Dallas",
+      "start_utc": "2026-08-02T02:30:00Z",
+      "end_utc": "2026-08-02T04:30:00Z",
+      "channels": [
+        "FC Dallas",
+        "LA Galaxy",
+        "Soccer en Español",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "pga",
+      "title": "Rocket Classic",
+      "description": "SiriusXM PGA Tour Radio · Rocket Classic · Detroit Golf Club",
+      "start_utc": "2026-08-02T17:00:00Z",
+      "end_utc": "2026-08-02T22:00:00Z",
+      "channels": [
+        "SiriusXM PGA TOUR Radio",
+        "SiriusXM PGA Tour Radio"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Charlotte FC @ Pumas UNAM",
+      "description": "SOCCER · Charlotte FC @ Pumas UNAM",
+      "start_utc": "2026-08-05T00:00:00Z",
+      "end_utc": "2026-08-05T02:00:00Z",
+      "channels": [
+        "Pumas UNAM",
+        "Charlotte FC",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Tigres UANL @ Real Salt Lake",
+      "description": "SOCCER · Tigres UANL @ Real Salt Lake",
+      "start_utc": "2026-08-05T02:00:00Z",
+      "end_utc": "2026-08-05T04:00:00Z",
+      "channels": [
+        "Real Salt Lake",
+        "Tigres UANL",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Inter Miami @ Atletico San Luis",
+      "description": "SOCCER · Inter Miami @ Atletico San Luis",
+      "start_utc": "2026-08-05T23:30:00Z",
+      "end_utc": "2026-08-06T01:30:00Z",
+      "channels": [
+        "Atletico San Luis",
+        "Inter Miami",
+        "Soccer en Español",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "LAFC @ Guadalajara",
+      "description": "SOCCER · LAFC @ Guadalajara",
+      "start_utc": "2026-08-06T02:30:00Z",
+      "end_utc": "2026-08-06T04:30:00Z",
+      "channels": [
+        "Guadalajara",
+        "LAFC",
+        "Soccer en Español",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "pga",
+      "title": "Wyndham Championship",
+      "description": "SiriusXM PGA Tour Radio · Wyndham Championship · Sedgefield Country Club",
+      "start_utc": "2026-08-06T16:00:00Z",
+      "end_utc": "2026-08-06T21:00:00Z",
+      "channels": [
+        "SiriusXM PGA TOUR Radio",
+        "SiriusXM PGA Tour Radio"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "New York City FC @ Santos Laguna",
+      "description": "SOCCER · New York City FC @ Santos Laguna",
+      "start_utc": "2026-08-06T23:30:00Z",
+      "end_utc": "2026-08-07T01:30:00Z",
+      "channels": [
+        "Santos Laguna",
+        "New York City FC",
+        "SiriusXM FC"
       ]
     },
     {
@@ -231,6 +239,64 @@
         "SiriusXM NFL Radio",
         "NFL Play-by-Play 225",
         "NFL Play-by-Play 226"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Club America @ San Diego FC",
+      "description": "SOCCER · Club America @ San Diego FC",
+      "start_utc": "2026-08-07T02:00:00Z",
+      "end_utc": "2026-08-07T04:00:00Z",
+      "channels": [
+        "San Diego FC",
+        "Club America",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "pga",
+      "title": "Wyndham Championship",
+      "description": "SiriusXM PGA Tour Radio · Wyndham Championship · Sedgefield Country Club",
+      "start_utc": "2026-08-07T16:00:00Z",
+      "end_utc": "2026-08-07T21:00:00Z",
+      "channels": [
+        "SiriusXM PGA TOUR Radio",
+        "SiriusXM PGA Tour Radio"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "NJ/NY Gotham FC @ San Diego Wave FC",
+      "description": "SOCCER · NJ/NY Gotham FC @ San Diego Wave FC",
+      "start_utc": "2026-08-08T00:00:00Z",
+      "end_utc": "2026-08-08T02:00:00Z",
+      "channels": [
+        "San Diego Wave FC",
+        "NJ/NY Gotham FC",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Vancouver Whitecaps @ FC Juarez",
+      "description": "SOCCER · Vancouver Whitecaps @ FC Juarez",
+      "start_utc": "2026-08-08T02:30:00Z",
+      "end_utc": "2026-08-08T04:30:00Z",
+      "channels": [
+        "FC Juarez",
+        "Vancouver Whitecaps",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "pga",
+      "title": "Wyndham Championship",
+      "description": "SiriusXM PGA Tour Radio · Wyndham Championship · Sedgefield Country Club",
+      "start_utc": "2026-08-08T17:00:00Z",
+      "end_utc": "2026-08-08T22:00:00Z",
+      "channels": [
+        "SiriusXM PGA TOUR Radio",
+        "SiriusXM PGA Tour Radio"
       ]
     },
     {
@@ -251,6 +317,42 @@
       "end_utc": "2026-08-09T00:00:00Z",
       "channels": [
         "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Inter Miami @ Monterrey",
+      "description": "SOCCER · Inter Miami @ Monterrey",
+      "start_utc": "2026-08-09T00:00:00Z",
+      "end_utc": "2026-08-09T02:00:00Z",
+      "channels": [
+        "Monterrey",
+        "Inter Miami",
+        "Soccer en Español",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Real Salt Lake @ Atlante",
+      "description": "SOCCER · Real Salt Lake @ Atlante",
+      "start_utc": "2026-08-09T02:00:00Z",
+      "end_utc": "2026-08-09T04:00:00Z",
+      "channels": [
+        "Atlante",
+        "Real Salt Lake",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "pga",
+      "title": "Wyndham Championship",
+      "description": "SiriusXM PGA Tour Radio · Wyndham Championship · Sedgefield Country Club",
+      "start_utc": "2026-08-09T17:00:00Z",
+      "end_utc": "2026-08-09T22:00:00Z",
+      "channels": [
+        "SiriusXM PGA TOUR Radio",
+        "SiriusXM PGA Tour Radio"
       ]
     },
     {
@@ -281,6 +383,42 @@
       "end_utc": "2026-08-09T22:00:00Z",
       "channels": [
         "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Indy Eleven @ Hartford Athletic",
+      "description": "SOCCER · Indy Eleven @ Hartford Athletic",
+      "start_utc": "2026-08-09T21:00:00Z",
+      "end_utc": "2026-08-09T23:00:00Z",
+      "channels": [
+        "Hartford Athletic",
+        "Indy Eleven",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Chicago Fire @ Santos Laguna",
+      "description": "SOCCER · Chicago Fire @ Santos Laguna",
+      "start_utc": "2026-08-10T00:00:00Z",
+      "end_utc": "2026-08-10T02:00:00Z",
+      "channels": [
+        "Santos Laguna",
+        "Chicago Fire",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Club America @ Portland Timbers",
+      "description": "SOCCER · Club America @ Portland Timbers",
+      "start_utc": "2026-08-10T02:25:00Z",
+      "end_utc": "2026-08-10T04:25:00Z",
+      "channels": [
+        "Portland Timbers",
+        "Club America",
+        "SiriusXM FC"
       ]
     },
     {
