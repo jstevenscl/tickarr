@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-04T13:55:09Z",
+  "generated_at": "2026-08-04T17:38:33Z",
   "events": [
     {
       "slug": "mlb",
@@ -119,13 +119,13 @@
     },
     {
       "slug": "soccer",
-      "title": "Charlotte FC @ Pumas UNAM",
-      "description": "SOCCER · Charlotte FC @ Pumas UNAM",
-      "start_utc": "2026-08-05T00:00:00Z",
-      "end_utc": "2026-08-05T02:00:00Z",
+      "title": "FC Cincinnati @ Pachuca",
+      "description": "SOCCER · FC Cincinnati @ Pachuca",
+      "start_utc": "2026-08-04T23:55:00Z",
+      "end_utc": "2026-08-05T01:55:00Z",
       "channels": [
-        "Pumas UNAM",
-        "Charlotte FC",
+        "Pachuca",
+        "FC Cincinnati",
         "SiriusXM FC"
       ]
     },
@@ -286,13 +286,13 @@
     },
     {
       "slug": "soccer",
-      "title": "Club America @ San Diego FC",
-      "description": "SOCCER · Club America @ San Diego FC",
-      "start_utc": "2026-08-07T02:00:00Z",
-      "end_utc": "2026-08-07T04:00:00Z",
+      "title": "Portland Timbers @ Puebla",
+      "description": "SOCCER · Portland Timbers @ Puebla",
+      "start_utc": "2026-08-07T02:30:00Z",
+      "end_utc": "2026-08-07T04:30:00Z",
       "channels": [
-        "San Diego FC",
-        "Club America",
+        "Puebla",
+        "Portland Timbers",
         "SiriusXM FC"
       ]
     },
@@ -316,18 +316,6 @@
       "channels": [
         "San Diego Wave FC",
         "NJ/NY Gotham FC",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Vancouver Whitecaps @ FC Juarez",
-      "description": "SOCCER · Vancouver Whitecaps @ FC Juarez",
-      "start_utc": "2026-08-08T02:30:00Z",
-      "end_utc": "2026-08-08T04:30:00Z",
-      "channels": [
-        "FC Juarez",
-        "Vancouver Whitecaps",
         "SiriusXM FC"
       ]
     },
@@ -437,18 +425,6 @@
       "channels": [
         "Hartford Athletic",
         "Indy Eleven",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Chicago Fire @ Santos Laguna",
-      "description": "SOCCER · Chicago Fire @ Santos Laguna",
-      "start_utc": "2026-08-10T00:00:00Z",
-      "end_utc": "2026-08-10T02:00:00Z",
-      "channels": [
-        "Santos Laguna",
-        "Chicago Fire",
         "SiriusXM FC"
       ]
     },
