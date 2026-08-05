@@ -1,80 +1,18 @@
 {
-  "generated_at": "2026-08-05T01:54:50Z",
+  "generated_at": "2026-08-05T06:21:42Z",
   "events": [
     {
       "slug": "mlb",
-      "title": "New York Yankees @ St. Louis Cardinals",
-      "description": "MLB · New York Yankees @ St. Louis Cardinals",
-      "start_utc": "2026-08-04T23:05:00Z",
-      "end_utc": "2026-08-05T02:05:00Z",
+      "title": "Chicago Cubs @ Los Angeles Dodgers",
+      "description": "MLB · Chicago Cubs @ Los Angeles Dodgers",
+      "start_utc": "2026-08-05T00:05:00Z",
+      "end_utc": "2026-08-05T03:05:00Z",
       "channels": [
-        "St. Louis Cardinals",
-        "New York Yankees",
+        "Los Angeles Dodgers",
+        "Chicago Cubs",
+        "MLB Play-by-Play 184",
+        "MLB en Español 870",
         "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Boston Red Sox @ Chicago White Sox",
-      "description": "MLB · Boston Red Sox @ Chicago White Sox",
-      "start_utc": "2026-08-04T23:10:00Z",
-      "end_utc": "2026-08-05T02:10:00Z",
-      "channels": [
-        "Chicago White Sox",
-        "Boston Red Sox",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Atlanta Braves @ Miami Marlins",
-      "description": "MLB · Atlanta Braves @ Miami Marlins",
-      "start_utc": "2026-08-04T23:15:00Z",
-      "end_utc": "2026-08-05T02:15:00Z",
-      "channels": [
-        "Miami Marlins",
-        "Atlanta Braves",
-        "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Kansas City Royals @ Minnesota Twins",
-      "description": "MLB · Kansas City Royals @ Minnesota Twins",
-      "start_utc": "2026-08-04T23:40:00Z",
-      "end_utc": "2026-08-05T02:40:00Z",
-      "channels": [
-        "Minnesota Twins",
-        "Kansas City Royals",
-        "MLB Play-by-Play 182",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Milwaukee Brewers @ Pittsburgh Pirates",
-      "description": "MLB · Milwaukee Brewers @ Pittsburgh Pirates",
-      "start_utc": "2026-08-04T23:40:00Z",
-      "end_utc": "2026-08-05T02:40:00Z",
-      "channels": [
-        "Pittsburgh Pirates",
-        "Milwaukee Brewers",
-        "MLB Play-by-Play 181",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "FC Cincinnati @ Pachuca",
-      "description": "SOCCER · FC Cincinnati @ Pachuca",
-      "start_utc": "2026-08-04T23:55:00Z",
-      "end_utc": "2026-08-05T01:55:00Z",
-      "channels": [
-        "Pachuca",
-        "FC Cincinnati",
-        "SiriusXM FC"
       ]
     },
     {
@@ -88,20 +26,6 @@
         "Texas Rangers",
         "MLB Play-by-Play 185",
         "MLB en Español 871",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago Cubs @ Los Angeles Dodgers",
-      "description": "MLB · Chicago Cubs @ Los Angeles Dodgers",
-      "start_utc": "2026-08-05T00:05:00Z",
-      "end_utc": "2026-08-05T03:05:00Z",
-      "channels": [
-        "Los Angeles Dodgers",
-        "Chicago Cubs",
-        "MLB Play-by-Play 184",
-        "MLB en Español 870",
         "MLB Network Radio"
       ]
     },
