@@ -1,17 +1,6 @@
 {
-  "generated_at": "2026-08-07T20:33:40Z",
+  "generated_at": "2026-08-08T01:06:59Z",
   "events": [
-    {
-      "slug": "pga",
-      "title": "Wyndham Championship",
-      "description": "SiriusXM PGA Tour Radio · Wyndham Championship · Sedgefield Country Club",
-      "start_utc": "2026-08-07T16:00:00Z",
-      "end_utc": "2026-08-07T21:00:00Z",
-      "channels": [
-        "SiriusXM PGA TOUR Radio",
-        "SiriusXM PGA Tour Radio"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Philadelphia Phillies @ Toronto Blue Jays",
