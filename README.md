@@ -1,8 +1,25 @@
 # Tickarr
 
-![Version](https://img.shields.io/badge/version-0.3.03-blue)
+![Version](https://img.shields.io/badge/version-0.4.0-blue)
 
 A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects dynamic text overlays into IPTV channels via FFmpeg. Tickarr clones the channel's existing stream profile, injects overlay parameters, and restores the original profile on disable — the source profile is never modified.
+
+**On Dispatcharr v0.29.0+**, Tickarr uses the new [`{channelId}` stream profile token](https://github.com/Dispatcharr/Dispatcharr/issues/1252) to share **one** stream profile across every channel using the same overlay type and base profile, instead of cloning one profile per channel. Older Dispatcharr versions automatically fall back to the previous one-clone-per-channel behavior — Tickarr detects which mode it's running in and there's nothing to configure either way.
+
+---
+
+## Screenshots
+
+<table>
+<tr>
+<td><img src="docs/screenshots/actions-nowplaying.jpg" alt="Now Playing actions" width="420"></td>
+<td><img src="docs/screenshots/actions-manage.jpg" alt="Manage actions, including Migrate to Shared Profiles" width="420"></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/shared-profile-detail.jpg" alt="A shared stream profile using the {channelId} token" width="420"></td>
+<td><img src="docs/screenshots/nowplaying-live-overlay.jpg" alt="Now Playing overlay rendering live on a channel" width="420"></td>
+</tr>
+</table>
 
 ---
 
@@ -13,7 +30,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Displays artist, song title, and channel name as a live-updating overlay
 - Audio-only channels receive an injected 1280x720 black video background — **the base profile must be genuinely audio-only (no `-c:v`/`-vcodec` flag, not even `-c:v copy`)** or the overlay will never render. See [Your base profile must be genuinely audio-only](docs/USERGUIDE.md#your-base-profile-must-be-genuinely-audio-only) in the User Guide.
 - On-Demand mode (default): overlay activates when a viewer tunes in, restores to passthrough when idle
-- Always On mode: overlay profile assigned permanently at enable time — no restart on connect, recommended for players sensitive to mid-stream restarts (e.g. Plex). **Clones one stream profile per enabled channel** (this is a current Dispatcharr limitation, not a bug — see [Always On and stream profile count](docs/USERGUIDE.md#always-on-and-stream-profile-count) in the User Guide). No performance impact either way — FFmpeg only runs while a channel is actively connected, regardless of how many profiles exist.
+- Always On mode: overlay profile assigned permanently at enable time — no restart on connect, recommended for players sensitive to mid-stream restarts (e.g. Plex). On Dispatcharr v0.29.0+, every channel sharing the same base profile uses **one shared stream profile** regardless of lineup size. On older Dispatcharr versions, Tickarr falls back to **one cloned stream profile per enabled channel** — see [Shared vs. per-channel stream profiles](docs/USERGUIDE.md#shared-vs-per-channel-stream-profiles) in the User Guide. No performance impact either way — FFmpeg only runs while a channel is actively connected, regardless of how many profiles exist.
 
 **Satellite Radio EPG** (Fill EPG action in Satellite Radio Channel Setup)
 - Sports channels: real game-by-game listings (matchups, races, events), refreshed every 4 hours
@@ -90,7 +107,7 @@ Your channel runs 100% normally at all times. Tickarr sits quietly in the backgr
 
 ## Requirements
 
-- Dispatcharr v0.27.1 or later
+- Dispatcharr v0.27.1 or later. **v0.29.0 or later is recommended** — Tickarr automatically uses a single shared stream profile per overlay type instead of cloning one per channel (see [Screenshots](#screenshots) above). Upgrading an existing install from an older Dispatcharr version to v0.29.0+ picks this up automatically the next time you enable a ticker; run **Actions → Migrate to Shared Profiles** to move already-enabled channels over immediately without waiting.
 - Redis (used by Dispatcharr — standard in all installs)
 - FFmpeg in the Dispatcharr container (standard in all installs)
 - Channels must have an FFmpeg-based stream profile assigned — **Proxy** and **Redirect** profiles bypass FFmpeg and cannot be used with any Tickarr overlay. See [Before You Start](docs/USERGUIDE.md#before-you-start--universal-requirements) in the User Guide if affected channels are being skipped.

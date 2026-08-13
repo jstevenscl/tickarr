@@ -136,11 +136,19 @@ In Tickarr settings, scroll to the **Now Playing** section (it is the first sect
    - **On-Demand (default, recommended)** — No profile is cloned until a viewer tunes in. The overlay activates on connect and restores to passthrough after about 30 seconds with no viewers. Saves a permanent profile per channel, but every connect requires Tickarr to swap profiles and restart the stream — most players handle this fine, but some (Plex is a known example) can be sensitive to a mid-connect restart.
    - **Always On** — The overlay profile is cloned and assigned permanently the moment you enable Now Playing, before anyone connects. There is no restart on connect — whoever tunes in gets the overlay from the very first frame. Recommended if you're seeing playback issues on a particular player when a channel is first opened. This creates one permanent cloned stream profile per enabled channel; unwatched channels still cost nothing (FFmpeg only runs while something is actually connected, regardless of trigger mode).
 
-### Always On and stream profile count
+### Shared vs. per-channel stream profiles
 
-If you enable Always On across a large satellite radio lineup (a full SiriusXM channel list is 400+ channels), you will see one cloned stream profile per channel in Dispatcharr's Stream Profiles list — for example, 424 channels means 424 cloned profiles. **This is expected and has no performance impact.** FFmpeg only runs while a channel is actively connected regardless of how many profiles exist; unwatched channels cost nothing whether they have a cloned profile sitting in the database or not. This was directly verified: bulk-enabling Always On across 424 channels completed in under 2 seconds with zero errors, and server load/CPU/memory were unaffected both during the operation and afterward.
+**On Dispatcharr v0.29.0 and later**, Tickarr uses the [`{channelId}` stream profile substitution token](https://github.com/Dispatcharr/Dispatcharr/issues/1252) (shipped in v0.29.0, closing the feature request Tickarr had been waiting on) to point every channel at **one shared stream profile per overlay type** instead of cloning a separate profile per channel. Enable Always On across a full 400+ channel satellite radio lineup and you'll see exactly one new profile appear in Dispatcharr's Stream Profiles list — named something like `Tickarr — <base profile> [shared:nowplaying:<hash>]` — shared by every channel using that same base profile. If some channels in your lineup use a different base stream profile than others, you'll see one shared profile per distinct base profile in use, not one per channel.
 
-The reason it's one profile per channel at all is a current Dispatcharr limitation: stream profiles support `{streamUrl}` and `{userAgent}` substitution at stream-start, but not a per-channel identifier, so Tickarr has to bake each channel's ID into its own cloned profile to point the overlay at the right text file. An open Dispatcharr feature request — [`{channelId}` substitution token](https://github.com/Dispatcharr/Dispatcharr/issues/1252) — would let Tickarr use a **single shared profile** for every Now Playing channel instead, regardless of trigger mode. If and when that request is picked up by the Dispatcharr team, Tickarr will be updated immediately to take advantage of it and permanently eliminate the per-channel profile clones.
+**On Dispatcharr versions before v0.29.0**, Tickarr automatically falls back to the previous behavior: one cloned stream profile per enabled channel — for example, 424 channels means 424 cloned profiles. **This has no performance impact either way.** FFmpeg only runs while a channel is actively connected regardless of how many profiles exist; unwatched channels cost nothing whether they have a cloned profile sitting in the database or not. This was directly verified on both paths: bulk-enabling Always On across 424 channels completed in under 2 seconds with zero errors, and server load/CPU/memory were unaffected both during the operation and afterward.
+
+Tickarr detects which mode to use automatically — there is nothing to configure. Run **Actions → Check Stream Profile Capabilities** at any time to see which mode your Dispatcharr install is currently using and why.
+
+![A shared stream profile — one entry in Dispatcharr's Stream Profiles list, used by every channel with the same base profile, with the {channelId} token resolved per-channel at stream time](screenshots/shared-profile-detail.jpg)
+
+#### Upgrading an existing install to shared profiles
+
+If you enabled Tickarr on a Dispatcharr version older than v0.29.0 and later upgrade Dispatcharr to v0.29.0+, your already-enabled channels keep using their existing per-channel clones until something naturally re-clones them (a disable/re-enable cycle, or — for On-Demand mode — the next time a channel goes idle and a viewer reconnects). To move already-enabled channels onto shared profiles immediately instead of waiting, run **Actions → Migrate to Shared Profiles**. It's safe to run more than once — channels already on a shared profile are skipped — and it reassigns each channel to the correct shared profile (creating one if needed) before deleting the old per-channel clone, so no channel is ever left without a working profile mid-migration. EAS and Weather Canada channels aren't touched by this action: their overlay profiles only exist while an alert is actively firing and are already rebuilt from scratch on every new alert, so they migrate to shared profiles automatically the next time an alert fires — nothing to run manually there.
 
 ---
 
@@ -159,6 +167,8 @@ The action result will confirm how many channels were enabled and how many were 
 - Run **Actions → View Active Tickers** to see a list of all enabled channels grouped by type.
 - Tune into one of the enabled channels. The overlay appears within 15 seconds of the first viewer connecting (one poll interval).
 - After you stop watching and the channel goes idle for 30 seconds, the overlay is silently removed and the channel returns to passthrough. It reactivates the next time someone tunes in.
+
+![Now Playing overlay rendering live on a channel](screenshots/nowplaying-live-overlay.jpg)
 
 ---
 
@@ -611,6 +621,13 @@ These settings apply to both NWS and Weather Canada alerts.
 
 The Actions panel displays sections in the same order as the Settings panel: **Now Playing → Channel Setup → EAS/JAS Weather Alerts → Custom Text → Sports Ticker → Manage**.
 
+<table>
+<tr>
+<td><img src="screenshots/actions-nowplaying.jpg" alt="Now Playing and Channel Setup actions" width="420"></td>
+<td><img src="screenshots/actions-manage.jpg" alt="Manage actions, including Migrate to Shared Profiles and Check Stream Profile Capabilities" width="420"></td>
+</tr>
+</table>
+
 ### Action Button Color Key
 
 Each section has its own button color so you can identify which overlay type an action belongs to at a glance. Within each color, **filled** buttons activate or update and **outline** buttons remove, restore, or run a secondary utility.
@@ -686,7 +703,9 @@ Each section has its own button color so you can identify which overlay type an 
 | View Active Tickers | Lists all channels that have a Tickarr overlay registered, grouped by type. Shows which channels have active overlay profiles vs. passthrough. |
 | Refresh Channel Data | Reloads the channel and group list from Dispatcharr. Run this if a channel or group is missing from a dropdown. |
 | Disable All Tickers | Disables every active Tickarr overlay across all channels. |
-| Clean Orphaned Profiles | Removes cloned stream profiles left behind when channels were deleted while a Tickarr overlay was active. |
+| Clean Orphaned Profiles | Removes cloned stream profiles left behind when channels were deleted while a Tickarr overlay was active. Also reaps shared profiles once no channel references them anymore. |
+| Migrate to Shared Profiles | On Dispatcharr v0.29.0+, moves already-enabled channels off their old per-channel cloned profile onto a shared one. Safe to run repeatedly. See [Upgrading an existing install to shared profiles](#upgrading-an-existing-install-to-shared-profiles). |
+| Check Stream Profile Capabilities | Reports whether this Dispatcharr install supports the `{channelId}` token (v0.29.0+) and therefore which profile mode Tickarr is using — shared or per-channel. |
 | Redis Diagnostics | Reports whether Redis is reachable and how many channels have active viewers detected. |
 | Reload Poller | Restarts background polling threads without restarting Dispatcharr. Use if overlays stop updating but streams are still live. |
 | Restart Dispatcharr | Restarts the Dispatcharr container. Required after every install or update. |
