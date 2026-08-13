@@ -1,148 +1,6 @@
 {
-  "generated_at": "2026-08-13T01:21:48Z",
+  "generated_at": "2026-08-13T05:29:08Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Miami Marlins @ Pittsburgh Pirates",
-      "description": "MLB · Miami Marlins @ Pittsburgh Pirates",
-      "start_utc": "2026-08-12T22:40:00Z",
-      "end_utc": "2026-08-13T01:40:00Z",
-      "channels": [
-        "Pittsburgh Pirates",
-        "Miami Marlins",
-        "MLB Play-by-Play 182",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Detroit Tigers @ Cleveland Guardians",
-      "description": "MLB · Detroit Tigers @ Cleveland Guardians",
-      "start_utc": "2026-08-12T22:40:00Z",
-      "end_utc": "2026-08-13T01:40:00Z",
-      "channels": [
-        "Cleveland Guardians",
-        "Detroit Tigers",
-        "MLB Play-by-Play 181",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Washington Nationals @ Chicago Cubs",
-      "description": "MLB · Washington Nationals @ Chicago Cubs",
-      "start_utc": "2026-08-12T22:45:00Z",
-      "end_utc": "2026-08-13T01:45:00Z",
-      "channels": [
-        "Chicago Cubs",
-        "Washington Nationals",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Yankees @ Seattle Mariners",
-      "description": "MLB · New York Yankees @ Seattle Mariners",
-      "start_utc": "2026-08-12T23:05:00Z",
-      "end_utc": "2026-08-13T02:05:00Z",
-      "channels": [
-        "Seattle Mariners",
-        "New York Yankees",
-        "MLB Play-by-Play 184",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Toronto Blue Jays @ Boston Red Sox",
-      "description": "MLB · Toronto Blue Jays @ Boston Red Sox",
-      "start_utc": "2026-08-12T23:07:00Z",
-      "end_utc": "2026-08-13T02:07:00Z",
-      "channels": [
-        "Boston Red Sox",
-        "Toronto Blue Jays",
-        "MLB Play-by-Play 183",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Atlanta Braves @ New York Mets",
-      "description": "MLB · Atlanta Braves @ New York Mets",
-      "start_utc": "2026-08-12T23:15:00Z",
-      "end_utc": "2026-08-13T02:15:00Z",
-      "channels": [
-        "New York Mets",
-        "Atlanta Braves",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Inter Miami @ Leon",
-      "description": "SOCCER · Inter Miami @ Leon",
-      "start_utc": "2026-08-12T23:30:00Z",
-      "end_utc": "2026-08-13T01:30:00Z",
-      "channels": [
-        "Leon",
-        "Inter Miami",
-        "Soccer en Español",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago White Sox @ Cincinnati Reds",
-      "description": "MLB · Chicago White Sox @ Cincinnati Reds",
-      "start_utc": "2026-08-12T23:40:00Z",
-      "end_utc": "2026-08-13T02:40:00Z",
-      "channels": [
-        "Cincinnati Reds",
-        "Chicago White Sox",
-        "MLB Play-by-Play 175",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Los Angeles Angels @ Texas Rangers",
-      "description": "MLB · Los Angeles Angels @ Texas Rangers",
-      "start_utc": "2026-08-13T02:10:00Z",
-      "end_utc": "2026-08-13T05:10:00Z",
-      "channels": [
-        "Texas Rangers",
-        "Los Angeles Angels",
-        "MLB Play-by-Play 176",
-        "MLB en Español 870",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Los Angeles Dodgers @ Kansas City Royals",
-      "description": "MLB · Los Angeles Dodgers @ Kansas City Royals",
-      "start_utc": "2026-08-13T02:10:00Z",
-      "end_utc": "2026-08-13T05:10:00Z",
-      "channels": [
-        "Kansas City Royals",
-        "Los Angeles Dodgers",
-        "MLB Network Radio",
-        "MLB en Español 871"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "LAFC @ Queretaro",
-      "description": "SOCCER · LAFC @ Queretaro",
-      "start_utc": "2026-08-13T02:30:00Z",
-      "end_utc": "2026-08-13T04:30:00Z",
-      "channels": [
-        "Queretaro",
-        "LAFC",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "pga",
       "title": "FedEx St. Jude Championship",
@@ -152,6 +10,84 @@
       "channels": [
         "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Detroit Tigers @ Cleveland Guardians",
+      "description": "MLB · Detroit Tigers @ Cleveland Guardians",
+      "start_utc": "2026-08-13T17:10:00Z",
+      "end_utc": "2026-08-13T20:10:00Z",
+      "channels": [
+        "Cleveland Guardians",
+        "Detroit Tigers",
+        "MLB Play-by-Play 175",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Miami Marlins @ Pittsburgh Pirates",
+      "description": "MLB · Miami Marlins @ Pittsburgh Pirates",
+      "start_utc": "2026-08-13T17:10:00Z",
+      "end_utc": "2026-08-13T20:10:00Z",
+      "channels": [
+        "Pittsburgh Pirates",
+        "Miami Marlins",
+        "MLB Play-by-Play 176",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "New York Yankees @ Seattle Mariners",
+      "description": "MLB · New York Yankees @ Seattle Mariners",
+      "start_utc": "2026-08-13T17:35:00Z",
+      "end_utc": "2026-08-13T20:35:00Z",
+      "channels": [
+        "Seattle Mariners",
+        "New York Yankees",
+        "MLB Play-by-Play 177",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Chicago White Sox @ Cincinnati Reds",
+      "description": "MLB · Chicago White Sox @ Cincinnati Reds",
+      "start_utc": "2026-08-13T18:10:00Z",
+      "end_utc": "2026-08-13T21:10:00Z",
+      "channels": [
+        "Cincinnati Reds",
+        "Chicago White Sox",
+        "MLB Play-by-Play 178",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Toronto Blue Jays @ Boston Red Sox",
+      "description": "MLB · Toronto Blue Jays @ Boston Red Sox",
+      "start_utc": "2026-08-13T19:07:00Z",
+      "end_utc": "2026-08-13T22:07:00Z",
+      "channels": [
+        "Boston Red Sox",
+        "Toronto Blue Jays",
+        "MLB Play-by-Play 179",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Washington Nationals @ Chicago Cubs",
+      "description": "MLB · Washington Nationals @ Chicago Cubs",
+      "start_utc": "2026-08-13T20:05:00Z",
+      "end_utc": "2026-08-13T23:05:00Z",
+      "channels": [
+        "Chicago Cubs",
+        "Washington Nationals",
+        "MLB Play-by-Play 180",
+        "MLB Network Radio"
       ]
     },
     {
@@ -191,6 +127,18 @@
         "Santos Laguna",
         "Philadelphia Union",
         "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Minnesota Twins @ Philadelphia Phillies",
+      "description": "MLB · Minnesota Twins @ Philadelphia Phillies",
+      "start_utc": "2026-08-13T23:30:00Z",
+      "end_utc": "2026-08-14T02:30:00Z",
+      "channels": [
+        "Philadelphia Phillies",
+        "Minnesota Twins",
+        "MLB Network Radio"
       ]
     },
     {
@@ -247,6 +195,34 @@
         "NFL Play-by-Play 229",
         "Satellite Radio Channel 385",
         "SiriusXM NFL Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Los Angeles Angels @ Texas Rangers",
+      "description": "MLB · Los Angeles Angels @ Texas Rangers",
+      "start_utc": "2026-08-14T02:07:00Z",
+      "end_utc": "2026-08-14T05:07:00Z",
+      "channels": [
+        "Texas Rangers",
+        "Los Angeles Angels",
+        "MLB Play-by-Play 175",
+        "MLB en Español 870",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Los Angeles Dodgers @ Milwaukee Brewers",
+      "description": "MLB · Los Angeles Dodgers @ Milwaukee Brewers",
+      "start_utc": "2026-08-14T02:10:00Z",
+      "end_utc": "2026-08-14T05:10:00Z",
+      "channels": [
+        "Milwaukee Brewers",
+        "Los Angeles Dodgers",
+        "MLB Play-by-Play 176",
+        "MLB en Español 871",
+        "MLB Network Radio"
       ]
     },
     {
