@@ -1,3 +1,5 @@
+import hashlib
+import inspect
 import json
 import logging
 import os
@@ -344,7 +346,91 @@ def _strip_dangerous_flags(channel_name, params):
     return params, removed
 
 
+# Cached tri-state: None = not yet checked this process.
+_CHANNEL_ID_TOKEN_SUPPORTED = None
+
+
+def _supports_channel_id_token():
+    """Detect whether this Dispatcharr install's StreamProfile.build_command() accepts
+    a channel_id argument — added for the {channelId} substitution token (Dispatcharr
+    issue #1252, shipped v0.29.0). Checked once per process and cached: Dispatcharr's
+    version can't change without a restart, which reloads Tickarr's plugin code anyway.
+    Fails closed (False) on any inspection error so an ambiguous result never risks
+    breaking the existing per-channel-clone behavior.
+    """
+    global _CHANNEL_ID_TOKEN_SUPPORTED
+    if _CHANNEL_ID_TOKEN_SUPPORTED is not None:
+        return _CHANNEL_ID_TOKEN_SUPPORTED
+    try:
+        from core.models import StreamProfile
+        sig = inspect.signature(StreamProfile.build_command)
+        _CHANNEL_ID_TOKEN_SUPPORTED = "channel_id" in sig.parameters
+    except Exception as e:
+        logger.warning(f"tickarr: could not determine {{channelId}} token support, assuming unsupported — {e}")
+        _CHANNEL_ID_TOKEN_SUPPORTED = False
+    return _CHANNEL_ID_TOKEN_SUPPORTED
+
+
+def _config_sig(*values):
+    """Short deterministic signature for a tuple of filter-affecting config values —
+    used as the dedup key for shared stream profiles (see _get_or_create_shared_profile).
+    """
+    raw = "|".join("" if v is None else str(v) for v in values)
+    return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:10]
+
+
+def _get_or_create_shared_profile(overlay_type, original_profile, channel_name, config_sig, build_filter_fn, post_process_fn=None):
+    """Get-or-create ONE StreamProfile shared by every channel with the same
+    (overlay_type, base/original profile, filter-affecting settings) — only used when
+    _supports_channel_id_token() is True. build_filter_fn receives the string "{channelId}"
+    (Dispatcharr's runtime substitution token, resolved per-channel at stream-start) in
+    place of a real numeric channel id, and must return the drawtext/filter_complex string
+    with it spliced in verbatim.
+
+    Looked up by name (name encodes overlay_type + config_sig) rather than tracked in a
+    separate index — self-healing if a profile is manually deleted, and naturally dedupes
+    across every enable/on-demand-connect/test call site without any of them needing to
+    know whether a matching profile already exists.
+
+    Never deleted by a single channel's disable/idle-restore — see _delete_cloned_profile,
+    which recognizes the "[shared:" name marker and only ever removes shared profiles via
+    the orphan-cleanup action once no mapping references them anymore.
+    """
+    from core.models import StreamProfile
+    name = f"{PROFILE_PREFIX}{original_profile.name} [shared:{overlay_type}:{config_sig}]"
+    raw_params = original_profile.parameters or ""
+    cleaned_params, removed_flags = _strip_dangerous_flags(channel_name or overlay_type, raw_params)
+    drawtext = build_filter_fn("{channelId}")
+    params = _inject_drawtext(cleaned_params, drawtext)
+    if post_process_fn:
+        params = post_process_fn(params)
+    existing = StreamProfile.objects.filter(name=name).first()
+    if existing:
+        if existing.parameters != params:
+            existing.parameters = params
+            existing.save(update_fields=["parameters"])
+            logger.info(f"tickarr: shared profile {existing.id} ({name}) refreshed")
+        return existing, removed_flags
+    profile = StreamProfile(
+        name=name,
+        command=original_profile.command,
+        parameters=params,
+        locked=False,
+        is_active=True,
+    )
+    profile.save()
+    logger.info(f"tickarr: shared profile created — {name} (id={profile.id})"
+                + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
+    return profile, removed_flags
+
+
 def _clone_and_inject(channel_id, original_profile, channel_name=""):
+    if _supports_channel_id_token():
+        sig = _config_sig(original_profile.id)
+        return _get_or_create_shared_profile(
+            "nowplaying", original_profile, channel_name, sig,
+            lambda cid_token: DRAWTEXT_FILTER_TEMPLATE.format(ticker_dir=TICKER_DIR, channel_id=cid_token),
+        )
     from core.models import StreamProfile
     raw_params = original_profile.parameters or ""
     cleaned_params, removed_flags = _strip_dangerous_flags(
@@ -352,6 +438,58 @@ def _clone_and_inject(channel_id, original_profile, channel_name=""):
     )
     drawtext = DRAWTEXT_FILTER_TEMPLATE.format(ticker_dir=TICKER_DIR, channel_id=channel_id)
     params = _inject_drawtext(cleaned_params, drawtext)
+    profile = StreamProfile(
+        name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel_id}]",
+        command=original_profile.command,
+        parameters=params,
+        locked=False,
+        is_active=True,
+    )
+    profile.save()
+    logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
+                + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
+    return profile, removed_flags
+
+
+def _clone_and_inject_custom(channel_id, original_profile, channel_name, style, position, schedule, duration, interval):
+    if _supports_channel_id_token():
+        sig = _config_sig(original_profile.id, style, position, schedule, duration, interval)
+        return _get_or_create_shared_profile(
+            "custom", original_profile, channel_name, sig,
+            lambda cid_token: _build_custom_filter(cid_token, style, position, schedule, duration, interval),
+        )
+    from core.models import StreamProfile
+    raw_params, removed_flags = _strip_dangerous_flags(channel_name, original_profile.parameters or "")
+    drawtext = _build_custom_filter(channel_id, style, position, schedule, duration, interval)
+    params = _inject_drawtext(raw_params, drawtext)
+    profile = StreamProfile(
+        name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel_id}]",
+        command=original_profile.command,
+        parameters=params,
+        locked=False,
+        is_active=True,
+    )
+    profile.save()
+    logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
+                + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
+    return profile, removed_flags
+
+
+def _clone_and_inject_sports(channel_id, original_profile, channel_name, position, fontsize,
+                             labelcolor, abbrcolor, color_mode, transcode_mode, ticker_style):
+    if _supports_channel_id_token():
+        sig = _config_sig(original_profile.id, position, fontsize, labelcolor, abbrcolor,
+                          color_mode, transcode_mode, ticker_style)
+        return _get_or_create_shared_profile(
+            "sports", original_profile, channel_name, sig,
+            lambda cid_token: _build_sports_filter(cid_token, position, fontsize, labelcolor,
+                                                    abbrcolor, color_mode, transcode_mode, ticker_style),
+        )
+    from core.models import StreamProfile
+    raw_params, removed_flags = _strip_dangerous_flags(channel_name, original_profile.parameters or "")
+    drawtext = _build_sports_filter(channel_id, position, fontsize, labelcolor, abbrcolor,
+                                    color_mode, transcode_mode, ticker_style)
+    params = _inject_drawtext(raw_params, drawtext)
     profile = StreamProfile(
         name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel_id}]",
         command=original_profile.command,
@@ -464,6 +602,37 @@ _EAS_TRANSCODE_PREFIXES = {
 def _clone_and_inject_eas(channel_id, original_profile, channel_name="", tone_interval=0,
                           overlay_style="tickarr", label_color="0xCC0000",
                           transcode_mode="full", tone_wav=None):
+    if _supports_channel_id_token():
+        # label_color is alert-severity-driven at runtime (only meaningful for the
+        # "broadcast" style) — including it in the signature only when it's actually used
+        # means channels currently showing different alert severities correctly get
+        # different shared profiles, without needlessly fragmenting the "tickarr" style
+        # (which never reads label_color) into one profile per severity ever seen.
+        sig_color = label_color if overlay_style == "broadcast" else ""
+        sig = _config_sig(original_profile.id, overlay_style, transcode_mode, tone_interval,
+                          sig_color, tone_wav)
+
+        def _build(cid_token):
+            transcode_prefix = _EAS_TRANSCODE_PREFIXES.get(transcode_mode, "")
+            if overlay_style == "broadcast":
+                return transcode_prefix + _build_eas_broadcast_filter(cid_token, label_color)
+            return (
+                transcode_prefix
+                + _EAS_TYPE_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=cid_token)
+                + ","
+                + _EAS_AREA_LAYER.format(font=_FONT_BOLD, ticker_dir=TICKER_DIR, channel_id=cid_token)
+            )
+
+        def _post(params):
+            if tone_interval <= 0:
+                return params
+            if tone_wav and os.path.exists(tone_wav):
+                return _inject_eas_tone_wav(params, tone_wav, tone_interval)
+            return _inject_eas_tone(params, "{channelId}", tone_interval)
+
+        return _get_or_create_shared_profile(
+            "eas", original_profile, channel_name, sig, _build, post_process_fn=_post,
+        )
     from core.models import StreamProfile
     raw_params = original_profile.parameters or ""
     cleaned_params, removed_flags = _strip_dangerous_flags(
@@ -533,9 +702,22 @@ def _restore_profile(channel, original_profile_id):
 
 
 def _delete_cloned_profile(profile_id):
+    """Delete a Tickarr-managed StreamProfile — unless it's a shared profile (name contains
+    "[shared:"), in which case it's retained: other channels may still be actively using it,
+    and per-channel disable/idle-restore/alert-clear call sites have no way to know that.
+    Shared profiles are only ever reaped by the Clean Orphaned Profiles action, once no
+    mapping references them anymore.
+    """
     from core.models import StreamProfile
     try:
-        StreamProfile.objects.filter(id=profile_id, name__startswith=PROFILE_PREFIX).delete()
+        profile = StreamProfile.objects.filter(id=profile_id, name__startswith=PROFILE_PREFIX).first()
+        if not profile:
+            return
+        if " [shared:" in profile.name:
+            logger.debug(f"tickarr: shared profile {profile_id} ({profile.name}) retained — "
+                         f"may still be in use by other channels")
+            return
+        profile.delete()
     except Exception as e:
         logger.warning(f"tickarr: could not delete profile {profile_id}: {e}")
 
@@ -2141,19 +2323,9 @@ def _fast_loop(stop_event):
                             abbrcolor       = mapping.get("sports_abbrcolor",  "#00d4ff")
                             transcode_mode  = mapping.get("sports_transcode_mode_video", "1080p30")
                             ticker_style    = mapping.get("sports_ticker_style", "scrolling")
-                            raw_params, _ = _strip_dangerous_flags(channel.name, orig.parameters or "")
-                            drawtext   = _build_sports_filter(cid, position, fontsize,
-                                                              labelcolor, abbrcolor, color_mode,
-                                                              transcode_mode, ticker_style)
-                            new_params = _inject_drawtext(raw_params, drawtext)
-                            cloned = _SP(
-                                name=f"{PROFILE_PREFIX}{orig.name} [ch{cid}]",
-                                command=orig.command,
-                                parameters=new_params,
-                                locked=False,
-                                is_active=True,
-                            )
-                            cloned.save()
+                            cloned, _ = _clone_and_inject_sports(cid, orig, channel.name, position, fontsize,
+                                                                 labelcolor, abbrcolor, color_mode,
+                                                                 transcode_mode, ticker_style)
                             _assign_profile(channel, cloned)
                             mapping["ticker_profile_id"] = cloned.id
                             mapping["sports_active"]     = True
@@ -2861,6 +3033,8 @@ class Plugin:
             "fill_and_sort":        self._fill_and_sort,
             "fill_sort_logos":      self._fill_sort_logos,
             "clean_orphans":        self._clean_orphans,
+            "migrate_shared_profiles": self._migrate_shared_profiles,
+            "check_channel_id_support": self._check_channel_id_support,
             "redis_diag":           self._redis_diag,
             "reload_poller":        self._reload_poller,
             "restart_dispatcharr":  self._restart_dispatcharr,
@@ -3040,18 +3214,9 @@ class Plugin:
                 ticker_profile_id = None
 
                 if trigger_mode == "always" or (trigger_mode == "on_demand" and custom_text):
-                    raw_params, removed_flags = _strip_dangerous_flags(channel.name, original_profile.parameters or "")
-                    drawtext = _build_custom_filter(channel.id, style, position, schedule, duration, interval)
-                    new_params = _inject_drawtext(raw_params, drawtext)
-                    from core.models import StreamProfile
-                    cloned = StreamProfile(
-                        name=f"{PROFILE_PREFIX}{original_profile.name} [ch{channel.id}]",
-                        command=original_profile.command,
-                        parameters=new_params,
-                        locked=False,
-                        is_active=True,
+                    cloned, removed_flags = _clone_and_inject_custom(
+                        channel.id, original_profile, channel.name, style, position, schedule, duration, interval
                     )
-                    cloned.save()
                     _assign_profile(channel, cloned)
                     ticker_profile_id = cloned.id
                     _write_custom_text(channel.id, custom_text)
@@ -3138,22 +3303,14 @@ class Plugin:
                         if not orig:
                             skipped.append(f"{channel.name} (original profile not found)")
                             continue
-                        raw_params, _ = _strip_dangerous_flags(channel.name, orig.parameters or "")
                         style    = mapping.get("custom_style",    "static")
                         position = mapping.get("custom_position", "bottom")
                         schedule = mapping.get("custom_schedule", "always")
                         duration = mapping.get("custom_duration", 10)
                         interval = mapping.get("custom_interval", 5)
-                        drawtext   = _build_custom_filter(channel.id, style, position, schedule, duration, interval)
-                        new_params = _inject_drawtext(raw_params, drawtext)
-                        cloned = _SP(
-                            name=f"{PROFILE_PREFIX}{orig.name} [ch{channel.id}]",
-                            command=orig.command,
-                            parameters=new_params,
-                            locked=False,
-                            is_active=True,
+                        cloned, _ = _clone_and_inject_custom(
+                            channel.id, orig, channel.name, style, position, schedule, duration, interval
                         )
-                        cloned.save()
                         ch_obj = _Ch.objects.filter(id=channel.id).first() or channel
                         _assign_profile(ch_obj, cloned)
                         _restart_channel_stream_async(ch_obj, "Custom")
@@ -4007,23 +4164,34 @@ class Plugin:
                 transcode_mode = mapping.get("sports_transcode_mode_video", "1080p30")
                 ticker_style   = mapping.get("sports_ticker_style", "scrolling")
 
-                raw_params, _ = _strip_dangerous_flags(channel.name, orig.parameters or "")
-                drawtext = _build_sports_filter(cid_int, position, fontsize,
-                                                labelcolor, abbrcolor, color_mode,
-                                                transcode_mode, ticker_style)
-                new_params = _inject_drawtext(raw_params, drawtext)
-
-                ticker_pid = mapping.get("ticker_profile_id")
-                existing = StreamProfile.objects.filter(id=ticker_pid).first() if ticker_pid else None
-                if existing and existing.name.startswith(PROFILE_PREFIX):
-                    existing.parameters = new_params
-                    existing.save()
-                    sports_profile = existing
-                else:
-                    sports_profile, _ = _clone_and_inject(cid_int, orig, channel.name)
-                    sports_profile.parameters = new_params
-                    sports_profile.save()
+                if _supports_channel_id_token():
+                    # Get-or-create by config signature already dedupes repeated test runs —
+                    # no need for (and no safety in) mutating whatever profile ticker_pid
+                    # happens to point at, which under shared profiles could be in active use
+                    # by other channels.
+                    sports_profile, _ = _clone_and_inject_sports(
+                        cid_int, orig, channel.name, position, fontsize,
+                        labelcolor, abbrcolor, color_mode, transcode_mode, ticker_style
+                    )
                     mapping["ticker_profile_id"] = sports_profile.id
+                else:
+                    raw_params, _ = _strip_dangerous_flags(channel.name, orig.parameters or "")
+                    drawtext = _build_sports_filter(cid_int, position, fontsize,
+                                                    labelcolor, abbrcolor, color_mode,
+                                                    transcode_mode, ticker_style)
+                    new_params = _inject_drawtext(raw_params, drawtext)
+
+                    ticker_pid = mapping.get("ticker_profile_id")
+                    existing = StreamProfile.objects.filter(id=ticker_pid).first() if ticker_pid else None
+                    if existing and existing.name.startswith(PROFILE_PREFIX):
+                        existing.parameters = new_params
+                        existing.save()
+                        sports_profile = existing
+                    else:
+                        sports_profile, _ = _clone_and_inject(cid_int, orig, channel.name)
+                        sports_profile.parameters = new_params
+                        sports_profile.save()
+                        mapping["ticker_profile_id"] = sports_profile.id
 
                 _assign_profile(channel, sports_profile)
                 _restart_channel_stream_async(channel, "Sports-Test")
@@ -4703,6 +4871,125 @@ class Plugin:
             except Exception as e:
                 logger.warning(f"tickarr: could not delete profile {profile.name}: {e}")
         return {"success": True, "message": f"Deleted {len(deleted)} orphaned profile(s):\n" + "\n".join(f"  - {n}" for n in deleted)}
+
+    def _migrate_shared_profiles(self, params):
+        """Move already-enabled channels off their legacy per-channel cloned profile onto a
+        shared profile, now that {channelId} is available. Idempotent — channels already on
+        a shared profile (or with no profile currently assigned, e.g. idle on-demand) are
+        left alone. EAS/EAS-CA are not migrated here: those profiles only exist while an
+        alert is actively firing and are already rebuilt from scratch on every new alert
+        activation, so they migrate to shared profiles automatically on their next alert.
+        """
+        if not _supports_channel_id_token():
+            return {"success": False, "message": (
+                "This Dispatcharr install does not support the {channelId} token "
+                "(requires v0.29.0+, Dispatcharr issue #1252). Nothing to migrate — "
+                "channels will keep using one cloned stream profile per channel."
+            )}
+
+        from apps.channels.models import Channel
+        from core.models import StreamProfile
+
+        mappings = _get_mappings()
+        migrated, skipped, failed = [], [], []
+        old_pids_touched = set()
+
+        for cid, mapping in list(mappings.items()):
+            ticker_pid = mapping.get("ticker_profile_id")
+            if not ticker_pid:
+                continue  # nothing currently assigned — e.g. idle on-demand channel
+            name = mapping.get("channel_name", f"channel {cid}")
+            try:
+                existing = StreamProfile.objects.filter(id=ticker_pid).first()
+                if not existing or " [shared:" in existing.name:
+                    continue  # already shared, or the clone is already gone — nothing to do
+
+                channel = Channel.objects.filter(id=int(cid)).first()
+                if not channel:
+                    skipped.append(f"{name} (channel no longer exists)")
+                    continue
+                orig = StreamProfile.objects.filter(id=mapping.get("original_profile_id")).first()
+                if not orig:
+                    skipped.append(f"{name} (original base profile missing)")
+                    continue
+
+                ticker_type = mapping.get("type", "nowplaying")
+                if ticker_type == "nowplaying":
+                    new_profile, _ = _clone_and_inject(channel.id, orig, name)
+                elif ticker_type == "custom":
+                    new_profile, _ = _clone_and_inject_custom(
+                        channel.id, orig, name,
+                        mapping.get("custom_style", "static"),
+                        mapping.get("custom_position", "bottom"),
+                        mapping.get("custom_schedule", "always"),
+                        mapping.get("custom_duration", 10),
+                        mapping.get("custom_interval", 5),
+                    )
+                elif ticker_type == "sports":
+                    new_profile, _ = _clone_and_inject_sports(
+                        channel.id, orig, name,
+                        mapping.get("sports_position", "bottom"),
+                        int(mapping.get("sports_fontsize") or 36),
+                        mapping.get("sports_labelcolor", "#ffd700"),
+                        mapping.get("sports_abbrcolor", "#00d4ff"),
+                        mapping.get("sports_color_mode", "single"),
+                        mapping.get("sports_transcode_mode_video", "1080p30"),
+                        mapping.get("sports_ticker_style", "scrolling"),
+                    )
+                else:
+                    skipped.append(f"{name} ({ticker_type} — migrates automatically on its next alert)")
+                    continue
+
+                _assign_profile(channel, new_profile)
+                _restart_channel_stream_async(channel, "Migrate")
+                old_pids_touched.add(ticker_pid)
+                mapping["ticker_profile_id"] = new_profile.id
+                mappings[cid] = mapping
+                migrated.append(name)
+            except Exception as e:
+                logger.error(f"tickarr: migrate_shared_profiles failed for {name}: {e}", exc_info=True)
+                failed.append(f"{name} (error: {e})")
+
+        # Only delete a legacy profile once nothing in the (post-migration) mappings still
+        # points at it — a legacy profile could in principle be shared by more than one
+        # channel (e.g. hand-edited), and deleting it mid-loop would SET_NULL every other
+        # channel still assigned to it (Channel.stream_profile is on_delete=SET_NULL) before
+        # their turn to migrate came up.
+        if old_pids_touched:
+            still_referenced = set()
+            for m in mappings.values():
+                for key in ("ticker_profile_id", "eas_profile_id"):
+                    if m.get(key) in old_pids_touched:
+                        still_referenced.add(m[key])
+            for old_pid in old_pids_touched - still_referenced:
+                _delete_cloned_profile(old_pid)
+
+        if migrated:
+            _save_mappings(mappings)
+
+        parts = []
+        if migrated: parts.append(f"Migrated to shared profiles: {len(migrated)} channel(s)\n" + "\n".join(f"  - {n}" for n in migrated))
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
+        return {"success": not failed, "message": "\n\n".join(parts) or
+                "Nothing to migrate — every channel is already on a shared profile (or has none assigned right now)."}
+
+    def _check_channel_id_support(self, params):
+        supported = _supports_channel_id_token()
+        if supported:
+            return {"success": True, "message": (
+                "Supported — this Dispatcharr install's StreamProfile.build_command() "
+                "accepts channel_id, so the {channelId} stream profile substitution token "
+                "(Dispatcharr issue #1252, shipped in v0.29.0) is available here. Tickarr will "
+                "use one shared stream profile per overlay type (per distinct combination of "
+                "base profile + settings) instead of cloning one per channel."
+            )}
+        return {"success": False, "message": (
+            "Not supported — this Dispatcharr install's StreamProfile.build_command() does "
+            "not accept channel_id, so the {channelId} token (Dispatcharr issue #1252) is "
+            "unavailable. Upgrade to Dispatcharr v0.29.0 or later to use it. Tickarr will "
+            "keep using one cloned stream profile per channel on this install."
+        )}
 
     def _redis_diag(self, params):
         rc = _get_redis_client()

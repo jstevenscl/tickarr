@@ -1,6 +1,6 @@
 {
   "name": "Tickarr",
-  "version": "0.3.06",
+  "version": "0.4.0",
   "logo": "logo.png",
   "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
@@ -294,6 +294,25 @@
       "confirm": {
         "message": "This will delete all Tickarr-cloned stream profiles that have no active channel mapping. Continue?"
       }
+    },
+    {
+      "id": "migrate_shared_profiles",
+      "label": "Migrate to Shared Profiles",
+      "description": "Moves already-enabled channels off their old per-channel cloned stream profile onto a shared one, now that this Dispatcharr install supports the {channelId} token. Safe to run repeatedly — channels already on a shared profile are skipped. EAS/EAS-CA migrate automatically on their next alert and are not touched here.",
+      "button_label": "Migrate",
+      "button_variant": "outline",
+      "button_color": "violet",
+      "confirm": {
+        "message": "This will reassign already-enabled channels from their per-channel cloned stream profile to a shared one and delete the old clones. Active streams will briefly restart to pick up the new profile. Continue?"
+      }
+    },
+    {
+      "id": "check_channel_id_support",
+      "label": "Check Stream Profile Capabilities",
+      "description": "Checks whether this Dispatcharr install supports the {channelId} stream profile substitution token (Dispatcharr issue #1252, shipped v0.29.0). When supported, Tickarr automatically uses one shared stream profile per overlay type instead of cloning one per channel.",
+      "button_label": "Check",
+      "button_variant": "outline",
+      "button_color": "violet"
     },
     {
       "id": "redis_diag",
