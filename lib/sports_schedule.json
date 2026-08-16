@@ -1,18 +1,6 @@
 {
-  "generated_at": "2026-08-16T12:25:32Z",
+  "generated_at": "2026-08-16T16:16:49Z",
   "events": [
-    {
-      "slug": "soccer",
-      "title": "Arsenal @ Manchester City Manchester City",
-      "description": "SOCCER · Arsenal @ Manchester City Manchester City",
-      "start_utc": "2026-08-16T14:00:00Z",
-      "end_utc": "2026-08-16T16:00:00Z",
-      "channels": [
-        "Manchester City Manchester City",
-        "Arsenal",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "indycar",
       "title": "Ontario Honda Dealers Indy at Markham",
