@@ -1,45 +1,6 @@
 {
-  "generated_at": "2026-08-19T20:19:00Z",
+  "generated_at": "2026-08-20T00:51:40Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Minnesota Twins @ Atlanta Braves",
-      "description": "MLB · Minnesota Twins @ Atlanta Braves",
-      "start_utc": "2026-08-19T17:40:00Z",
-      "end_utc": "2026-08-19T20:40:00Z",
-      "channels": [
-        "Atlanta Braves",
-        "Minnesota Twins",
-        "MLB Play-by-Play 177",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago Cubs @ Chicago White Sox",
-      "description": "MLB · Chicago Cubs @ Chicago White Sox",
-      "start_utc": "2026-08-19T18:20:00Z",
-      "end_utc": "2026-08-19T21:20:00Z",
-      "channels": [
-        "Chicago White Sox",
-        "Chicago Cubs",
-        "MLB Play-by-Play 178",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Boston Red Sox @ Arizona Diamondbacks",
-      "description": "MLB · Boston Red Sox @ Arizona Diamondbacks",
-      "start_utc": "2026-08-19T20:10:00Z",
-      "end_utc": "2026-08-19T23:10:00Z",
-      "channels": [
-        "Arizona Diamondbacks",
-        "Boston Red Sox",
-        "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Philadelphia Phillies @ Miami Marlins",
@@ -67,6 +28,19 @@
     },
     {
       "slug": "mlb",
+      "title": "Cincinnati Reds @ St. Louis Cardinals",
+      "description": "MLB · Cincinnati Reds @ St. Louis Cardinals",
+      "start_utc": "2026-08-19T22:40:00Z",
+      "end_utc": "2026-08-20T01:40:00Z",
+      "channels": [
+        "St. Louis Cardinals",
+        "Cincinnati Reds",
+        "MLB Play-by-Play 183",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
       "title": "Cleveland Guardians @ San Francisco Giants",
       "description": "MLB · Cleveland Guardians @ San Francisco Giants",
       "start_utc": "2026-08-19T22:40:00Z",
@@ -88,19 +62,6 @@
         "Toronto Blue Jays",
         "Tampa Bay Rays",
         "MLB Play-by-Play 181",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cincinnati Reds @ St. Louis Cardinals",
-      "description": "MLB · Cincinnati Reds @ St. Louis Cardinals",
-      "start_utc": "2026-08-19T22:40:00Z",
-      "end_utc": "2026-08-20T01:40:00Z",
-      "channels": [
-        "St. Louis Cardinals",
-        "Cincinnati Reds",
-        "MLB Play-by-Play 183",
         "MLB Network Radio"
       ]
     },
