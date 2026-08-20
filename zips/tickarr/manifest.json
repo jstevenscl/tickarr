@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-28T00:00:00Z",
+  "generated_at": "2026-08-20T20:20:44Z",
   "manifest": {
     "slug": "tickarr",
     "name": "Tickarr",
@@ -7,18 +7,27 @@
     "author": "jstevenscl",
     "registry_url": "https://github.com/jstevenscl/tickarr",
     "registry_name": "jstevenscl/tickarr",
-    "last_updated": "2026-08-13T18:14:39Z",
+    "last_updated": "2026-08-20T20:20:44Z",
     "latest": {
-      "version": "0.4.0",
-      "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.4.0.zip",
-      "checksum_md5": "05e10e6e318c5f6d324d84c300e6c08f",
-      "checksum_sha256": "a3d42671af1d3051ded55c0f2bcbb36cb06bc12d44d22a1b8eefd83a067b0e77",
-      "size": 2182552,
-      "last_updated": "2026-08-13T18:14:39Z",
-      "build_timestamp": "2026-08-13T18:14:39Z",
+      "version": "0.4.01",
+      "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.4.01.zip",
+      "checksum_md5": "588a60d63980c1238d04a95a47d8bda5",
+      "checksum_sha256": "a1a7e779d320956055dfc1e8c884df01f6e847d764810f217685b99880a60173",
+      "size": 2185081,
+      "last_updated": "2026-08-20T20:20:44Z",
+      "build_timestamp": "2026-08-20T20:20:44Z",
       "latest_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-latest.zip"
     },
     "versions": [
+      {
+        "version": "0.4.01",
+        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.4.01.zip",
+        "checksum_md5": "588a60d63980c1238d04a95a47d8bda5",
+        "checksum_sha256": "a1a7e779d320956055dfc1e8c884df01f6e847d764810f217685b99880a60173",
+        "size": 2185081,
+        "last_updated": "2026-08-20T20:20:44Z",
+        "build_timestamp": "2026-08-20T20:20:44Z"
+      },
       {
         "version": "0.4.0",
         "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.4.0.zip",

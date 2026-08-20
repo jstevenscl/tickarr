@@ -2389,8 +2389,8 @@ def _sweep_loop(stop_event):
                                      and _channel_is_stale(c[0], now)][:STALE_BATCH_SIZE]
                         ch_to_poll = active_ch + stale_ch
                         if ch_to_poll:
-                            logger.info(f"tickarr: sweep {len(active_ch)} active, "
-                                        f"{len(stale_ch)} stale (of {len(all_ch)})")
+                            logger.debug(f"tickarr: sweep {len(active_ch)} active, "
+                                         f"{len(stale_ch)} stale (of {len(all_ch)})")
                             _poll_channels(ch_to_poll)
 
                         # On-demand nowplaying: restore passthrough when no viewers
