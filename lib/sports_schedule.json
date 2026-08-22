@@ -1,16 +1,6 @@
 {
-  "generated_at": "2026-08-22T16:16:11Z",
+  "generated_at": "2026-08-22T20:14:57Z",
   "events": [
-    {
-      "slug": "nascar",
-      "title": "NCS Pole Qualifying",
-      "description": "SiriusXM NASCAR Radio · NCS Pole Qualifying · New Hampshire Motor Speedway",
-      "start_utc": "2026-08-22T14:30:00Z",
-      "end_utc": "2026-08-22T18:00:00Z",
-      "channels": [
-        "SiriusXM NASCAR Radio"
-      ]
-    },
     {
       "slug": "nfl",
       "title": "Detroit Lions @ Washington Commanders",
@@ -22,18 +12,6 @@
         "Detroit Lions",
         "SiriusXM NFL Radio",
         "Satellite Radio Channel 380"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Brentford @ Tottenham",
-      "description": "SOCCER · Brentford @ Tottenham",
-      "start_utc": "2026-08-22T16:30:00Z",
-      "end_utc": "2026-08-22T18:30:00Z",
-      "channels": [
-        "Tottenham",
-        "Brentford",
-        "SiriusXM FC"
       ]
     },
     {
@@ -76,16 +54,6 @@
         "NFL Play-by-Play 227",
         "Satellite Radio Channel 383",
         "SiriusXM NFL Radio"
-      ]
-    },
-    {
-      "slug": "nascar",
-      "title": "Team EJP 175",
-      "description": "SiriusXM NASCAR Radio · Team EJP 175 · New Hampshire Motor Speedway",
-      "start_utc": "2026-08-22T17:00:00Z",
-      "end_utc": "2026-08-22T20:30:00Z",
-      "channels": [
-        "SiriusXM NASCAR Radio"
       ]
     },
     {
