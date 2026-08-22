@@ -1,17 +1,6 @@
 {
-  "generated_at": "2026-08-22T08:20:36Z",
+  "generated_at": "2026-08-22T12:25:23Z",
   "events": [
-    {
-      "slug": "f1",
-      "title": "F-1 Sprint Race",
-      "description": "Formula 1 Racing and Analysis · F-1 Sprint Race · Circuit Zandvoort",
-      "start_utc": "2026-08-22T10:00:00Z",
-      "end_utc": "2026-08-22T12:00:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "soccer",
       "title": "Hull City @ Manchester United",
