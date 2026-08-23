@@ -1,18 +1,6 @@
 {
-  "generated_at": "2026-08-23T16:17:03Z",
+  "generated_at": "2026-08-23T20:14:31Z",
   "events": [
-    {
-      "slug": "soccer",
-      "title": "Newcastle @ Liverpool",
-      "description": "SOCCER · Newcastle @ Liverpool",
-      "start_utc": "2026-08-23T15:30:00Z",
-      "end_utc": "2026-08-23T17:30:00Z",
-      "channels": [
-        "Liverpool",
-        "Newcastle",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "nascar",
       "title": "Dollar Tree 301",
@@ -86,16 +74,6 @@
         "Washington Nationals",
         "Miami Marlins",
         "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "indycar",
-      "title": "Freedom 250 GP of Washington, DC",
-      "description": "SiriusXM INDYCAR Nation · Freedom 250 GP of Washington, DC · Streets of Washington, DC",
-      "start_utc": "2026-08-23T18:00:00Z",
-      "end_utc": "2026-08-23T20:30:00Z",
-      "channels": [
-        "SiriusXM INDYCAR Nation"
       ]
     },
     {
