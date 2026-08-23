@@ -1,137 +1,6 @@
 {
-  "generated_at": "2026-08-22T20:14:57Z",
+  "generated_at": "2026-08-23T00:55:39Z",
   "events": [
-    {
-      "slug": "nfl",
-      "title": "Detroit Lions @ Washington Commanders",
-      "description": "NFL · Detroit Lions @ Washington Commanders",
-      "start_utc": "2026-08-22T16:00:00Z",
-      "end_utc": "2026-08-22T19:00:00Z",
-      "channels": [
-        "Washington Commanders",
-        "Detroit Lions",
-        "SiriusXM NFL Radio",
-        "Satellite Radio Channel 380"
-      ]
-    },
-    {
-      "slug": "nfl",
-      "title": "Cleveland Browns @ Buffalo Bills",
-      "description": "NFL · Cleveland Browns @ Buffalo Bills",
-      "start_utc": "2026-08-22T17:00:00Z",
-      "end_utc": "2026-08-22T20:00:00Z",
-      "channels": [
-        "Buffalo Bills",
-        "Cleveland Browns",
-        "NFL Play-by-Play 225",
-        "Satellite Radio Channel 381",
-        "SiriusXM NFL Radio"
-      ]
-    },
-    {
-      "slug": "nfl",
-      "title": "Indianapolis Colts @ Atlanta Falcons",
-      "description": "NFL · Indianapolis Colts @ Atlanta Falcons",
-      "start_utc": "2026-08-22T17:00:00Z",
-      "end_utc": "2026-08-22T20:00:00Z",
-      "channels": [
-        "Atlanta Falcons",
-        "Indianapolis Colts",
-        "NFL Play-by-Play 226",
-        "Satellite Radio Channel 382",
-        "SiriusXM NFL Radio"
-      ]
-    },
-    {
-      "slug": "nfl",
-      "title": "Minnesota Vikings @ Baltimore Ravens",
-      "description": "NFL · Minnesota Vikings @ Baltimore Ravens",
-      "start_utc": "2026-08-22T17:00:00Z",
-      "end_utc": "2026-08-22T20:00:00Z",
-      "channels": [
-        "Baltimore Ravens",
-        "Minnesota Vikings",
-        "NFL Play-by-Play 227",
-        "Satellite Radio Channel 383",
-        "SiriusXM NFL Radio"
-      ]
-    },
-    {
-      "slug": "pga",
-      "title": "BMW Championship",
-      "description": "SiriusXM PGA Tour Radio · BMW Championship · Bellerive Country Club",
-      "start_utc": "2026-08-22T17:00:00Z",
-      "end_utc": "2026-08-22T22:00:00Z",
-      "channels": [
-        "SiriusXM PGA TOUR Radio",
-        "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Yankees @ Toronto Blue Jays",
-      "description": "MLB · New York Yankees @ Toronto Blue Jays",
-      "start_utc": "2026-08-22T17:35:00Z",
-      "end_utc": "2026-08-22T20:35:00Z",
-      "channels": [
-        "Toronto Blue Jays",
-        "New York Yankees",
-        "MLB Play-by-Play 175",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Milwaukee Brewers @ Atlanta Braves",
-      "description": "MLB · Milwaukee Brewers @ Atlanta Braves",
-      "start_utc": "2026-08-22T18:10:00Z",
-      "end_utc": "2026-08-22T21:10:00Z",
-      "channels": [
-        "Atlanta Braves",
-        "Milwaukee Brewers",
-        "MLB Play-by-Play 176",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "nfl",
-      "title": "Los Angeles Rams @ New Orleans Saints",
-      "description": "NFL · Los Angeles Rams @ New Orleans Saints",
-      "start_utc": "2026-08-22T20:00:00Z",
-      "end_utc": "2026-08-22T23:00:00Z",
-      "channels": [
-        "New Orleans Saints",
-        "Los Angeles Rams",
-        "NFL Play-by-Play 225",
-        "Satellite Radio Channel 381",
-        "SiriusXM NFL Radio"
-      ]
-    },
-    {
-      "slug": "nfl",
-      "title": "Miami Dolphins @ New York Giants",
-      "description": "NFL · Miami Dolphins @ New York Giants",
-      "start_utc": "2026-08-22T20:00:00Z",
-      "end_utc": "2026-08-22T23:00:00Z",
-      "channels": [
-        "New York Giants",
-        "Miami Dolphins",
-        "SiriusXM NFL Radio",
-        "Satellite Radio Channel 380"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Miami Marlins @ Washington Nationals",
-      "description": "MLB · Miami Marlins @ Washington Nationals",
-      "start_utc": "2026-08-22T20:10:00Z",
-      "end_utc": "2026-08-22T23:10:00Z",
-      "channels": [
-        "Washington Nationals",
-        "Miami Marlins",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Philadelphia Phillies @ St. Louis Cardinals",
@@ -176,6 +45,19 @@
     },
     {
       "slug": "mlb",
+      "title": "Baltimore Orioles @ Tampa Bay Rays",
+      "description": "MLB · Baltimore Orioles @ Tampa Bay Rays",
+      "start_utc": "2026-08-22T23:05:00Z",
+      "end_utc": "2026-08-23T02:05:00Z",
+      "channels": [
+        "Tampa Bay Rays",
+        "Baltimore Orioles",
+        "MLB Play-by-Play 180",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
       "title": "Texas Rangers @ Los Angeles Angels",
       "description": "MLB · Texas Rangers @ Los Angeles Angels",
       "start_utc": "2026-08-22T23:05:00Z",
@@ -190,14 +72,14 @@
     },
     {
       "slug": "mlb",
-      "title": "Baltimore Orioles @ Tampa Bay Rays",
-      "description": "MLB · Baltimore Orioles @ Tampa Bay Rays",
-      "start_utc": "2026-08-22T23:05:00Z",
-      "end_utc": "2026-08-23T02:05:00Z",
+      "title": "Chicago White Sox @ New York Mets",
+      "description": "MLB · Chicago White Sox @ New York Mets",
+      "start_utc": "2026-08-22T23:10:00Z",
+      "end_utc": "2026-08-23T02:10:00Z",
       "channels": [
-        "Tampa Bay Rays",
-        "Baltimore Orioles",
-        "MLB Play-by-Play 180",
+        "New York Mets",
+        "Chicago White Sox",
+        "MLB Play-by-Play 178",
         "MLB Network Radio"
       ]
     },
@@ -216,14 +98,27 @@
     },
     {
       "slug": "mlb",
-      "title": "Chicago White Sox @ New York Mets",
-      "description": "MLB · Chicago White Sox @ New York Mets",
-      "start_utc": "2026-08-22T23:10:00Z",
-      "end_utc": "2026-08-23T02:10:00Z",
+      "title": "Boston Red Sox @ San Francisco Giants",
+      "description": "MLB · Boston Red Sox @ San Francisco Giants",
+      "start_utc": "2026-08-22T23:15:00Z",
+      "end_utc": "2026-08-23T02:15:00Z",
       "channels": [
-        "New York Mets",
-        "Chicago White Sox",
-        "MLB Play-by-Play 178",
+        "San Francisco Giants",
+        "Boston Red Sox",
+        "MLB Play-by-Play 185",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Seattle Mariners @ Chicago Cubs",
+      "description": "MLB · Seattle Mariners @ Chicago Cubs",
+      "start_utc": "2026-08-22T23:15:00Z",
+      "end_utc": "2026-08-23T02:15:00Z",
+      "channels": [
+        "Chicago Cubs",
+        "Seattle Mariners",
+        "MLB Play-by-Play 184",
         "MLB Network Radio"
       ]
     },
@@ -251,32 +146,6 @@
         "Detroit Tigers",
         "Kansas City Royals",
         "MLB Play-by-Play 183",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Boston Red Sox @ San Francisco Giants",
-      "description": "MLB · Boston Red Sox @ San Francisco Giants",
-      "start_utc": "2026-08-22T23:15:00Z",
-      "end_utc": "2026-08-23T02:15:00Z",
-      "channels": [
-        "San Francisco Giants",
-        "Boston Red Sox",
-        "MLB Play-by-Play 185",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Seattle Mariners @ Chicago Cubs",
-      "description": "MLB · Seattle Mariners @ Chicago Cubs",
-      "start_utc": "2026-08-22T23:15:00Z",
-      "end_utc": "2026-08-23T02:15:00Z",
-      "channels": [
-        "Chicago Cubs",
-        "Seattle Mariners",
-        "MLB Play-by-Play 184",
         "MLB Network Radio"
       ]
     },
