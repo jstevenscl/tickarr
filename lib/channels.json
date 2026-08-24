@@ -45,7 +45,7 @@
   },
   "90s on 9": {
     "name": "90s on 9",
-    "description": "If it was 'all that' in the 90s, it's on 90s on 9. Get jiggy with the hottest 90s music from boy bands to pop queens, grunge rock, hip-hop and R&B with artists like Mariah Carey, Backstreet Boys, TLC, Green Day, Alanis Morissette, Boyz II Men, Aerosmith, Britney Spears and more. Hosted by legendary personalities Downtown Julie Brown & Spyder Harrison, singer/songwriter Lisa Loeb and Sugar Ray's Mark McGrath.",
+    "description": "If it was 'all that' in the 90s, it's on 90s on 9. Get jiggy with the hottest 90s music from boy bands to pop queens, grunge rock, hip-hop and R&B with artists like Mariah Carey, Backstreet Boys, TLC, Green Day, Alanis Morissette, Boyz II Men, Aerosmith, Britney Spears and more. Hosted by former MTV VJ Downtown Julie Brown, singer/songwriter Lisa Loeb and Sugar Ray's Mark McGrath.",
     "genre": "Pop",
     "sxm_number": 9,
     "seasonal": null,
@@ -2969,17 +2969,6 @@
     "sxm_entity_id": "9494",
     "lookaround_channel_id": "96f5d0e4-ebff-564a-6c39-70a4a642e360"
   },
-  "soulcycle radio": {
-    "name": "SoulCycle Radio",
-    "description": "There's a reason we ride to the rhythm as a pack. At SoulCycle, music is what connects us, moves us, and inspires us. So we designed this channel to deliver the same joy, motivation, and heart-pumping beat you expect from us in class-and then some. Whether you're in the car, walking to work, or dancing in your bedroom, turn it up for a transformative mind-body-soul experience.",
-    "genre": "Pop",
-    "sxm_number": 704,
-    "seasonal": null,
-    "logo_url": "https://stellartunerlog.com/logos/9500.png",
-    "sxm_logo_src": "if/66/66cd9165c54231c9b831ebf64cb7417f_1756126389.png",
-    "sxm_entity_id": "9500",
-    "lookaround_channel_id": "6c535597-8e2b-5b54-968a-10cad277f43b"
-  },
   "the tragically hip radio": {
     "name": "The Tragically Hip Radio",
     "description": "The Tragically Hip Radio, playing music from the band's entire catalogue, with exclusive live recordings, rarities, discussions surrounding their history, and the sounds that have influenced their iconic career.",
@@ -3123,12 +3112,12 @@
     "sxm_entity_id": "9543",
     "lookaround_channel_id": "2211d1e6-153e-f617-b0d7-fd0b4ff513f2"
   },
-  "the beach boys channel": {
-    "name": "The Beach Boys Channel",
-    "description": "Playing sun-drenched songs from every phase of the group's decades-spanning career! It's all on Good Vibrations: The Beach Boys Channel! From their early songs about sand, surf, girls and cars into the psychedelic period filled with rich experimentation, The Beach Boys have grown up with American pop music and have brought California's coastline to the world. Their biggest hits plus hard-to-find rarities combine for a trip to the beach, without leaving home!",
+  "limited edition 2": {
+    "name": "Limited Edition 2",
+    "description": "An online home for more of SiriusXM's exclusive limited-run channels - from Pop to Rock, Comedy to Talk, and much more.",
     "genre": "Pop",
     "sxm_number": 502,
-    "seasonal": null,
+    "seasonal": true,
     "logo_url": "https://stellartunerlog.com/logos/9545.png",
     "sxm_logo_src": "",
     "sxm_entity_id": "9545",
@@ -3827,10 +3816,10 @@
     "sxm_entity_id": "9673",
     "lookaround_channel_id": "fc92713b-2006-4980-ef7c-e70f1da80427"
   },
-  "little miss twain radio_105": {
-    "name": "Little Miss Twain Radio",
-    "description": "Celebrate the trailblazing career of Shania Twain & the release of her 7th studio album, with Little Miss Twain Radio. Hear the songs that made her a global legend, from country classics to crossover pop hits, along with memorable collaborations, music from artists she admires, and stories behind them all. Let's go girls!",
-    "genre": "Country",
+  "experts only radio_105": {
+    "name": "Experts Only Radio",
+    "description": "John Summit takes you on a musical journey without limits! Hear his bi-weekly show and discover a variety of sounds and styles as well as DJ sets from around the world. (explicit)",
+    "genre": "Dance/Electronic",
     "sxm_number": 105,
     "seasonal": null,
     "logo_url": "https://stellartunerlog.com/logos/9674.png",
@@ -3939,7 +3928,7 @@
   },
   "siriusxm hits 1": {
     "name": "SiriusXM Hits 1",
-    "description": "Today's hits from pop, hip-hop, rock, rhythm, country and R&B. Featuring The Morning Mash Up with Ryan & Nicole, Mack & Jen middays, Gaby Symon afternoons, Mikey Piff evenings, plus Spyder Harrison and the HITS 1 Weekend Countdown.",
+    "description": "Today's hits from pop, hip-hop, rock, rhythm, country and R&B - featuring The Morning Mash Up with Ryan & Nicole, Mack & Jen middays, Brady afternoons, Mikey Piff evenings, HITBOUND, and The Weekend Countdown.",
     "genre": "Pop",
     "sxm_number": 2,
     "seasonal": null,
@@ -4249,7 +4238,7 @@
     "name": "Bluegrass Junction",
     "description": "Experience the cutting-edge sounds of bluegrass music while never straying too far from its roots and traditions... including weekly shows from Chris Jones, Ned Luberecki, Joey Black and the legendary Del McCoury!",
     "genre": "Country",
-    "sxm_number": 77,
+    "sxm_number": 65,
     "seasonal": null,
     "logo_url": "https://stellartunerlog.com/logos/bluegrass.png",
     "sxm_logo_src": "aem/51/510bfed4a7def6f26ad3b9a3b40e928b_1732039925.jpeg",
@@ -4491,7 +4480,7 @@
     "name": "Kirk Franklin's Praise",
     "description": "Grammy winning icon Kirk Franklin empowers you through your day with today's divinely inspired gospel music. Hear inspirational music from artists including Tamela Mann, Donnie McClurkin, Tye Tribett, Le'Andria Johnson and more. Kirk's got the music and the message to make ya sing, clap and shout!",
     "genre": "Christian",
-    "sxm_number": 68,
+    "sxm_number": 77,
     "seasonal": null,
     "logo_url": "https://stellartunerlog.com/logos/praise.png",
     "sxm_logo_src": "aem/87/874ce351bce77783226b25b88ab24123_1699375180.jpeg",
@@ -4520,14 +4509,14 @@
     "sxm_entity_id": "hiphopnation",
     "lookaround_channel_id": "bd54fc02-e063-0e3e-0cbb-4ceafef734e7"
   },
-  "the message_65": {
+  "the message_78": {
     "name": "The Message",
     "description": "Pop and rock with a higher purpose. Contemporary Christian music delivered by compassionate hosts to encourage you and your family on your faith journey.",
     "genre": "Christian",
-    "sxm_number": 65,
+    "sxm_number": 78,
     "seasonal": null,
     "logo_url": "https://stellartunerlog.com/logos/spirit.png",
-    "sxm_logo_src": "if/5c/5c64da6d1dc53d689652611d63d1b8ec_1765946657.png",
+    "sxm_logo_src": "",
     "sxm_entity_id": "spirit",
     "lookaround_channel_id": "c2e3e686-93a6-5d22-c818-6d8ea63bcc7c"
   },
@@ -4557,7 +4546,7 @@
     "name": "Watercolors",
     "description": "A sonic landscape of silky, smooth jazz melodies and alluring contemporary jazz rhythms. Indulge the senses with soulful saxophone, mesmerizing piano, breezy guitar and groovy bass lines. Lively art for your ears.",
     "genre": "Jazz/Standards/Classical",
-    "sxm_number": 66,
+    "sxm_number": 68,
     "seasonal": null,
     "logo_url": "https://stellartunerlog.com/logos/jazzcafe.png",
     "sxm_logo_src": "aem/6c/6cdf1bbea9f0345154d5f8d5cdad78c2_1699375786.jpeg",
@@ -4656,7 +4645,7 @@
     "name": "Symphony Hall",
     "description": "Classical music from yesterday and today performed by top orchestras, chamber music ensembles and instrumental soloists. Featuring Baroque and Beyond, Classics on Film, Living American, SiriusXM Presents the Philadelphia Orchestra, Vox Choral and The Chamber Music Society of Lincoln Center",
     "genre": "Jazz/Standards/Classical",
-    "sxm_number": 78,
+    "sxm_number": 66,
     "seasonal": null,
     "logo_url": "https://stellartunerlog.com/logos/symphonyhall.png",
     "sxm_logo_src": "if/cc/ccb8a729794f33748f8c76558812c326_1740160031.jpg",
@@ -7940,6 +7929,17 @@
     "sxm_logo_src": "",
     "sxm_entity_id": "9560",
     "lookaround_channel_id": null
+  },
+  "soulcycle radio": {
+    "name": "SoulCycle Radio",
+    "description": "There's a reason we ride to the rhythm as a pack. At SoulCycle, music is what connects us, moves us, and inspires us. So we designed this channel to deliver the same joy, motivation, and heart-pumping beat you expect from us in class-and then some. Whether you're in the car, walking to work, or dancing in your bedroom, turn it up for a transformative mind-body-soul experience.",
+    "genre": "Pop",
+    "sxm_number": 704,
+    "seasonal": null,
+    "logo_url": "https://stellartunerlog.com/logos/9500.png",
+    "sxm_logo_src": "if/66/66cd9165c54231c9b831ebf64cb7417f_1756126389.png",
+    "sxm_entity_id": "9500",
+    "lookaround_channel_id": "6c535597-8e2b-5b54-968a-10cad277f43b"
   },
   "sports 392": {
     "name": "Sports 392",
