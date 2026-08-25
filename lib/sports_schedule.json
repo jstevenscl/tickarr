@@ -1,18 +1,6 @@
 {
-  "generated_at": "2026-08-24T20:21:55Z",
+  "generated_at": "2026-08-25T00:53:48Z",
   "events": [
-    {
-      "slug": "soccer",
-      "title": "Fulham @ Chelsea",
-      "description": "SOCCER · Fulham @ Chelsea",
-      "start_utc": "2026-08-24T19:00:00Z",
-      "end_utc": "2026-08-24T21:00:00Z",
-      "channels": [
-        "Chelsea",
-        "Fulham",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Miami Marlins @ Boston Red Sox",
