@@ -1,70 +1,6 @@
 {
-  "generated_at": "2026-08-30T02:59:42Z",
+  "generated_at": "2026-08-30T09:38:38Z",
   "events": [
-    {
-      "slug": "nascar",
-      "title": "Coke Zero Sugar 400",
-      "description": "SiriusXM NASCAR Radio · Coke Zero Sugar 400 · Daytona International Speedway",
-      "start_utc": "2026-08-29T22:30:00Z",
-      "end_utc": "2026-08-30T02:00:00Z",
-      "channels": [
-        "SiriusXM NASCAR Radio",
-        "Sports 997",
-        "Sports 998",
-        "Sports 999"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Athletics @ Baltimore Orioles",
-      "description": "MLB · Athletics @ Baltimore Orioles",
-      "start_utc": "2026-08-30T02:05:00Z",
-      "end_utc": "2026-08-30T05:05:00Z",
-      "channels": [
-        "Baltimore Orioles",
-        "Athletics",
-        "MLB Play-by-Play 176",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "San Francisco Giants @ Arizona Diamondbacks",
-      "description": "MLB · San Francisco Giants @ Arizona Diamondbacks",
-      "start_utc": "2026-08-30T02:05:00Z",
-      "end_utc": "2026-08-30T05:05:00Z",
-      "channels": [
-        "Arizona Diamondbacks",
-        "San Francisco Giants",
-        "MLB Play-by-Play 180",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Los Angeles Angels @ Philadelphia Phillies",
-      "description": "MLB · Los Angeles Angels @ Philadelphia Phillies",
-      "start_utc": "2026-08-30T02:07:00Z",
-      "end_utc": "2026-08-30T05:07:00Z",
-      "channels": [
-        "Philadelphia Phillies",
-        "Los Angeles Angels",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "San Diego FC @ LA Galaxy",
-      "description": "SOCCER · San Diego FC @ LA Galaxy",
-      "start_utc": "2026-08-30T02:30:00Z",
-      "end_utc": "2026-08-30T04:30:00Z",
-      "channels": [
-        "LA Galaxy",
-        "San Diego FC",
-        "Soccer en Español",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "soccer",
       "title": "Chelsea @ Brighton",
@@ -100,6 +36,19 @@
       ]
     },
     {
+      "slug": "mlb",
+      "title": "Washington Nationals @ Miami Marlins",
+      "description": "MLB · Washington Nationals @ Miami Marlins",
+      "start_utc": "2026-08-30T16:15:00Z",
+      "end_utc": "2026-08-30T19:15:00Z",
+      "channels": [
+        "Miami Marlins",
+        "Washington Nationals",
+        "MLB Play-by-Play 175",
+        "MLB Network Radio"
+      ]
+    },
+    {
       "slug": "pga",
       "title": "TOUR Championship",
       "description": "SiriusXM PGA Tour Radio · TOUR Championship · East Lake Golf Club",
@@ -118,6 +67,176 @@
       "end_utc": "2026-08-30T19:30:00Z",
       "channels": [
         "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Atlanta Braves @ Colorado Rockies",
+      "description": "MLB · Atlanta Braves @ Colorado Rockies",
+      "start_utc": "2026-08-30T17:35:00Z",
+      "end_utc": "2026-08-30T20:35:00Z",
+      "channels": [
+        "Colorado Rockies",
+        "Atlanta Braves",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "New York Yankees @ Boston Red Sox",
+      "description": "MLB · New York Yankees @ Boston Red Sox",
+      "start_utc": "2026-08-30T17:35:00Z",
+      "end_utc": "2026-08-30T20:35:00Z",
+      "channels": [
+        "Boston Red Sox",
+        "New York Yankees",
+        "MLB Play-by-Play 176",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Toronto Blue Jays @ Seattle Mariners",
+      "description": "MLB · Toronto Blue Jays @ Seattle Mariners",
+      "start_utc": "2026-08-30T17:37:00Z",
+      "end_utc": "2026-08-30T20:37:00Z",
+      "channels": [
+        "Seattle Mariners",
+        "Toronto Blue Jays",
+        "MLB Play-by-Play 178",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Cleveland Guardians @ Kansas City Royals",
+      "description": "MLB · Cleveland Guardians @ Kansas City Royals",
+      "start_utc": "2026-08-30T17:40:00Z",
+      "end_utc": "2026-08-30T20:40:00Z",
+      "channels": [
+        "Kansas City Royals",
+        "Cleveland Guardians",
+        "MLB Play-by-Play 179",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Detroit Tigers @ Los Angeles Dodgers",
+      "description": "MLB · Detroit Tigers @ Los Angeles Dodgers",
+      "start_utc": "2026-08-30T17:40:00Z",
+      "end_utc": "2026-08-30T20:40:00Z",
+      "channels": [
+        "Los Angeles Dodgers",
+        "Detroit Tigers",
+        "MLB Play-by-Play 180",
+        "MLB en Español 870",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Tampa Bay Rays @ San Diego Padres",
+      "description": "MLB · Tampa Bay Rays @ San Diego Padres",
+      "start_utc": "2026-08-30T17:40:00Z",
+      "end_utc": "2026-08-30T20:40:00Z",
+      "channels": [
+        "San Diego Padres",
+        "Tampa Bay Rays",
+        "MLB Play-by-Play 177",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Minnesota Twins @ Chicago White Sox",
+      "description": "MLB · Minnesota Twins @ Chicago White Sox",
+      "start_utc": "2026-08-30T18:10:00Z",
+      "end_utc": "2026-08-30T21:10:00Z",
+      "channels": [
+        "Chicago White Sox",
+        "Minnesota Twins",
+        "MLB Play-by-Play 182",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Milwaukee Brewers @ Texas Rangers",
+      "description": "MLB · Milwaukee Brewers @ Texas Rangers",
+      "start_utc": "2026-08-30T18:10:00Z",
+      "end_utc": "2026-08-30T21:10:00Z",
+      "channels": [
+        "Texas Rangers",
+        "Milwaukee Brewers",
+        "MLB Play-by-Play 183",
+        "MLB en Español 871",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "St. Louis Cardinals @ Pittsburgh Pirates",
+      "description": "MLB · St. Louis Cardinals @ Pittsburgh Pirates",
+      "start_utc": "2026-08-30T18:15:00Z",
+      "end_utc": "2026-08-30T21:15:00Z",
+      "channels": [
+        "Pittsburgh Pirates",
+        "St. Louis Cardinals",
+        "MLB Play-by-Play 181",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "New York Mets @ Houston Astros",
+      "description": "MLB · New York Mets @ Houston Astros",
+      "start_utc": "2026-08-30T19:10:00Z",
+      "end_utc": "2026-08-30T22:10:00Z",
+      "channels": [
+        "Houston Astros",
+        "New York Mets",
+        "MLB Play-by-Play 185",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Athletics @ Baltimore Orioles",
+      "description": "MLB · Athletics @ Baltimore Orioles",
+      "start_utc": "2026-08-30T20:05:00Z",
+      "end_utc": "2026-08-30T23:05:00Z",
+      "channels": [
+        "Baltimore Orioles",
+        "Athletics",
+        "MLB Play-by-Play 187",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Los Angeles Angels @ Philadelphia Phillies",
+      "description": "MLB · Los Angeles Angels @ Philadelphia Phillies",
+      "start_utc": "2026-08-30T20:07:00Z",
+      "end_utc": "2026-08-30T23:07:00Z",
+      "channels": [
+        "Philadelphia Phillies",
+        "Los Angeles Angels",
+        "MLB Play-by-Play 186",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Chicago Cubs @ Cincinnati Reds",
+      "description": "MLB · Chicago Cubs @ Cincinnati Reds",
+      "start_utc": "2026-08-30T23:20:00Z",
+      "end_utc": "2026-08-31T02:20:00Z",
+      "channels": [
+        "Cincinnati Reds",
+        "Chicago Cubs",
+        "MLB Network Radio",
+        "MLB Play-by-Play 175"
       ]
     },
     {
@@ -177,6 +296,26 @@
       ]
     },
     {
+      "slug": "nascar",
+      "title": "NCS Pole Qualifying",
+      "description": "SiriusXM NASCAR Radio · NCS Pole Qualifying · Darlington Raceway",
+      "start_utc": "2026-09-05T20:00:00Z",
+      "end_utc": "2026-09-05T23:30:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "Fleetio 200",
+      "description": "SiriusXM NASCAR Radio · Fleetio 200 · Darlington Raceway",
+      "start_utc": "2026-09-05T23:00:00Z",
+      "end_utc": "2026-09-06T02:30:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
       "slug": "f1",
       "title": "Italian Grand Prix",
       "description": "Formula 1 Racing and Analysis · Italian Grand Prix · Autodromo Nazionale Monza",
@@ -185,6 +324,16 @@
       "channels": [
         "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "Cook Out Southern 500",
+      "description": "SiriusXM NASCAR Radio · Cook Out Southern 500 · Darlington Raceway",
+      "start_utc": "2026-09-06T20:00:00Z",
+      "end_utc": "2026-09-06T23:30:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
       ]
     },
     {
@@ -232,6 +381,26 @@
       ]
     },
     {
+      "slug": "nascar",
+      "title": "NCS Pole Qualifying",
+      "description": "SiriusXM NASCAR Radio · NCS Pole Qualifying · World Wide Technology Raceway",
+      "start_utc": "2026-09-12T19:30:00Z",
+      "end_utc": "2026-09-12T23:00:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "Nu Way 225 Sauced by Blues Hog",
+      "description": "SiriusXM NASCAR Radio · Nu Way 225 Sauced by Blues Hog · World Wide Technology Raceway",
+      "start_utc": "2026-09-12T23:00:00Z",
+      "end_utc": "2026-09-13T02:30:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
       "slug": "f1",
       "title": "Grand Prix of Spain",
       "description": "Formula 1 Racing and Analysis · Grand Prix of Spain · Circuito de Madring",
@@ -240,6 +409,56 @@
       "channels": [
         "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "Enjoy Illinois 300",
+      "description": "SiriusXM NASCAR Radio · Enjoy Illinois 300 · World Wide Technology Raceway",
+      "start_utc": "2026-09-13T18:00:00Z",
+      "end_utc": "2026-09-13T21:30:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "UNOH 250 Presented by Ohio Logistics",
+      "description": "SiriusXM NASCAR Radio · UNOH 250 Presented by Ohio Logistics · Bristol Motor Speedway",
+      "start_utc": "2026-09-17T23:30:00Z",
+      "end_utc": "2026-09-18T03:00:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "NCS Pole Qualifying",
+      "description": "SiriusXM NASCAR Radio · NCS Pole Qualifying · Bristol Motor Speedway",
+      "start_utc": "2026-09-18T20:30:00Z",
+      "end_utc": "2026-09-19T00:00:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "Food City 300",
+      "description": "SiriusXM NASCAR Radio · Food City 300 · Bristol Motor Speedway",
+      "start_utc": "2026-09-18T23:00:00Z",
+      "end_utc": "2026-09-19T02:30:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "Bass Pro Shops Night Race",
+      "description": "SiriusXM NASCAR Radio · Bass Pro Shops Night Race · Bristol Motor Speedway",
+      "start_utc": "2026-09-19T22:30:00Z",
+      "end_utc": "2026-09-20T02:00:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
       ]
     },
     {
@@ -287,6 +506,16 @@
       ]
     },
     {
+      "slug": "nascar",
+      "title": "NCS Pole Qualifying",
+      "description": "SiriusXM NASCAR Radio · NCS Pole Qualifying · Kansas Speedway",
+      "start_utc": "2026-09-25T14:00:00Z",
+      "end_utc": "2026-09-25T17:30:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
       "slug": "f1",
       "title": "Azerbaijan Grand Prix",
       "description": "Formula 1 Racing and Analysis · Azerbaijan Grand Prix · Baku City Circuit",
@@ -295,6 +524,26 @@
       "channels": [
         "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "NASCAR CRAFTSMAN Truck Series Playoff Race at Kansas",
+      "description": "SiriusXM NASCAR Radio · NASCAR CRAFTSMAN Truck Series Playoff Race at Kansas · Kansas Speedway",
+      "start_utc": "2026-09-26T16:30:00Z",
+      "end_utc": "2026-09-26T20:00:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "nascar",
+      "title": "Hollywood Casino 400",
+      "description": "SiriusXM NASCAR Radio · Hollywood Casino 400 · Kansas Speedway",
+      "start_utc": "2026-09-27T18:00:00Z",
+      "end_utc": "2026-09-27T21:30:00Z",
+      "channels": [
+        "SiriusXM NASCAR Radio"
       ]
     }
   ]
