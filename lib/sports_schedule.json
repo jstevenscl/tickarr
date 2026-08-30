@@ -1,19 +1,6 @@
 {
-  "generated_at": "2026-08-30T18:58:45Z",
+  "generated_at": "2026-08-30T22:17:37Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Washington Nationals @ Miami Marlins",
-      "description": "MLB · Washington Nationals @ Miami Marlins",
-      "start_utc": "2026-08-30T16:15:00Z",
-      "end_utc": "2026-08-30T19:15:00Z",
-      "channels": [
-        "Miami Marlins",
-        "Washington Nationals",
-        "MLB Play-by-Play 175",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "pga",
       "title": "TOUR Championship",
@@ -23,147 +10,6 @@
       "channels": [
         "SiriusXM PGA TOUR Radio",
         "SiriusXM PGA Tour Radio"
-      ]
-    },
-    {
-      "slug": "indycar",
-      "title": "Milwaukee Mile Race 2",
-      "description": "SiriusXM INDYCAR Nation · Milwaukee Mile Race 2 · Milwaukee Mile",
-      "start_utc": "2026-08-30T17:00:00Z",
-      "end_utc": "2026-08-30T19:30:00Z",
-      "channels": [
-        "SiriusXM INDYCAR Nation"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Atlanta Braves @ Colorado Rockies",
-      "description": "MLB · Atlanta Braves @ Colorado Rockies",
-      "start_utc": "2026-08-30T17:35:00Z",
-      "end_utc": "2026-08-30T20:35:00Z",
-      "channels": [
-        "Colorado Rockies",
-        "Atlanta Braves",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Yankees @ Boston Red Sox",
-      "description": "MLB · New York Yankees @ Boston Red Sox",
-      "start_utc": "2026-08-30T17:35:00Z",
-      "end_utc": "2026-08-30T20:35:00Z",
-      "channels": [
-        "Boston Red Sox",
-        "New York Yankees",
-        "MLB Play-by-Play 176",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Toronto Blue Jays @ Seattle Mariners",
-      "description": "MLB · Toronto Blue Jays @ Seattle Mariners",
-      "start_utc": "2026-08-30T17:37:00Z",
-      "end_utc": "2026-08-30T20:37:00Z",
-      "channels": [
-        "Seattle Mariners",
-        "Toronto Blue Jays",
-        "MLB Play-by-Play 178",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cleveland Guardians @ Kansas City Royals",
-      "description": "MLB · Cleveland Guardians @ Kansas City Royals",
-      "start_utc": "2026-08-30T17:40:00Z",
-      "end_utc": "2026-08-30T20:40:00Z",
-      "channels": [
-        "Kansas City Royals",
-        "Cleveland Guardians",
-        "MLB Play-by-Play 179",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Detroit Tigers @ Los Angeles Dodgers",
-      "description": "MLB · Detroit Tigers @ Los Angeles Dodgers",
-      "start_utc": "2026-08-30T17:40:00Z",
-      "end_utc": "2026-08-30T20:40:00Z",
-      "channels": [
-        "Los Angeles Dodgers",
-        "Detroit Tigers",
-        "MLB Play-by-Play 180",
-        "MLB en Español 870",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Tampa Bay Rays @ San Diego Padres",
-      "description": "MLB · Tampa Bay Rays @ San Diego Padres",
-      "start_utc": "2026-08-30T17:40:00Z",
-      "end_utc": "2026-08-30T20:40:00Z",
-      "channels": [
-        "San Diego Padres",
-        "Tampa Bay Rays",
-        "MLB Play-by-Play 177",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Minnesota Twins @ Chicago White Sox",
-      "description": "MLB · Minnesota Twins @ Chicago White Sox",
-      "start_utc": "2026-08-30T18:10:00Z",
-      "end_utc": "2026-08-30T21:10:00Z",
-      "channels": [
-        "Chicago White Sox",
-        "Minnesota Twins",
-        "MLB Play-by-Play 182",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Milwaukee Brewers @ Texas Rangers",
-      "description": "MLB · Milwaukee Brewers @ Texas Rangers",
-      "start_utc": "2026-08-30T18:10:00Z",
-      "end_utc": "2026-08-30T21:10:00Z",
-      "channels": [
-        "Texas Rangers",
-        "Milwaukee Brewers",
-        "MLB Play-by-Play 183",
-        "MLB en Español 871",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "St. Louis Cardinals @ Pittsburgh Pirates",
-      "description": "MLB · St. Louis Cardinals @ Pittsburgh Pirates",
-      "start_utc": "2026-08-30T18:15:00Z",
-      "end_utc": "2026-08-30T21:15:00Z",
-      "channels": [
-        "Pittsburgh Pirates",
-        "St. Louis Cardinals",
-        "MLB Play-by-Play 181",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "New York Mets @ Houston Astros",
-      "description": "MLB · New York Mets @ Houston Astros",
-      "start_utc": "2026-08-30T19:10:00Z",
-      "end_utc": "2026-08-30T22:10:00Z",
-      "channels": [
-        "Houston Astros",
-        "New York Mets",
-        "MLB Play-by-Play 185",
-        "MLB Network Radio"
       ]
     },
     {
@@ -272,6 +118,16 @@
       ]
     },
     {
+      "slug": "indycar",
+      "title": "INDY NXT Race 1",
+      "description": "SiriusXM INDYCAR Nation · INDY NXT Race 1 · Weathertech Raceway Laguna Seca",
+      "start_utc": "2026-09-05T22:25:00Z",
+      "end_utc": "2026-09-06T00:55:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
       "slug": "nascar",
       "title": "Fleetio 200",
       "description": "SiriusXM NASCAR Radio · Fleetio 200 · Darlington Raceway",
@@ -290,6 +146,26 @@
       "channels": [
         "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "INDY NXT Race 2",
+      "description": "SiriusXM INDYCAR Nation · INDY NXT Race 2 · Weathertech Raceway Laguna Seca",
+      "start_utc": "2026-09-06T16:25:00Z",
+      "end_utc": "2026-09-06T18:55:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
+      ]
+    },
+    {
+      "slug": "indycar",
+      "title": "INDYCAR GP of Monterey",
+      "description": "SiriusXM INDYCAR Nation · INDYCAR GP of Monterey · Weathertech Raceway Laguna Seca",
+      "start_utc": "2026-09-06T18:30:00Z",
+      "end_utc": "2026-09-06T21:00:00Z",
+      "channels": [
+        "SiriusXM INDYCAR Nation"
       ]
     },
     {
