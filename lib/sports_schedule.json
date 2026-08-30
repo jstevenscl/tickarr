@@ -1,18 +1,6 @@
 {
-  "generated_at": "2026-08-30T09:38:38Z",
+  "generated_at": "2026-08-30T15:51:15Z",
   "events": [
-    {
-      "slug": "soccer",
-      "title": "Chelsea @ Brighton",
-      "description": "SOCCER · Chelsea @ Brighton",
-      "start_utc": "2026-08-30T13:00:00Z",
-      "end_utc": "2026-08-30T15:00:00Z",
-      "channels": [
-        "Brighton",
-        "Chelsea",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "indycar",
       "title": "INDY NXT Race",
