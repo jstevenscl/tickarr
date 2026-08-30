@@ -1450,7 +1450,19 @@ def _get_mappings():
         if os.path.exists(MAPPINGS_FILE):
             with open(MAPPINGS_FILE, encoding="utf-8") as f:
                 return json.load(f)
-    except Exception as e:
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        # Genuinely unparseable content (not a transient I/O error) — heal so we
+        # don't re-log this on every sweep tick forever. Preserve the bad file
+        # for forensics first.
+        logger.error(f"tickarr: mappings file is corrupt, resetting to empty: {e}")
+        try:
+            os.replace(MAPPINGS_FILE, MAPPINGS_FILE + ".corrupt")
+        except OSError:
+            pass
+        _save_mappings({})
+    except OSError as e:
+        # Transient read failure (lock, permissions, race with a concurrent
+        # writer) — do NOT touch the file; it may well be fine on the next read.
         logger.error(f"tickarr: failed to read mappings: {e}")
     return {}
 
