@@ -3552,8 +3552,8 @@
     "sxm_entity_id": "9607",
     "lookaround_channel_id": "ad0ab172-202f-c05b-c7b9-597be600541f"
   },
-  "kellyclarkson connection": {
-    "name": "KellyClarkson Connection",
+  "the kelly clarkson connection": {
+    "name": "The Kelly Clarkson Connection",
     "description": "The Kelly Clarkson universe hits the airwaves with The Kelly Clarkson Connection! Make yourself comfortable in Kelly's world - you'll be surrounded by the music she loves, music she's inspired by and the stories behind the songs in Kelly's two-decade long catalog of award-winning hits. Experience the chemistry of The Kelly Clarkson Connection!",
     "genre": "Pop",
     "sxm_number": 12,
@@ -3816,10 +3816,10 @@
     "sxm_entity_id": "9673",
     "lookaround_channel_id": "fc92713b-2006-4980-ef7c-e70f1da80427"
   },
-  "experts only radio_105": {
-    "name": "Experts Only Radio",
-    "description": "John Summit takes you on a musical journey without limits! Hear his bi-weekly show and discover a variety of sounds and styles as well as DJ sets from around the world. (explicit)",
-    "genre": "Dance/Electronic",
+  "road trip radio_105": {
+    "name": "Road Trip Radio",
+    "description": "Roll your windows down and turn the music up! A hand-selected mix of driving jams and singalongs as unpredictable as your journey. Hear all the music from the last 60 years sure to please everyone in the car!",
+    "genre": "Pop",
     "sxm_number": 105,
     "seasonal": null,
     "logo_url": "https://stellartunerlog.com/logos/9674.png",
@@ -4478,7 +4478,7 @@
   },
   "kirk franklin's praise": {
     "name": "Kirk Franklin's Praise",
-    "description": "Grammy winning icon Kirk Franklin empowers you through your day with today's divinely inspired gospel music. Hear inspirational music from artists including Tamela Mann, Donnie McClurkin, Tye Tribett, Le'Andria Johnson and more. Kirk's got the music and the message to make ya sing, clap and shout!",
+    "description": "Grammy-winning icon Kirk Franklin empowers you through your day with today's divinely inspired gospel music. Hear inspirational music from artists including Tamela Mann, Donnie McClurkin, Tye Tribett, Le'Andria Johnson and more. Kirk's got the music and the message to make ya sing, clap and shout!",
     "genre": "Christian",
     "sxm_number": 77,
     "seasonal": null,
