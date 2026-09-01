@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-01T15:54:28Z",
+  "generated_at": "2026-09-01T19:07:43Z",
   "events": [
     {
       "slug": "mlb",
@@ -201,6 +201,19 @@
       ]
     },
     {
+      "slug": "soccer",
+      "title": "Charleston Battery @ Hartford Athletic",
+      "description": "SOCCER · Charleston Battery @ Hartford Athletic",
+      "start_utc": "2026-09-02T23:00:00Z",
+      "end_utc": "2026-09-03T01:00:00Z",
+      "channels": [
+        "Hartford Athletic",
+        "Charleston Battery",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
       "slug": "f1",
       "title": "F-1 Practice 1",
       "description": "Formula 1 Racing and Analysis · F-1 Practice 1 · Autodromo Nazionale Monza",
@@ -223,6 +236,32 @@
       ]
     },
     {
+      "slug": "soccer",
+      "title": "Ipswich @ Liverpool",
+      "description": "SOCCER · Ipswich @ Liverpool",
+      "start_utc": "2026-09-04T19:00:00Z",
+      "end_utc": "2026-09-04T21:00:00Z",
+      "channels": [
+        "Liverpool",
+        "Ipswich",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Bay FC @ Kansas City Current",
+      "description": "SOCCER · Bay FC @ Kansas City Current",
+      "start_utc": "2026-09-05T02:00:00Z",
+      "end_utc": "2026-09-05T04:00:00Z",
+      "channels": [
+        "Kansas City Current",
+        "Bay FC",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
       "slug": "f1",
       "title": "F-1 Practice 3",
       "description": "Formula 1 Racing and Analysis · F-1 Practice 3 · Autodromo Nazionale Monza",
@@ -234,6 +273,19 @@
       ]
     },
     {
+      "slug": "soccer",
+      "title": "Newcastle @ Bournemouth",
+      "description": "SOCCER · Newcastle @ Bournemouth",
+      "start_utc": "2026-09-05T11:30:00Z",
+      "end_utc": "2026-09-05T13:30:00Z",
+      "channels": [
+        "Bournemouth",
+        "Newcastle",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
       "slug": "f1",
       "title": "F-1 Qualifying",
       "description": "Formula 1 Racing and Analysis · F-1 Qualifying · Autodromo Nazionale Monza",
@@ -242,6 +294,45 @@
       "channels": [
         "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Nottingham Forest @ Tottenham",
+      "description": "SOCCER · Nottingham Forest @ Tottenham",
+      "start_utc": "2026-09-05T14:00:00Z",
+      "end_utc": "2026-09-05T16:00:00Z",
+      "channels": [
+        "Tottenham",
+        "Nottingham Forest",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Manchester City @ Coventry City",
+      "description": "SOCCER · Manchester City @ Coventry City",
+      "start_utc": "2026-09-05T14:00:00Z",
+      "end_utc": "2026-09-05T16:00:00Z",
+      "channels": [
+        "Coventry City",
+        "Manchester City",
+        "Sports 964",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Hull City @ Aston Villa",
+      "description": "SOCCER · Hull City @ Aston Villa",
+      "start_utc": "2026-09-05T16:30:00Z",
+      "end_utc": "2026-09-05T18:30:00Z",
+      "channels": [
+        "Aston Villa",
+        "Hull City",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
       ]
     },
     {
@@ -276,6 +367,57 @@
       ]
     },
     {
+      "slug": "soccer",
+      "title": "Philadelphia Union @ CF Montreal",
+      "description": "SOCCER · Philadelphia Union @ CF Montreal",
+      "start_utc": "2026-09-05T23:30:00Z",
+      "end_utc": "2026-09-06T01:30:00Z",
+      "channels": [
+        "CF Montreal",
+        "Philadelphia Union",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Inter Miami CF @ Atlanta United",
+      "description": "SOCCER · Inter Miami CF @ Atlanta United",
+      "start_utc": "2026-09-05T23:30:00Z",
+      "end_utc": "2026-09-06T01:30:00Z",
+      "channels": [
+        "Atlanta United",
+        "Inter Miami CF",
+        "Soccer en Español",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Real Salt Lake @ LAFC",
+      "description": "SOCCER · Real Salt Lake @ LAFC",
+      "start_utc": "2026-09-06T01:30:00Z",
+      "end_utc": "2026-09-06T03:30:00Z",
+      "channels": [
+        "LAFC",
+        "Real Salt Lake",
+        "Soccer en Español",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Everton @ Manchester United",
+      "description": "SOCCER · Everton @ Manchester United",
+      "start_utc": "2026-09-06T13:00:00Z",
+      "end_utc": "2026-09-06T15:00:00Z",
+      "channels": [
+        "Manchester United",
+        "Everton",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
       "slug": "f1",
       "title": "Italian Grand Prix",
       "description": "Formula 1 Racing and Analysis · Italian Grand Prix · Autodromo Nazionale Monza",
@@ -284,6 +426,19 @@
       "channels": [
         "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Arsenal @ Chelsea",
+      "description": "SOCCER · Arsenal @ Chelsea",
+      "start_utc": "2026-09-06T15:30:00Z",
+      "end_utc": "2026-09-06T17:30:00Z",
+      "channels": [
+        "Chelsea",
+        "Arsenal",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
       ]
     },
     {
@@ -315,7 +470,10 @@
       "start_utc": "2026-09-06T20:00:00Z",
       "end_utc": "2026-09-06T23:30:00Z",
       "channels": [
-        "SiriusXM NASCAR Radio"
+        "SiriusXM NASCAR Radio",
+        "Sports 997",
+        "Sports 998",
+        "Sports 999"
       ]
     },
     {
@@ -328,7 +486,35 @@
         "New England Patriots",
         "Seattle Seahawks",
         "SiriusXM NFL Radio",
+        "NCAA Play-by-Play 192",
+        "NCAA Play-by-Play 193",
         "NFL en Español 832"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Chicago Fire @ Inter Miami CF",
+      "description": "SOCCER · Chicago Fire @ Inter Miami CF",
+      "start_utc": "2026-09-10T00:30:00Z",
+      "end_utc": "2026-09-10T02:30:00Z",
+      "channels": [
+        "Inter Miami CF",
+        "Chicago Fire",
+        "Soccer en Español",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Vancouver Whitecaps @ LA Galaxy",
+      "description": "SOCCER · Vancouver Whitecaps @ LA Galaxy",
+      "start_utc": "2026-09-10T02:30:00Z",
+      "end_utc": "2026-09-10T04:30:00Z",
+      "channels": [
+        "LA Galaxy",
+        "Vancouver Whitecaps",
+        "Soccer en Español",
+        "SiriusXM FC"
       ]
     },
     {
@@ -354,6 +540,19 @@
       ]
     },
     {
+      "slug": "soccer",
+      "title": "Kansas City Current @ Orlando Pride",
+      "description": "SOCCER · Kansas City Current @ Orlando Pride",
+      "start_utc": "2026-09-12T00:00:00Z",
+      "end_utc": "2026-09-12T02:00:00Z",
+      "channels": [
+        "Orlando Pride",
+        "Kansas City Current",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
       "slug": "f1",
       "title": "F-1 Practice 3",
       "description": "Formula 1 Racing and Analysis · F-1 Practice 3 · Circuito de Madring",
@@ -373,6 +572,58 @@
       "channels": [
         "F1 on SiriusXM",
         "Formula 1 Racing and Analysis"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Chelsea @ Hull City",
+      "description": "SOCCER · Chelsea @ Hull City",
+      "start_utc": "2026-09-12T14:00:00Z",
+      "end_utc": "2026-09-12T16:00:00Z",
+      "channels": [
+        "Hull City",
+        "Chelsea",
+        "Sports 964",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Liverpool @ Fulham",
+      "description": "SOCCER · Liverpool @ Fulham",
+      "start_utc": "2026-09-12T14:00:00Z",
+      "end_utc": "2026-09-12T16:00:00Z",
+      "channels": [
+        "Fulham",
+        "Liverpool",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Tottenham @ Everton",
+      "description": "SOCCER · Tottenham @ Everton",
+      "start_utc": "2026-09-12T16:30:00Z",
+      "end_utc": "2026-09-12T18:30:00Z",
+      "channels": [
+        "Everton",
+        "Tottenham",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Sunderland @ Arsenal",
+      "description": "SOCCER · Sunderland @ Arsenal",
+      "start_utc": "2026-09-12T19:00:00Z",
+      "end_utc": "2026-09-12T21:00:00Z",
+      "channels": [
+        "Arsenal",
+        "Sunderland",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
       ]
     },
     {
@@ -396,6 +647,44 @@
       ]
     },
     {
+      "slug": "soccer",
+      "title": "Inter Miami CF @ Nashville SC",
+      "description": "SOCCER · Inter Miami CF @ Nashville SC",
+      "start_utc": "2026-09-12T23:30:00Z",
+      "end_utc": "2026-09-13T01:30:00Z",
+      "channels": [
+        "Nashville SC",
+        "Inter Miami CF",
+        "Soccer en Español",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "San Jose Earthquakes @ Houston Dynamo",
+      "description": "SOCCER · San Jose Earthquakes @ Houston Dynamo",
+      "start_utc": "2026-09-13T02:30:00Z",
+      "end_utc": "2026-09-13T04:30:00Z",
+      "channels": [
+        "Houston Dynamo",
+        "San Jose Earthquakes",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Coventry City @ Brighton",
+      "description": "SOCCER · Coventry City @ Brighton",
+      "start_utc": "2026-09-13T13:00:00Z",
+      "end_utc": "2026-09-13T15:00:00Z",
+      "channels": [
+        "Brighton",
+        "Coventry City",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
       "slug": "f1",
       "title": "Grand Prix of Spain",
       "description": "Formula 1 Racing and Analysis · Grand Prix of Spain · Circuito de Madring",
@@ -407,6 +696,19 @@
       ]
     },
     {
+      "slug": "soccer",
+      "title": "Manchester United @ Manchester City",
+      "description": "SOCCER · Manchester United @ Manchester City",
+      "start_utc": "2026-09-13T15:30:00Z",
+      "end_utc": "2026-09-13T17:30:00Z",
+      "channels": [
+        "Manchester City",
+        "Manchester United",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
       "slug": "nascar",
       "title": "Enjoy Illinois 300",
       "description": "SiriusXM NASCAR Radio · Enjoy Illinois 300 · World Wide Technology Raceway",
@@ -414,6 +716,43 @@
       "end_utc": "2026-09-13T21:30:00Z",
       "channels": [
         "SiriusXM NASCAR Radio"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Chicago Fire @ New England Revolution",
+      "description": "SOCCER · Chicago Fire @ New England Revolution",
+      "start_utc": "2026-09-13T21:30:00Z",
+      "end_utc": "2026-09-13T23:30:00Z",
+      "channels": [
+        "New England Revolution",
+        "Chicago Fire",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "San Diego FC @ Philadelphia Union",
+      "description": "SOCCER · San Diego FC @ Philadelphia Union",
+      "start_utc": "2026-09-14T01:00:00Z",
+      "end_utc": "2026-09-14T03:00:00Z",
+      "channels": [
+        "Philadelphia Union",
+        "San Diego FC",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Leeds @ Newcastle",
+      "description": "SOCCER · Leeds @ Newcastle",
+      "start_utc": "2026-09-14T19:00:00Z",
+      "end_utc": "2026-09-14T21:00:00Z",
+      "channels": [
+        "Newcastle",
+        "Leeds",
+        "MLB Play-by-Play 188",
+        "SiriusXM FC"
       ]
     },
     {
