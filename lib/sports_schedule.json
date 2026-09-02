@@ -1,83 +1,6 @@
 {
-  "generated_at": "2026-09-01T22:17:27Z",
+  "generated_at": "2026-09-02T02:22:26Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Cincinnati Reds @ San Diego Padres",
-      "description": "MLB · Cincinnati Reds @ San Diego Padres",
-      "start_utc": "2026-09-01T22:40:00Z",
-      "end_utc": "2026-09-02T01:40:00Z",
-      "channels": [
-        "San Diego Padres",
-        "Cincinnati Reds",
-        "Satellite Radio Channel 203",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Pittsburgh Pirates @ San Francisco Giants",
-      "description": "MLB · Pittsburgh Pirates @ San Francisco Giants",
-      "start_utc": "2026-09-01T22:40:00Z",
-      "end_utc": "2026-09-02T01:40:00Z",
-      "channels": [
-        "San Francisco Giants",
-        "Pittsburgh Pirates",
-        "Satellite Radio Channel 204",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cleveland Guardians @ Toronto Blue Jays",
-      "description": "MLB · Cleveland Guardians @ Toronto Blue Jays",
-      "start_utc": "2026-09-01T22:40:00Z",
-      "end_utc": "2026-09-02T01:40:00Z",
-      "channels": [
-        "Toronto Blue Jays",
-        "Cleveland Guardians",
-        "Satellite Radio Channel 205",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Tampa Bay Rays @ New York Mets",
-      "description": "MLB · Tampa Bay Rays @ New York Mets",
-      "start_utc": "2026-09-01T22:40:00Z",
-      "end_utc": "2026-09-02T01:40:00Z",
-      "channels": [
-        "New York Mets",
-        "Tampa Bay Rays",
-        "Satellite Radio Channel 202",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Washington Nationals @ Atlanta Braves",
-      "description": "MLB · Washington Nationals @ Atlanta Braves",
-      "start_utc": "2026-09-01T22:45:00Z",
-      "end_utc": "2026-09-02T01:45:00Z",
-      "channels": [
-        "Atlanta Braves",
-        "Washington Nationals",
-        "Satellite Radio Channel 206",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Boston Red Sox @ Seattle Mariners",
-      "description": "MLB · Boston Red Sox @ Seattle Mariners",
-      "start_utc": "2026-09-01T22:45:00Z",
-      "end_utc": "2026-09-02T01:45:00Z",
-      "channels": [
-        "Seattle Mariners",
-        "Boston Red Sox",
-        "MLB Network Radio"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Kansas City Royals @ Miami Marlins",
@@ -93,19 +16,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Chicago Cubs @ Milwaukee Brewers",
-      "description": "MLB · Chicago Cubs @ Milwaukee Brewers",
-      "start_utc": "2026-09-01T23:40:00Z",
-      "end_utc": "2026-09-02T02:40:00Z",
-      "channels": [
-        "Milwaukee Brewers",
-        "Chicago Cubs",
-        "Satellite Radio Channel 207",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "Minnesota Twins @ Detroit Tigers",
       "description": "MLB · Minnesota Twins @ Detroit Tigers",
       "start_utc": "2026-09-01T23:40:00Z",
@@ -115,6 +25,19 @@
         "Minnesota Twins",
         "ICI Première",
         "Satellite Radio Channel 208",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Chicago Cubs @ Milwaukee Brewers",
+      "description": "MLB · Chicago Cubs @ Milwaukee Brewers",
+      "start_utc": "2026-09-01T23:40:00Z",
+      "end_utc": "2026-09-02T02:40:00Z",
+      "channels": [
+        "Milwaukee Brewers",
+        "Chicago Cubs",
+        "Satellite Radio Channel 207",
         "MLB Network Radio"
       ]
     },
