@@ -1,85 +1,6 @@
 {
-  "generated_at": "2026-09-02T22:14:22Z",
+  "generated_at": "2026-09-03T02:29:35Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Arizona Diamondbacks @ Philadelphia Phillies",
-      "description": "MLB · Arizona Diamondbacks @ Philadelphia Phillies",
-      "start_utc": "2026-09-02T19:40:00Z",
-      "end_utc": "2026-09-02T22:40:00Z",
-      "channels": [
-        "Philadelphia Phillies",
-        "Arizona Diamondbacks",
-        "Pure Comedy",
-        "Satellite Radio Channel 206",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Boston Red Sox @ Seattle Mariners",
-      "description": "MLB · Boston Red Sox @ Seattle Mariners",
-      "start_utc": "2026-09-02T20:10:00Z",
-      "end_utc": "2026-09-02T23:10:00Z",
-      "channels": [
-        "Seattle Mariners",
-        "Boston Red Sox",
-        "MLB Network Radio",
-        "Satellite Radio Channel 207"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Tampa Bay Rays @ New York Mets",
-      "description": "MLB · Tampa Bay Rays @ New York Mets",
-      "start_utc": "2026-09-02T22:40:00Z",
-      "end_utc": "2026-09-03T01:40:00Z",
-      "channels": [
-        "New York Mets",
-        "Tampa Bay Rays",
-        "Satellite Radio Channel 208",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cleveland Guardians @ Toronto Blue Jays",
-      "description": "MLB · Cleveland Guardians @ Toronto Blue Jays",
-      "start_utc": "2026-09-02T22:40:00Z",
-      "end_utc": "2026-09-03T01:40:00Z",
-      "channels": [
-        "Toronto Blue Jays",
-        "Cleveland Guardians",
-        "Satellite Radio Channel 210",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Pittsburgh Pirates @ San Francisco Giants",
-      "description": "MLB · Pittsburgh Pirates @ San Francisco Giants",
-      "start_utc": "2026-09-02T22:40:00Z",
-      "end_utc": "2026-09-03T01:40:00Z",
-      "channels": [
-        "San Francisco Giants",
-        "Pittsburgh Pirates",
-        "Satellite Radio Channel 209",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Charleston Battery @ Hartford Athletic",
-      "description": "SOCCER · Charleston Battery @ Hartford Athletic",
-      "start_utc": "2026-09-02T23:00:00Z",
-      "end_utc": "2026-09-03T01:00:00Z",
-      "channels": [
-        "Hartford Athletic",
-        "Charleston Battery",
-        "MLB Play-by-Play 188",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Kansas City Royals @ Miami Marlins",
@@ -95,6 +16,18 @@
     },
     {
       "slug": "mlb",
+      "title": "Chicago Cubs @ Milwaukee Brewers",
+      "description": "MLB · Chicago Cubs @ Milwaukee Brewers",
+      "start_utc": "2026-09-02T23:40:00Z",
+      "end_utc": "2026-09-03T02:40:00Z",
+      "channels": [
+        "Milwaukee Brewers",
+        "Chicago Cubs",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
       "title": "Minnesota Twins @ Detroit Tigers",
       "description": "MLB · Minnesota Twins @ Detroit Tigers",
       "start_utc": "2026-09-02T23:40:00Z",
@@ -104,18 +37,6 @@
         "Minnesota Twins",
         "ICI Première",
         "Satellite Radio Channel 211",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago Cubs @ Milwaukee Brewers",
-      "description": "MLB · Chicago Cubs @ Milwaukee Brewers",
-      "start_utc": "2026-09-02T23:40:00Z",
-      "end_utc": "2026-09-03T02:40:00Z",
-      "channels": [
-        "Milwaukee Brewers",
-        "Chicago Cubs",
         "MLB Network Radio"
       ]
     },
@@ -245,19 +166,6 @@
     },
     {
       "slug": "soccer",
-      "title": "Nottingham Forest @ Tottenham",
-      "description": "SOCCER · Nottingham Forest @ Tottenham",
-      "start_utc": "2026-09-05T14:00:00Z",
-      "end_utc": "2026-09-05T16:00:00Z",
-      "channels": [
-        "Tottenham",
-        "Nottingham Forest",
-        "MLB Play-by-Play 188",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
       "title": "Manchester City @ Coventry City",
       "description": "SOCCER · Manchester City @ Coventry City",
       "start_utc": "2026-09-05T14:00:00Z",
@@ -266,6 +174,19 @@
         "Coventry City",
         "Manchester City",
         "Sports 964",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Nottingham Forest @ Tottenham",
+      "description": "SOCCER · Nottingham Forest @ Tottenham",
+      "start_utc": "2026-09-05T14:00:00Z",
+      "end_utc": "2026-09-05T16:00:00Z",
+      "channels": [
+        "Tottenham",
+        "Nottingham Forest",
+        "MLB Play-by-Play 188",
         "SiriusXM FC"
       ]
     },
@@ -523,19 +444,6 @@
     },
     {
       "slug": "soccer",
-      "title": "Chelsea @ Hull City",
-      "description": "SOCCER · Chelsea @ Hull City",
-      "start_utc": "2026-09-12T14:00:00Z",
-      "end_utc": "2026-09-12T16:00:00Z",
-      "channels": [
-        "Hull City",
-        "Chelsea",
-        "Sports 964",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
       "title": "Liverpool @ Fulham",
       "description": "SOCCER · Liverpool @ Fulham",
       "start_utc": "2026-09-12T14:00:00Z",
@@ -544,6 +452,19 @@
         "Fulham",
         "Liverpool",
         "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Chelsea @ Hull City",
+      "description": "SOCCER · Chelsea @ Hull City",
+      "start_utc": "2026-09-12T14:00:00Z",
+      "end_utc": "2026-09-12T16:00:00Z",
+      "channels": [
+        "Hull City",
+        "Chelsea",
+        "Sports 964",
         "SiriusXM FC"
       ]
     },
