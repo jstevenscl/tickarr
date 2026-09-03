@@ -1,42 +1,16 @@
 {
-  "generated_at": "2026-09-03T19:00:58Z",
+  "generated_at": "2026-09-03T22:07:18Z",
   "events": [
     {
       "slug": "mlb",
-      "title": "Pittsburgh Pirates @ San Francisco Giants",
-      "description": "MLB · Pittsburgh Pirates @ San Francisco Giants",
-      "start_utc": "2026-09-03T16:35:00Z",
-      "end_utc": "2026-09-03T19:35:00Z",
+      "title": "Chicago Cubs @ Milwaukee Brewers",
+      "description": "MLB · Chicago Cubs @ Milwaukee Brewers",
+      "start_utc": "2026-09-03T23:15:00Z",
+      "end_utc": "2026-09-04T02:15:00Z",
       "channels": [
-        "San Francisco Giants",
-        "Pittsburgh Pirates",
-        "Satellite Radio Channel 202",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Cleveland Guardians @ Toronto Blue Jays",
-      "description": "MLB · Cleveland Guardians @ Toronto Blue Jays",
-      "start_utc": "2026-09-03T17:10:00Z",
-      "end_utc": "2026-09-03T20:10:00Z",
-      "channels": [
-        "Toronto Blue Jays",
-        "Cleveland Guardians",
-        "Satellite Radio Channel 203",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Houston Astros @ Chicago White Sox",
-      "description": "MLB · Houston Astros @ Chicago White Sox",
-      "start_utc": "2026-09-03T18:10:00Z",
-      "end_utc": "2026-09-03T21:10:00Z",
-      "channels": [
-        "Chicago White Sox",
-        "Houston Astros",
-        "Satellite Radio Channel 204",
+        "Milwaukee Brewers",
+        "Chicago Cubs",
+        "Satellite Radio Channel 206",
         "MLB Network Radio"
       ]
     },
@@ -51,19 +25,6 @@
         "Baltimore Orioles",
         "Comedy Roundup",
         "Satellite Radio Channel 205",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
-      "title": "Chicago Cubs @ Milwaukee Brewers",
-      "description": "MLB · Chicago Cubs @ Milwaukee Brewers",
-      "start_utc": "2026-09-03T23:15:00Z",
-      "end_utc": "2026-09-04T02:15:00Z",
-      "channels": [
-        "Milwaukee Brewers",
-        "Chicago Cubs",
-        "Satellite Radio Channel 206",
         "MLB Network Radio"
       ]
     },
