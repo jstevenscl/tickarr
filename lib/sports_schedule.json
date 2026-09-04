@@ -1,17 +1,6 @@
 {
-  "generated_at": "2026-09-04T15:34:52Z",
+  "generated_at": "2026-09-04T18:44:48Z",
   "events": [
-    {
-      "slug": "f1",
-      "title": "F-1 Practice 2",
-      "description": "Formula 1 Racing and Analysis · F-1 Practice 2 · Autodromo Nazionale Monza",
-      "start_utc": "2026-09-04T13:55:00Z",
-      "end_utc": "2026-09-04T15:55:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Cleveland Guardians @ Detroit Tigers",
