@@ -1,11 +1,11 @@
 {
   "kelly's handpicked faves": "Kelly Clarkson Connection",
   "kelly clarkson connection": "The Kelly Clarkson Connection",
-  "green day's idiot nation": "FACTION PUNK",
-  "green days idiot nation": "FACTION PUNK",
-  "idiot nation": "FACTION PUNK",
-  "green day x punk": "FACTION PUNK",
-  "green day radio": "FACTION PUNK",
+  "green day's idiot nation": "Green Day's Idiot Nation",
+  "green days idiot nation": "Green Day's Idiot Nation",
+  "idiot nation": "Green Day's Idiot Nation",
+  "green day x punk": "Green Day's Idiot Nation",
+  "green day radio": "Green Day's Idiot Nation",
   "whole lotta red hot": "Red Hot Chili Peppers",
   "whole lotta rhcp on siriusxm": "Red Hot Chili Peppers",
   "whole lotta rhcp": "Red Hot Chili Peppers",
@@ -37,7 +37,7 @@
   "steve aoki remix radio": "Steve Aoki's Remix Radio",
   "iceberg radio": "Iceberg",
   "jeff & larry's comedy roundup": "Comedy Roundup",
-  "alerts from the weather channel": "The Weather Channel",
+  "alerts from the weather channel": "FOX Weather",
   "p.o.t.u.s.": "POTUS Politics",
   "potus": "POTUS Politics",
   "freakonomics radio network": "Freakonomics Radio",
@@ -85,5 +85,7 @@
   "carrie's country": "Carrie's Country",
   "bangers": "Alt Workout",
   "raw comedy": "SebastianManiscalco Cmdy",
-  "raw dog comedy": "SebastianManiscalco Cmdy"
+  "raw dog comedy": "SebastianManiscalco Cmdy",
+  "siriusxm scoreboard": "SiriusXM Sports Schedule",
+  "scoreboard": "SiriusXM Sports Schedule"
 }

@@ -1372,12 +1372,51 @@ def _remove_sports_file(channel_id):
 # Channel cache helpers
 # ---------------------------------------------------------------------------
 
-CACHE_TTL = 7 * 24 * 3600
+CACHE_TTL = 24 * 3600  # was 7 days -- shortened alongside the live-fetch fix below,
+                       # see that comment for why: a week-old cache still masks a
+                       # mid-week SiriusXM lineup change for up to 6 more days.
 
-# Bundled channel data ships inside the plugin directory alongside plugin.py.
-# No EPGeditARR dependency at runtime — data updates with each Tickarr release.
+# Bundled channel data ships inside the plugin directory alongside plugin.py, used
+# only as a fallback when the live fetch below fails (e.g. no network reachability).
+# Confirmed live 2026-09-04 (real incident on an EDM-managed fork of this plugin,
+# ticker_agent): this bundled channels.json is a frozen snapshot from whenever the
+# plugin was last built/released, with no live data source at all -- Refresh Channel
+# Data only ever re-read this same frozen file. Running Sort Channels against it
+# reverted already-corrected channel names back to their pre-reshuffle SXM numbers,
+# because the bundled data still reflected the old lineup. Live-fetching from the
+# same stellartunerlog.com source TICKARR_CHANNEL_URL already uses for nowplaying
+# data (below) is the actual fix -- reshaped into the same {name.lower(): {...}}
+# structure the bundled file used, so _match_channel/_do_fill/_do_logos/
+# _sort_channels all work unchanged regardless of which source supplied the data.
 _BUNDLED_CHANNELS = os.path.join(_PLUGIN_DIR, "channels.json")
 _BUNDLED_ALIASES  = os.path.join(_PLUGIN_DIR, "channel_aliases.json")
+
+
+def _fetch_live_channel_catalog():
+    """Fetch + reshape the live StellarTunerLog catalog (TICKARR_CHANNEL_URL,
+    defined below) into the same {name.lower(): {name, description, genre,
+    sxm_number, seasonal, logo_url, sxm_logo_src, sxm_entity_id,
+    lookaround_channel_id}} shape the bundled channels.json already uses."""
+    req = urllib.request.Request(TICKARR_CHANNEL_URL, headers={"User-Agent": "Tickarr/1.0"})
+    with urllib.request.urlopen(req, timeout=15) as r:
+        data = json.loads(r.read())
+    channels = {}
+    for entry in (data.get("channels") or {}).values():
+        name = (entry.get("name") or "").strip()
+        if not name:
+            continue
+        channels[name.lower()] = {
+            "name": name,
+            "description": entry.get("description", ""),
+            "genre": entry.get("primary_genre", ""),
+            "seasonal": None,
+            "sxm_number": entry.get("channel_number"),
+            "logo_url": entry.get("logo_url", ""),
+            "sxm_logo_src": "",
+            "sxm_entity_id": entry.get("id", ""),
+            "lookaround_channel_id": entry.get("guid", ""),
+        }
+    return channels
 
 
 def _get_channel_data(force=False):
@@ -1392,16 +1431,23 @@ def _get_channel_data(force=False):
 
     channels, aliases = {}, {}
 
-    # Load channels — bundled file is authoritative
-    if os.path.exists(_BUNDLED_CHANNELS):
+    # Live fetch is authoritative -- see _BUNDLED_CHANNELS's comment above for why.
+    try:
+        channels = _fetch_live_channel_catalog()
+        logger.info(f"tickarr: loaded {len(channels)} channels from live stellartunerlog.com fetch")
+    except Exception as e:
+        logger.warning(f"tickarr: live channel catalog fetch failed ({e}) -- falling back to bundled channels.json")
+
+    # Fallback: bundled snapshot, only used when the live fetch above failed entirely.
+    if not channels and os.path.exists(_BUNDLED_CHANNELS):
         try:
             with open(_BUNDLED_CHANNELS, encoding="utf-8") as f:
                 channels = json.load(f)
-            logger.info(f"tickarr: loaded {len(channels)} channels from bundled channels.json")
+            logger.info(f"tickarr: loaded {len(channels)} channels from bundled channels.json (fallback)")
         except Exception as e:
             logger.error(f"tickarr: failed to load bundled channels.json: {e}")
-    else:
-        logger.warning("tickarr: bundled channels.json not found — channel matching unavailable")
+    elif not channels:
+        logger.warning("tickarr: bundled channels.json not found and live fetch failed — channel matching unavailable")
 
     # Load aliases — bundled file, flat dict format
     if os.path.exists(_BUNDLED_ALIASES):
