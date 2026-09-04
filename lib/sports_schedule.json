@@ -1,33 +1,6 @@
 {
-  "generated_at": "2026-09-04T18:44:48Z",
+  "generated_at": "2026-09-04T22:00:26Z",
   "events": [
-    {
-      "slug": "mlb",
-      "title": "Cleveland Guardians @ Detroit Tigers",
-      "description": "MLB · Cleveland Guardians @ Detroit Tigers",
-      "start_utc": "2026-09-04T18:10:00Z",
-      "end_utc": "2026-09-04T21:10:00Z",
-      "channels": [
-        "Detroit Tigers",
-        "Cleveland Guardians",
-        "ICI Première",
-        "Satellite Radio Channel 202",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Ipswich @ Liverpool",
-      "description": "SOCCER · Ipswich @ Liverpool",
-      "start_utc": "2026-09-04T19:00:00Z",
-      "end_utc": "2026-09-04T21:00:00Z",
-      "channels": [
-        "Liverpool",
-        "Ipswich",
-        "MLB Play-by-Play 188",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "mlb",
       "title": "Cincinnati Reds @ Milwaukee Brewers",
@@ -150,19 +123,6 @@
     },
     {
       "slug": "mlb",
-      "title": "Houston Astros @ Arizona Diamondbacks",
-      "description": "MLB · Houston Astros @ Arizona Diamondbacks",
-      "start_utc": "2026-09-05T00:10:00Z",
-      "end_utc": "2026-09-05T03:10:00Z",
-      "channels": [
-        "Arizona Diamondbacks",
-        "Houston Astros",
-        "Satellite Radio Channel 211",
-        "MLB Network Radio"
-      ]
-    },
-    {
-      "slug": "mlb",
       "title": "Kansas City Royals @ Toronto Blue Jays",
       "description": "MLB · Kansas City Royals @ Toronto Blue Jays",
       "start_utc": "2026-09-05T00:10:00Z",
@@ -171,6 +131,19 @@
         "Toronto Blue Jays",
         "Kansas City Royals",
         "Satellite Radio Channel 209",
+        "MLB Network Radio"
+      ]
+    },
+    {
+      "slug": "mlb",
+      "title": "Houston Astros @ Arizona Diamondbacks",
+      "description": "MLB · Houston Astros @ Arizona Diamondbacks",
+      "start_utc": "2026-09-05T00:10:00Z",
+      "end_utc": "2026-09-05T03:10:00Z",
+      "channels": [
+        "Arizona Diamondbacks",
+        "Houston Astros",
+        "Satellite Radio Channel 211",
         "MLB Network Radio"
       ]
     },
@@ -277,19 +250,6 @@
     },
     {
       "slug": "soccer",
-      "title": "Manchester City @ Coventry City",
-      "description": "SOCCER · Manchester City @ Coventry City",
-      "start_utc": "2026-09-05T14:00:00Z",
-      "end_utc": "2026-09-05T16:00:00Z",
-      "channels": [
-        "Coventry City",
-        "Manchester City",
-        "Sports 964",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
       "title": "Nottingham Forest @ Tottenham",
       "description": "SOCCER · Nottingham Forest @ Tottenham",
       "start_utc": "2026-09-05T14:00:00Z",
@@ -298,6 +258,19 @@
         "Tottenham",
         "Nottingham Forest",
         "MLB Play-by-Play 188",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
+      "title": "Manchester City @ Coventry City",
+      "description": "SOCCER · Manchester City @ Coventry City",
+      "start_utc": "2026-09-05T14:00:00Z",
+      "end_utc": "2026-09-05T16:00:00Z",
+      "channels": [
+        "Coventry City",
+        "Manchester City",
+        "Sports 964",
         "SiriusXM FC"
       ]
     },
