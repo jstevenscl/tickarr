@@ -1,6 +1,6 @@
-# Tickarr User Guide
+# Ticker User Guide
 
-Tickarr is a plugin for [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) that adds live text overlays to IPTV channels via FFmpeg. It clones the channel's existing stream profile, injects overlay parameters into the clone, and restores the original when disabled. Your source profiles are never modified.
+Ticker is a plugin for [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) that adds live text overlays to IPTV channels via FFmpeg. It clones the channel's existing stream profile, injects overlay parameters into the clone, and restores the original when disabled. Your source profiles are never modified.
 
 ---
 
@@ -22,47 +22,47 @@ Tickarr is a plugin for [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr
 ## Installation
 
 1. In Dispatcharr, go to **Plugins → Find Plugins**.
-2. Search for **Tickarr** and click **Install**.
-3. When installation completes, go to **Tickarr → Actions** and run **Restart Dispatcharr**.
+2. Search for **Ticker** and click **Install**.
+3. When installation completes, go to **Ticker → Actions** and run **Restart Dispatcharr**.
 
-   > **This step is required every time you install or update Tickarr.** Dispatcharr loads plugin code once at startup — without a restart, none of the new code is active.
+   > **This step is required every time you install or update Ticker.** Dispatcharr loads plugin code once at startup — without a restart, none of the new code is active.
 
-4. After the page reloads, navigate back to the Tickarr plugin page and continue with the setup section below for the overlay type you want.
+4. After the page reloads, navigate back to the Ticker plugin page and continue with the setup section below for the overlay type you want.
 
 ---
 
 ## Before You Start — Universal Requirements
 
-Before enabling **any** Tickarr overlay on a channel, that channel must have a stream profile assigned to it in Dispatcharr. Tickarr clones that profile to inject the overlay — if the channel has no profile, there is nothing to clone and the enable action will skip the channel.
+Before enabling **any** Ticker overlay on a channel, that channel must have a stream profile assigned to it in Dispatcharr. Ticker clones that profile to inject the overlay — if the channel has no profile, there is nothing to clone and the enable action will skip the channel.
 
 **How to assign a stream profile:**
 1. In Dispatcharr, go to **Channels**.
-2. Open the channel you want to enable a Tickarr overlay on.
+2. Open the channel you want to enable a Ticker overlay on.
 3. Under **Stream Profile**, choose any active profile.
 4. Save.
 
-Repeat for every channel (or use a Channel Group default profile) before running any Tickarr enable action.
+Repeat for every channel (or use a Channel Group default profile) before running any Ticker enable action.
 
 ### Proxy and Redirect profiles are not compatible
 
-Tickarr injects overlays by adding FFmpeg filters to the channel's stream profile. Channels using a **Proxy** or **Redirect** stream profile cannot use any ticker — these profiles pass the stream through Dispatcharr's internal proxy or redirect the client directly to the source URL, bypassing FFmpeg entirely. There is no FFmpeg process to inject into.
+Ticker injects overlays by adding FFmpeg filters to the channel's stream profile. Channels using a **Proxy** or **Redirect** stream profile cannot use any ticker — these profiles pass the stream through Dispatcharr's internal proxy or redirect the client directly to the source URL, bypassing FFmpeg entirely. There is no FFmpeg process to inject into.
 
 If a channel is skipped with the message **"stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker"**, do the following:
 
 1. In Dispatcharr, go to **Channels** and open the affected channel.
 2. Under **Stream Profile**, select any FFmpeg-based profile. Any profile that is not named **Proxy** or **Redirect** is FFmpeg-based. If you're unsure which to choose, the default FFmpeg profile works for most channels.
 3. Click **Save**.
-4. Go back to Tickarr and re-run the enable action you were trying to use.
+4. Go back to Ticker and re-run the enable action you were trying to use.
 
-**If many channels are affected:** The most likely cause is that Dispatcharr's system-wide default stream profile is set to Proxy or Redirect, and those channels have no explicit profile assigned. To fix all of them at once, go to Dispatcharr **Settings → Streams** and change the default stream profile to an FFmpeg-based one. After saving, re-run the Tickarr enable action.
+**If many channels are affected:** The most likely cause is that Dispatcharr's system-wide default stream profile is set to Proxy or Redirect, and those channels have no explicit profile assigned. To fix all of them at once, go to Dispatcharr **Settings → Streams** and change the default stream profile to an FFmpeg-based one. After saving, re-run the Ticker enable action.
 
-### Auto-synced channels can silently revert Tickarr's overlay profile
+### Auto-synced channels can silently revert Ticker's overlay profile
 
-If your channels come from an M3U playlist and that M3U account's **channel group** has a default **Stream Profile** configured (a Dispatcharr auto-sync setting), Dispatcharr resets the channel's stream profile back to that default every time the M3U refreshes — undoing whatever profile Tickarr cloned and assigned, with no error shown to you. The overlay will work right after you enable it, then silently stop appearing after the next scheduled M3U sync, even though Tickarr's settings still show the channel as enabled.
+If your channels come from an M3U playlist and that M3U account's **channel group** has a default **Stream Profile** configured (a Dispatcharr auto-sync setting), Dispatcharr resets the channel's stream profile back to that default every time the M3U refreshes — undoing whatever profile Ticker cloned and assigned, with no error shown to you. The overlay will work right after you enable it, then silently stop appearing after the next scheduled M3U sync, even though Ticker's settings still show the channel as enabled.
 
-**How to tell if this affects you:** In Dispatcharr, open the M3U account that owns your channels, find the group your Tickarr-enabled channels belong to, and check whether a **Stream Profile** is set for that group.
+**How to tell if this affects you:** In Dispatcharr, open the M3U account that owns your channels, find the group your Ticker-enabled channels belong to, and check whether a **Stream Profile** is set for that group.
 
-**Fix:** Clear the Stream Profile override for that group (leave it unset) so auto-sync stops reasserting a profile over Tickarr's clone. Assign stream profiles per-channel instead, the normal way (see above) — Tickarr will keep managing them correctly from there. This applies to every Tickarr overlay type (Now Playing, EAS, Sports Ticker, Custom Text), not just one feature, since they all clone and assign a stream profile the same way.
+**Fix:** Clear the Stream Profile override for that group (leave it unset) so auto-sync stops reasserting a profile over Ticker's clone. Assign stream profiles per-channel instead, the normal way (see above) — Ticker will keep managing them correctly from there. This applies to every Ticker overlay type (Now Playing, EAS, Sports Ticker, Custom Text), not just one feature, since they all clone and assign a stream profile the same way.
 
 ---
 
@@ -70,15 +70,15 @@ If your channels come from an M3U playlist and that M3U account's **channel grou
 
 ### What it does
 
-Tickarr fetches the currently playing track for each satellite radio station from [stellartunerlog.com](https://stellartunerlog.com) and displays the artist name, song title, and channel name in a centered overlay on the stream. For audio-only channels (no video signal), Tickarr also injects a 1280×720 black video frame so the overlay has something to render on.
+Ticker fetches the currently playing track for each satellite radio station from [stellartunerlog.com](https://stellartunerlog.com) and displays the artist name, song title, and channel name in a centered overlay on the stream. For audio-only channels (no video signal), Ticker also injects a 1280×720 black video frame so the overlay has something to render on.
 
 The overlay updates automatically as tracks change — no interaction needed after setup.
 
 ### Your base profile must be genuinely audio-only
 
-Satellite radio channels have no video signal at all. To show the Now Playing overlay, Tickarr has to generate video from nothing — it draws a black canvas and writes the artist/song text onto it, then encodes that as a new video stream alongside your existing audio. This only works if Tickarr can tell your channel truly has no video to begin with.
+Satellite radio channels have no video signal at all. To show the Now Playing overlay, Ticker has to generate video from nothing — it draws a black canvas and writes the artist/song text onto it, then encodes that as a new video stream alongside your existing audio. This only works if Ticker can tell your channel truly has no video to begin with.
 
-Tickarr decides this by checking whether the stream profile's FFmpeg parameters contain a video codec flag (`-c:v` or `-vcodec`) at all. **If your profile includes `-c:v copy` — even as unused boilerplate copied from a video profile template — Tickarr will assume the channel has real video and try to draw the overlay onto it instead of generating its own canvas.** Since there's no actual video track for `-c:v copy` to pass through, the overlay will never appear, and FFmpeg does unnecessary extra work trying to encode video that doesn't exist.
+Ticker decides this by checking whether the stream profile's FFmpeg parameters contain a video codec flag (`-c:v` or `-vcodec`) at all. **If your profile includes `-c:v copy` — even as unused boilerplate copied from a video profile template — Ticker will assume the channel has real video and try to draw the overlay onto it instead of generating its own canvas.** Since there's no actual video track for `-c:v copy` to pass through, the overlay will never appear, and FFmpeg does unnecessary extra work trying to encode video that doesn't exist.
 
 **If you don't already have a dedicated audio-only profile, create one:**
 
@@ -89,24 +89,24 @@ Tickarr decides this by checking whether the stream profile's FFmpeg parameters 
    ```
 3. Save, then assign this profile to your satellite radio channel group before enabling Now Playing (see [Before You Start](#before-you-start--universal-requirements)).
 
-The `-vn` flag (discard video) makes the intent explicit and guarantees Tickarr detects the channel correctly, even though there's no video track to discard in the first place.
+The `-vn` flag (discard video) makes the intent explicit and guarantees Ticker detects the channel correctly, even though there's no video track to discard in the first place.
 
 ---
 
 ### Step 1 — Set up your satellite radio channels in Dispatcharr
 
-If you have not yet set up channel names, EPG data, sort order, or logos for your satellite radio channels, Tickarr can do all of it. These steps are optional but strongly recommended before enabling Now Playing so that channel matching works correctly.
+If you have not yet set up channel names, EPG data, sort order, or logos for your satellite radio channels, Ticker can do all of it. These steps are optional but strongly recommended before enabling Now Playing so that channel matching works correctly.
 
-> **Where to find this in the app:** In Tickarr Settings, the **Now Playing** fields appear first. Scroll **down past the Now Playing section** to reach the **Satellite Radio Channel Setup** section. Configure the Apply To target there, then come back here to run the actions below.
+> **Where to find this in the app:** In Ticker Settings, the **Now Playing** fields appear first. Scroll **down past the Now Playing section** to reach the **Satellite Radio Channel Setup** section. Configure the Apply To target there, then come back here to run the actions below.
 
-All four actions below use the same **Apply To** target you configure in the **Satellite Radio Channel Setup** section of Tickarr settings. Select your channel group there before running any of these.
+All four actions below use the same **Apply To** target you configure in the **Satellite Radio Channel Setup** section of Ticker settings. Select your channel group there before running any of these.
 
 | Action | What it does | When to run it |
 |---|---|---|
-| **Fill EPG — Full Satellite Radio Guide** | Downloads Tickarr's satellite radio EPG and assigns it to the selected channels. Sets tvg-id, channel name, and guide data. | Run this first if your SiriusXM channels have no EPG. |
+| **Fill EPG — Full Satellite Radio Guide** | Downloads Ticker's satellite radio EPG and assigns it to the selected channels. Sets tvg-id, channel name, and guide data. | Run this first if your SiriusXM channels have no EPG. |
 | **Fill EPG — TVG ID Only** | Sets only the tvg-id on selected channels so they match an EPG source you already have loaded. Does not download guide data. | Use instead of Full EPG if you have an existing EPG source. |
 | **Sort Channels** | Renumbers the selected channels by satellite radio lineup order. Fills in the Sort Start Number automatically if left blank. Sequential mode (default) packs channels with no gaps; Absolute mode sets each channel's trailing digits to its real SXM station number — see Numbering Mode below. | Run after Fill EPG to put channels in the right order. |
-| **Assign Logos** | Sets channel logos from Tickarr's built-in satellite radio library. Channels with no match are skipped. | Run after sorting. |
+| **Assign Logos** | Sets channel logos from Ticker's built-in satellite radio library. Channels with no match are skipped. | Run after sorting. |
 | **Fill EPG + Sort** | Runs Full EPG fill and Sort together. | Shortcut for the two most common steps. |
 | **Fill EPG + Sort + Logos** | Runs all three together. | Recommended for a full first-time setup. |
 
@@ -116,10 +116,10 @@ All four actions below use the same **Apply To** target you configure in the **S
 
 ### Step 2 — Configure Now Playing settings
 
-In Tickarr settings, scroll to the **Now Playing** section (it is the first section at the top of the settings panel) and fill in the following fields **in order**:
+In Ticker settings, scroll to the **Now Playing** section (it is the first section at the top of the settings panel) and fill in the following fields **in order**:
 
 1. **Apply To** — Choose the scope:
-   - **All Channels** — Enables Now Playing on every channel Tickarr can see. Use this only if your entire channel library is satellite radio.
+   - **All Channels** — Enables Now Playing on every channel Ticker can see. Use this only if your entire channel library is satellite radio.
    - **Channel Group** — Enables Now Playing on every channel in a specific group. This is the recommended option for most installs where satellite radio channels are in their own group.
    - **Multiple Groups (CSV)** — Enter a comma-separated list of group names to enable across several groups at once.
    - **Single Channel** — Enables Now Playing on one specific channel.
@@ -133,22 +133,22 @@ In Tickarr settings, scroll to the **Now Playing** section (it is the first sect
 3. **Exclude Groups (optional)** — If you chose **All Channels** or **Channel Group**, enter any group names you want skipped (e.g. `News, Sports`) as a comma-separated list.
 
 4. **Trigger Mode** — Controls when the overlay profile is active:
-   - **On-Demand (default, recommended)** — No profile is cloned until a viewer tunes in. The overlay activates on connect and restores to passthrough after about 30 seconds with no viewers. Saves a permanent profile per channel, but every connect requires Tickarr to swap profiles and restart the stream — most players handle this fine, but some (Plex is a known example) can be sensitive to a mid-connect restart.
+   - **On-Demand (default, recommended)** — No profile is cloned until a viewer tunes in. The overlay activates on connect and restores to passthrough after about 30 seconds with no viewers. Saves a permanent profile per channel, but every connect requires Ticker to swap profiles and restart the stream — most players handle this fine, but some (Plex is a known example) can be sensitive to a mid-connect restart.
    - **Always On** — The overlay profile is cloned and assigned permanently the moment you enable Now Playing, before anyone connects. There is no restart on connect — whoever tunes in gets the overlay from the very first frame. Recommended if you're seeing playback issues on a particular player when a channel is first opened. This creates one permanent cloned stream profile per enabled channel; unwatched channels still cost nothing (FFmpeg only runs while something is actually connected, regardless of trigger mode).
 
 ### Shared vs. per-channel stream profiles
 
-**On Dispatcharr v0.29.0 and later**, Tickarr uses the [`{channelId}` stream profile substitution token](https://github.com/Dispatcharr/Dispatcharr/issues/1252) (shipped in v0.29.0, closing the feature request Tickarr had been waiting on) to point every channel at **one shared stream profile per overlay type** instead of cloning a separate profile per channel. Enable Always On across a full 400+ channel satellite radio lineup and you'll see exactly one new profile appear in Dispatcharr's Stream Profiles list — named something like `Tickarr — <base profile> [shared:nowplaying:<hash>]` — shared by every channel using that same base profile. If some channels in your lineup use a different base stream profile than others, you'll see one shared profile per distinct base profile in use, not one per channel.
+**On Dispatcharr v0.29.0 and later**, Ticker uses the [`{channelId}` stream profile substitution token](https://github.com/Dispatcharr/Dispatcharr/issues/1252) (shipped in v0.29.0, closing the feature request Ticker had been waiting on) to point every channel at **one shared stream profile per overlay type** instead of cloning a separate profile per channel. Enable Always On across a full 400+ channel satellite radio lineup and you'll see exactly one new profile appear in Dispatcharr's Stream Profiles list — named something like `Ticker — <base profile> [shared:nowplaying:<hash>]` — shared by every channel using that same base profile. If some channels in your lineup use a different base stream profile than others, you'll see one shared profile per distinct base profile in use, not one per channel.
 
-**On Dispatcharr versions before v0.29.0**, Tickarr automatically falls back to the previous behavior: one cloned stream profile per enabled channel — for example, 424 channels means 424 cloned profiles. **This has no performance impact either way.** FFmpeg only runs while a channel is actively connected regardless of how many profiles exist; unwatched channels cost nothing whether they have a cloned profile sitting in the database or not. This was directly verified on both paths: bulk-enabling Always On across 424 channels completed in under 2 seconds with zero errors, and server load/CPU/memory were unaffected both during the operation and afterward.
+**On Dispatcharr versions before v0.29.0**, Ticker automatically falls back to the previous behavior: one cloned stream profile per enabled channel — for example, 424 channels means 424 cloned profiles. **This has no performance impact either way.** FFmpeg only runs while a channel is actively connected regardless of how many profiles exist; unwatched channels cost nothing whether they have a cloned profile sitting in the database or not. This was directly verified on both paths: bulk-enabling Always On across 424 channels completed in under 2 seconds with zero errors, and server load/CPU/memory were unaffected both during the operation and afterward.
 
-Tickarr detects which mode to use automatically — there is nothing to configure. Run **Actions → Check Stream Profile Capabilities** at any time to see which mode your Dispatcharr install is currently using and why.
+Ticker detects which mode to use automatically — there is nothing to configure. Run **Actions → Check Stream Profile Capabilities** at any time to see which mode your Dispatcharr install is currently using and why.
 
 ![A shared stream profile — one entry in Dispatcharr's Stream Profiles list, used by every channel with the same base profile, with the {channelId} token resolved per-channel at stream time](screenshots/shared-profile-detail.jpg)
 
 #### Upgrading an existing install to shared profiles
 
-If you enabled Tickarr on a Dispatcharr version older than v0.29.0 and later upgrade Dispatcharr to v0.29.0+, your already-enabled channels keep using their existing per-channel clones until something naturally re-clones them (a disable/re-enable cycle, or — for On-Demand mode — the next time a channel goes idle and a viewer reconnects). To move already-enabled channels onto shared profiles immediately instead of waiting, run **Actions → Migrate to Shared Profiles**. It's safe to run more than once — channels already on a shared profile are skipped — and it reassigns each channel to the correct shared profile (creating one if needed) before deleting the old per-channel clone, so no channel is ever left without a working profile mid-migration. EAS and Weather Canada channels aren't touched by this action: their overlay profiles only exist while an alert is actively firing and are already rebuilt from scratch on every new alert, so they migrate to shared profiles automatically the next time an alert fires — nothing to run manually there.
+If you enabled Ticker on a Dispatcharr version older than v0.29.0 and later upgrade Dispatcharr to v0.29.0+, your already-enabled channels keep using their existing per-channel clones until something naturally re-clones them (a disable/re-enable cycle, or — for On-Demand mode — the next time a channel goes idle and a viewer reconnects). To move already-enabled channels onto shared profiles immediately instead of waiting, run **Actions → Migrate to Shared Profiles**. It's safe to run more than once — channels already on a shared profile are skipped — and it reassigns each channel to the correct shared profile (creating one if needed) before deleting the old per-channel clone, so no channel is ever left without a working profile mid-migration. EAS and Weather Canada channels aren't touched by this action: their overlay profiles only exist while an alert is actively firing and are already rebuilt from scratch on every new alert, so they migrate to shared profiles automatically the next time an alert fires — nothing to run manually there.
 
 ---
 
@@ -156,7 +156,7 @@ If you enabled Tickarr on a Dispatcharr version older than v0.29.0 and later upg
 
 Run **Actions → Enable Now Playing**.
 
-Tickarr registers the selected channels. No profile clone happens yet — the overlay activates automatically the first time a viewer tunes in, and restores to passthrough when the channel goes idle.
+Ticker registers the selected channels. No profile clone happens yet — the overlay activates automatically the first time a viewer tunes in, and restores to passthrough when the channel goes idle.
 
 The action result will confirm how many channels were enabled and how many were skipped (already enabled, no stream profile, etc.).
 
@@ -174,7 +174,7 @@ The action result will confirm how many channels were enabled and how many were 
 
 ### Channel name matching
 
-Tickarr matches Dispatcharr channel names to satellite radio stations automatically using fuzzy matching. A channel named `Hits 1` will match `SiriusXM Hits 1` without manual configuration. Running **Fill EPG** first sets standard names that match reliably.
+Ticker matches Dispatcharr channel names to satellite radio stations automatically using fuzzy matching. A channel named `Hits 1` will match `SiriusXM Hits 1` without manual configuration. Running **Fill EPG** first sets standard names that match reliably.
 
 If a channel does not match, run **Actions → Refresh Channel Data** and then re-run the enable action.
 
@@ -196,7 +196,7 @@ Run **Actions → Disable Now Playing**. All cloned profiles are deleted and ori
 
 ### What it does
 
-Tickarr monitors NOAA/NWS for active weather alerts in your configured zones. When an alert fires, it automatically switches affected channels to a broadcast-style EAS overlay — a full-width alert bar with a scrolling crawl, colored severity label, and optional attention tone. When the alert clears, channels silently switch back to their normal passthrough profiles. No action is ever required from you.
+Ticker monitors NOAA/NWS for active weather alerts in your configured zones. When an alert fires, it automatically switches affected channels to a broadcast-style EAS overlay — a full-width alert bar with a scrolling crawl, colored severity label, and optional attention tone. When the alert clears, channels silently switch back to their normal passthrough profiles. No action is ever required from you.
 
 Your channel runs at full passthrough 100% of the time there is no alert. EAS only re-encodes while an alert is active.
 
@@ -215,7 +215,7 @@ To monitor multiple zones (e.g. your county plus surrounding counties), you will
 
 ### Step 2 — Configure EAS settings
 
-In Tickarr settings, scroll to the **EAS Weather Alerts** section and fill in the following fields **in the order they appear**:
+In Ticker settings, scroll to the **EAS Weather Alerts** section and fill in the following fields **in the order they appear**:
 
 1. **EAS Transcode Quality** — Resolution during an active alert. Channels run at full passthrough when there is no alert — transcoding only occurs while an alert is active.
    - **Full quality (default)** — Source resolution and framerate. Best for capable CPUs or GPU-accelerated systems.
@@ -234,9 +234,9 @@ In Tickarr settings, scroll to the **EAS Weather Alerts** section and fill in th
 
 5. **Alert Overlay Style**:
    - **TV Broadcast (recommended)** — Dark bar across the bottom with a colored severity label on the left and a scrolling white crawl on the right. Looks like a real TV station alert.
-   - **Tickarr Custom** — Simpler flashing overlay boxes.
+   - **Ticker Custom** — Simpler flashing overlay boxes.
 
-6. **Poll Interval (seconds)** — How often Tickarr checks NWS for new or cleared alerts. Default is 60 seconds. Minimum is 15.
+6. **Poll Interval (seconds)** — How often Ticker checks NWS for new or cleared alerts. Default is 60 seconds. Minimum is 15.
 
 7. **Siren Tone Interval (seconds)** — How often the EAS attention tone (853 Hz + 960 Hz dual tone) repeats during an active alert. Set to `0` to disable the tone entirely. Minimum is 30 when enabled.
 
@@ -252,7 +252,7 @@ In Tickarr settings, scroll to the **EAS Weather Alerts** section and fill in th
 
 Run **Actions → Enable EAS Silent Ticker**.
 
-Tickarr registers the selected channels as EAS-armed. No profile is cloned yet. Channels stream normally on their original profiles. The clone only happens when an actual alert fires for your zones.
+Ticker registers the selected channels as EAS-armed. No profile is cloned yet. Channels stream normally on their original profiles. The clone only happens when an actual alert fires for your zones.
 
 ---
 
@@ -274,7 +274,7 @@ This fires a fake alert on your enabled channel(s) for the duration set in **Tes
 
 ### How profile switching works
 
-- **Alert fires:** Tickarr clones the channel's original passthrough profile, injects the EAS bar and tone, and assigns the clone. If another ticker (Now Playing, Custom Text, Sports) was actively running, it is paused — EAS takes precedence. Your original profile is never modified.
+- **Alert fires:** Ticker clones the channel's original passthrough profile, injects the EAS bar and tone, and assigns the clone. If another ticker (Now Playing, Custom Text, Sports) was actively running, it is paused — EAS takes precedence. Your original profile is never modified.
 - **Alert clears:** The EAS clone is deleted and the channel is restored automatically. If another ticker was running before the alert, it re-activates on the next viewer connect or sweep cycle. This happens within one poll interval (default 60 seconds).
 - **Multiple alerts:** If more than one alert type is active simultaneously (e.g., a Severe Thunderstorm Warning and a Flood Watch), the label box shows the most severe event. The crawl lists all active alerts in order of severity. When all alerts clear, the profile restores.
 
@@ -290,7 +290,7 @@ Run **Actions → Disable EAS Ticker**. All EAS-armed channels return to their o
 
 ### What it does
 
-Tickarr monitors Environment Canada (EC) for active weather alerts in your configured cities. When an alert fires, it activates the same broadcast-style overlay used for NWS alerts — a full-width alert bar with a scrolling crawl, colored severity label, and the Canadian NAAD attention tone. When the alert clears, channels silently return to passthrough.
+Ticker monitors Environment Canada (EC) for active weather alerts in your configured cities. When an alert fires, it activates the same broadcast-style overlay used for NWS alerts — a full-width alert bar with a scrolling crawl, colored severity label, and the Canadian NAAD attention tone. When the alert clears, channels silently return to passthrough.
 
 Weather Canada uses Canada's three-level color system: **Yellow** (Watch / Moderate), **Orange** (Warning / Severe), **Red** (Emergency / Extreme).
 
@@ -302,21 +302,21 @@ Weather Canada and NWS EAS are independent — they have separate channel target
 
 Unlike NWS zone codes (which Environment Canada has no public equivalent lookup page for — see below), you have two ways to find your Weather Canada city IDs:
 
-**Option A — In-app lookup:** Run **Actions → City Lookup** (teal outline button). Enter a city name (e.g. `Toronto`) or a 2-letter province code (e.g. `ON`, `QC`, `BC`) in the **City Lookup** field in Settings, then click the button. Tickarr returns a list of matching city names and their IDs.
+**Option A — In-app lookup:** Run **Actions → City Lookup** (teal outline button). Enter a city name (e.g. `Toronto`) or a 2-letter province code (e.g. `ON`, `QC`, `BC`) in the **City Lookup** field in Settings, then click the button. Ticker returns a list of matching city names and their IDs.
 
-**Option B — Browse the full list:** See [Weather Canada City Codes](CANADA_CITY_CODES.md) — every city Tickarr can monitor, grouped by province, generated from the same data the in-app lookup uses.
+**Option B — Browse the full list:** See [Weather Canada City Codes](CANADA_CITY_CODES.md) — every city Ticker can monitor, grouped by province, generated from the same data the in-app lookup uses.
 
 City IDs look like `on-143` (Ontario city 143 = Toronto) or `qc-147` (Quebec city 147 = Montreal). Copy the ID you want into **Weather Canada City IDs**.
 
 You can enter multiple city IDs comma-separated to monitor more than one location.
 
-> **Why isn't there a link to an Environment Canada site, the way the USA section links to weather.gov?** Environment Canada's current site (weather.gc.ca) uses coordinate-based URLs (`?coords=lat,lng`) and no longer exposes these city codes anywhere in its pages — they only exist in EC's underlying `citypageweather` data feed, which Tickarr reads directly. There's no public page to send you to, so the list above (and the in-app lookup) are the only ways to find your code.
+> **Why isn't there a link to an Environment Canada site, the way the USA section links to weather.gov?** Environment Canada's current site (weather.gc.ca) uses coordinate-based URLs (`?coords=lat,lng`) and no longer exposes these city codes anywhere in its pages — they only exist in EC's underlying `citypageweather` data feed, which Ticker reads directly. There's no public page to send you to, so the list above (and the in-app lookup) are the only ways to find your code.
 
 ---
 
 ### Step 2 — Configure Weather Canada settings
 
-In Tickarr settings, scroll to the **Weather Canada** section:
+In Ticker settings, scroll to the **Weather Canada** section:
 
 1. **Weather Canada City IDs** — Comma-separated city ID codes (e.g. `on-143, qc-147`). Use City Lookup to find these.
 
@@ -335,7 +335,7 @@ In Tickarr settings, scroll to the **Weather Canada** section:
 
 Run **Actions → Enable Weather Canada Alerts** (teal filled button).
 
-Tickarr arms the selected channels. No profile is cloned yet — the overlay only activates when an active EC alert fires for your configured city IDs.
+Ticker arms the selected channels. No profile is cloned yet — the overlay only activates when an active EC alert fires for your configured city IDs.
 
 ---
 
@@ -363,7 +363,7 @@ Custom Text displays any message you choose on one or more channels. You can sho
 
 ### Step 1 — Configure Custom Text settings
 
-In Tickarr settings, scroll to the **Custom Text** section and fill in the following fields **in the order they appear**:
+In Ticker settings, scroll to the **Custom Text** section and fill in the following fields **in the order they appear**:
 
 1. **Apply To** — Choose: All Channels, Channel Group, Multiple Groups, or Single Channel.
 
@@ -397,9 +397,9 @@ In Tickarr settings, scroll to the **Custom Text** section and fill in the follo
 
 Run **Actions → Enable Custom Text**.
 
-- In **On-Demand** mode with no text: Tickarr registers the channels. Nothing else happens until you set text.
-- In **On-Demand** mode with text already entered: Tickarr clones profiles and activates the overlay immediately.
-- In **Always On** mode: Tickarr clones profiles and writes the text immediately.
+- In **On-Demand** mode with no text: Ticker registers the channels. Nothing else happens until you set text.
+- In **On-Demand** mode with text already entered: Ticker clones profiles and activates the overlay immediately.
+- In **Always On** mode: Ticker clones profiles and writes the text immediately.
 
 ---
 
@@ -412,7 +412,7 @@ To set or update the displayed message at any time without disabling:
 
 The change takes effect immediately — no stream restart needed.
 
-**To remove the overlay on On-Demand channels:** Clear the Custom Text field (leave it blank) and run **Actions → Update Custom Text**. Tickarr will restore the original passthrough profile and delete the overlay clone.
+**To remove the overlay on On-Demand channels:** Clear the Custom Text field (leave it blank) and run **Actions → Update Custom Text**. Ticker will restore the original passthrough profile and delete the overlay clone.
 
 ---
 
@@ -432,7 +432,7 @@ The sports ticker pulls live scores from the ESPN API and displays them in a scr
 
 ### Step 1 — Configure Sports Ticker settings
 
-In Tickarr settings, scroll to the **Sports Ticker** section and fill in the following fields **in the order they appear**:
+In Ticker settings, scroll to the **Sports Ticker** section and fill in the following fields **in the order they appear**:
 
 1. **Transcode Quality (Video Channels)** — Output resolution and framerate while the ticker is active. Channels return to their original profile when the ticker is not running.
    - **1080p30 (default)** — Full resolution, framerate capped at 30fps. Recommended starting point.
@@ -479,8 +479,8 @@ In Tickarr settings, scroll to the **Sports Ticker** section and fill in the fol
 
 Run **Actions → Enable Sports Ticker**.
 
-- In **Always On** mode: Tickarr clones profiles and starts the ESPN poller immediately.
-- In **Active Games Only** or **Favorite Teams Only** mode: Tickarr registers the channels. The overlay activates automatically when a qualifying live game is detected, and restores to passthrough when all qualifying games end. If no viewers are connected to the channel for 30 seconds after all games end, the passthrough restore is also triggered regardless.
+- In **Always On** mode: Ticker clones profiles and starts the ESPN poller immediately.
+- In **Active Games Only** or **Favorite Teams Only** mode: Ticker registers the channels. The overlay activates automatically when a qualifying live game is detected, and restores to passthrough when all qualifying games end. If no viewers are connected to the channel for 30 seconds after all games end, the passthrough restore is also triggered regardless.
 
 ---
 
@@ -575,8 +575,8 @@ These settings apply to both NWS and Weather Canada alerts.
 | Field | Description |
 |---|---|
 | Minimum Severity | Minimum severity to trigger: Watch/Yellow (Moderate+), Warning/Orange (Severe+), or Emergency/Red (Extreme only). Default: Watch. |
-| Alert Overlay Style | `TV Broadcast` — news ticker bar (recommended). `Tickarr Custom` — simpler flashing overlay. |
-| Poll Interval (seconds) | How often Tickarr checks for alerts from both sources. Default 60s, minimum 15s. |
+| Alert Overlay Style | `TV Broadcast` — news ticker bar (recommended). `Ticker Custom` — simpler flashing overlay. |
+| Poll Interval (seconds) | How often Ticker checks for alerts from both sources. Default 60s, minimum 15s. |
 | Siren Tone Interval (seconds) | Seconds between attention tone repetitions. NWS uses the 853+960 Hz EAS dual tone; Weather Canada uses the NAAD attention signal. Set to 0 to disable. |
 | Test Alert Duration (seconds) | How long test alert actions run before auto-restoring. Default 60, range 10–600. |
 | Saved / Favorite Codes | Reference-only storage for NWS zone codes you use often. Not actively monitored — just a convenient place to keep codes you look up frequently. |
@@ -653,10 +653,10 @@ Each section has its own button color so you can identify which overlay type an 
 
 | Action | Description |
 |---|---|
-| Fill EPG — Full Satellite Radio Guide | Downloads Tickarr's satellite radio EPG and assigns it to the selected channels. |
+| Fill EPG — Full Satellite Radio Guide | Downloads Ticker's satellite radio EPG and assigns it to the selected channels. |
 | Fill EPG — TVG ID Only | Sets tvg-id only — use when you already have an EPG source loaded. |
 | Sort Channels | Renumbers selected channels by satellite radio lineup order. |
-| Assign Logos | Sets logos from Tickarr's built-in satellite radio library. |
+| Assign Logos | Sets logos from Ticker's built-in satellite radio library. |
 | Fill EPG + Sort | Runs Full EPG fill and Sort together. |
 | Fill EPG + Sort + Logos | Runs Full EPG fill, Sort, and Logos together. Recommended for first-time setup. |
 
@@ -667,7 +667,7 @@ Each section has its own button color so you can identify which overlay type an 
 | Enable EAS — JAS Weather Alerts | Arms selected channels for NWS EAS. No profile is cloned until a real alert fires. |
 | Test EAS Alert | Fires a fake NWS EAS overlay for the configured Test Alert Duration, then auto-restores. |
 | Disable EAS Ticker | Restores original profiles and disarms all NWS EAS-enabled channels. |
-| Migrate EAS to Dynamic Mode | One-time migration for users upgrading from an older version of Tickarr that used always-on EAS profiles. |
+| Migrate EAS to Dynamic Mode | One-time migration for users upgrading from an older version of Ticker that used always-on EAS profiles. |
 | NWS Zone Lookup — Find USA Zone Codes | Enter a 2-letter US state code in Zone Lookup State in Settings, then click to get all NWS zone codes for that state. |
 
 ### Weather Canada Alerts
@@ -700,12 +700,12 @@ Each section has its own button color so you can identify which overlay type an 
 
 | Action | Description |
 |---|---|
-| View Active Tickers | Lists all channels that have a Tickarr overlay registered, grouped by type. Shows which channels have active overlay profiles vs. passthrough. |
+| View Active Tickers | Lists all channels that have a Ticker overlay registered, grouped by type. Shows which channels have active overlay profiles vs. passthrough. |
 | Refresh Channel Data | Reloads the channel and group list from Dispatcharr. Run this if a channel or group is missing from a dropdown. |
-| Disable All Tickers | Disables every active Tickarr overlay across all channels. |
-| Clean Orphaned Profiles | Removes cloned stream profiles left behind when channels were deleted while a Tickarr overlay was active. Also reaps shared profiles once no channel references them anymore. |
+| Disable All Tickers | Disables every active Ticker overlay across all channels. |
+| Clean Orphaned Profiles | Removes cloned stream profiles left behind when channels were deleted while a Ticker overlay was active. Also reaps shared profiles once no channel references them anymore. |
 | Migrate to Shared Profiles | On Dispatcharr v0.29.0+, moves already-enabled channels off their old per-channel cloned profile onto a shared one. Safe to run repeatedly. See [Upgrading an existing install to shared profiles](#upgrading-an-existing-install-to-shared-profiles). |
-| Check Stream Profile Capabilities | Reports whether this Dispatcharr install supports the `{channelId}` token (v0.29.0+) and therefore which profile mode Tickarr is using — shared or per-channel. |
+| Check Stream Profile Capabilities | Reports whether this Dispatcharr install supports the `{channelId}` token (v0.29.0+) and therefore which profile mode Ticker is using — shared or per-channel. |
 | Redis Diagnostics | Reports whether Redis is reachable and how many channels have active viewers detected. |
 | Reload Poller | Restarts background polling threads without restarting Dispatcharr. Use if overlays stop updating but streams are still live. |
 | Restart Dispatcharr | Restarts the Dispatcharr container. Required after every install or update. |
@@ -729,7 +729,7 @@ Run **Actions → Reload Poller**. If still stale after 30 seconds, disable and 
 
 ### Overlay worked, then stopped appearing on its own
 
-If the channel is on an auto-synced M3U playlist, check whether its channel group has a default **Stream Profile** configured on the M3U account side — see [Auto-synced channels can silently revert Tickarr's overlay profile](#before-you-start--universal-requirements). Dispatcharr's periodic M3U sync reasserts that default profile on every refresh, overwriting Tickarr's cloned profile with no error message. Clear the group's Stream Profile override to fix it.
+If the channel is on an auto-synced M3U playlist, check whether its channel group has a default **Stream Profile** configured on the M3U account side — see [Auto-synced channels can silently revert Ticker's overlay profile](#before-you-start--universal-requirements). Dispatcharr's periodic M3U sync reasserts that default profile on every refresh, overwriting Ticker's cloned profile with no error message. Clear the group's Stream Profile override to fix it.
 
 ### "No games scheduled" in the sports ticker
 
@@ -743,9 +743,9 @@ Run **Actions → Refresh Channel Data**, then check that the channel is managed
 
 - Confirm your zone codes are correct and the alert is actually active for those zones. You can verify at `https://api.weather.gov/alerts/active?zone=OHZ001` (replace with your code).
 - Confirm the alert's severity meets or exceeds your **Severity Filter** setting.
-- Confirm the alert's status is `actual` (not `test` or `exercise`) — Tickarr filters for real alerts only.
+- Confirm the alert's status is `actual` (not `test` or `exercise`) — Ticker filters for real alerts only.
 - Run **Test EAS Alert** to verify your EAS setup is working independently of a real alert.
-- Check Dispatcharr container logs for any Tickarr EAS errors.
+- Check Dispatcharr container logs for any Ticker EAS errors.
 
 ### EAS channel not restoring after alert clears
 
@@ -765,7 +765,7 @@ Run **Actions → Clean Orphaned Profiles**.
 
 ### Redis errors or zero active channels
 
-Run **Actions → Redis Diagnostics**. If Redis is unreachable, On-Demand and smart trigger modes will not detect viewers — Tickarr falls back to polling all registered channels. Restart Dispatcharr to restart Redis if needed.
+Run **Actions → Redis Diagnostics**. If Redis is unreachable, On-Demand and smart trigger modes will not detect viewers — Ticker falls back to polling all registered channels. Restart Dispatcharr to restart Redis if needed.
 
 ### Plugin changes not taking effect after an update
 

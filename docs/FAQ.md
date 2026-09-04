@@ -1,25 +1,25 @@
-# Tickarr FAQ
+# Ticker FAQ
 
 ---
 
 ## General
 
-**Q: Do I need to restart Dispatcharr after installing or updating Tickarr?**
+**Q: Do I need to restart Dispatcharr after installing or updating Ticker?**
 
-Yes. Dispatcharr caches Python modules at startup — new plugin code is not active until you restart. After any install or update, go to **Tickarr → Actions → Restart Dispatcharr**. The page will go offline for about 15 seconds, then come back with the new code loaded.
+Yes. Dispatcharr caches Python modules at startup — new plugin code is not active until you restart. After any install or update, go to **Ticker → Actions → Restart Dispatcharr**. The page will go offline for about 15 seconds, then come back with the new code loaded.
 
 ---
 
 **Q: A channel was skipped with "stream profile is Proxy or Redirect". What does this mean?**
 
-Tickarr injects overlays by adding FFmpeg filter parameters to the channel's cloned stream profile. **Proxy** and **Redirect** profiles do not go through FFmpeg — they either pass the stream through Dispatcharr's internal proxy or redirect the client straight to the source URL. There is no FFmpeg process to inject a drawtext filter into, so Tickarr cannot add an overlay to these channels.
+Ticker injects overlays by adding FFmpeg filter parameters to the channel's cloned stream profile. **Proxy** and **Redirect** profiles do not go through FFmpeg — they either pass the stream through Dispatcharr's internal proxy or redirect the client straight to the source URL. There is no FFmpeg process to inject a drawtext filter into, so Ticker cannot add an overlay to these channels.
 
 To fix it:
 
 1. In Dispatcharr, go to **Channels** and open the affected channel.
 2. Under **Stream Profile**, select any FFmpeg-based profile (any profile that is not named **Proxy** or **Redirect**). If you're not sure which to use, the default FFmpeg profile works for most channels.
 3. Click **Save**.
-4. Re-run the Tickarr enable action for that channel.
+4. Re-run the Ticker enable action for that channel.
 
 If many channels are affected at once, the likely cause is that Dispatcharr's system-wide default stream profile is set to Proxy or Redirect and those channels have no explicit profile assigned. Change the default in Dispatcharr **Settings → Streams** to an FFmpeg-based profile, then re-run the enable action.
 
@@ -27,14 +27,14 @@ If many channels are affected at once, the likely cause is that Dispatcharr's sy
 
 **Q: Will enabling a ticker change my stream quality or original stream profile?**
 
-No. Tickarr clones your existing stream profile and injects the overlay filter into the clone. Your original profile is never modified. When you disable the ticker, the original profile is restored and the clone is deleted.
+No. Ticker clones your existing stream profile and injects the overlay filter into the clone. Your original profile is never modified. When you disable the ticker, the original profile is restored and the clone is deleted.
 
 ---
 
 **Q: The overlay is not showing up after I enabled it. What should I check?**
 
 1. Make sure you restarted Dispatcharr after the last install or update.
-2. Make sure someone is actively watching the channel. Tickarr only writes overlay data to channels that have active viewers.
+2. Make sure someone is actively watching the channel. Ticker only writes overlay data to channels that have active viewers.
 3. Wait up to 30 seconds after enabling for the first data to load.
 4. Try **Actions → Reload Poller** to restart the background data thread.
 5. If still nothing, disable and re-enable the channel to re-clone the stream profile with current parameters.
@@ -91,7 +91,7 @@ If you're on v0.1.0 and still seeing this, disable and re-enable the channel to 
 A few things to check:
 
 1. **Try Single Color mode.** Multi-Color uses three drawtext layers which is more CPU-intensive. Switch to Single Color (disable → change Color Mode setting → re-enable).
-2. **Check your base stream profile.** If the channel's original profile contains `-force_key_frames`, older versions of Tickarr would inherit that and produce very high bitrate output. v0.1.0 strips this automatically.
+2. **Check your base stream profile.** If the channel's original profile contains `-force_key_frames`, older versions of Ticker would inherit that and produce very high bitrate output. v0.1.0 strips this automatically.
 3. **Check your VPN or network.** If Dispatcharr or your IPTV provider routes through a VPN, VPN instability can cause buffering on any transcoded stream. Try disabling the ticker and see if the stream runs clean — if it does and buffering returns only with the ticker, the VPN may be under load.
 4. **Run Reload Poller.** A stuck background thread can cause file I/O issues that indirectly stress the encoder.
 
@@ -99,7 +99,7 @@ A few things to check:
 
 **Q: Can I put the sports ticker on an audio-only channel?**
 
-Yes. Tickarr automatically detects audio-only channels and injects a 1280×720 black video background so the overlay has somewhere to render. The result is a black screen with the scrolling ticker, which is normal and expected for radio-style channels.
+Yes. Ticker automatically detects audio-only channels and injects a 1280×720 black video background so the overlay has somewhere to render. The result is a black screen with the scrolling ticker, which is normal and expected for radio-style channels.
 
 ---
 
@@ -138,7 +138,7 @@ The overlay uses fallback content (the channel name) until the first successful 
 
 ---
 
-**Q: Does Tickarr support SiriusXM video channels?**
+**Q: Does Ticker support SiriusXM video channels?**
 
 Yes. The Now Playing overlay is designed for audio-only channels (where it injects a black video background), but it will also work on video channels. The overlay box will appear centered on the existing video.
 
@@ -146,7 +146,7 @@ Yes. The Now Playing overlay is designed for audio-only channels (where it injec
 
 **Q: Why is the Now Playing info sometimes a track or two behind?**
 
-xmplaylist.com is a third-party service that scrapes SiriusXM. There is inherent delay between when a track starts playing and when xmplaylist reflects it, typically 30–60 seconds. This is a limitation of the data source, not Tickarr.
+xmplaylist.com is a third-party service that scrapes SiriusXM. There is inherent delay between when a track starts playing and when xmplaylist reflects it, typically 30–60 seconds. This is a limitation of the data source, not Ticker.
 
 ---
 
@@ -154,7 +154,7 @@ xmplaylist.com is a third-party service that scrapes SiriusXM. There is inherent
 
 **Q: Why does Absolute numbering mode require a Numbering Block Size?**
 
-Absolute mode sets each channel's trailing digits to its real SXM station number — but SiriusXM's full catalog runs up to station 1999, and channels with no match need a reserved range to fill into that won't drift into whatever you numbered next. Rather than guess a default, Tickarr requires you to set it explicitly (1000 comfortably covers a typical lineup — real provider data shows ~99.8% of channels at or below 999). A matched channel whose real station number falls outside your block still gets its correct absolute number and is called out in the result message, never silently moved.
+Absolute mode sets each channel's trailing digits to its real SXM station number — but SiriusXM's full catalog runs up to station 1999, and channels with no match need a reserved range to fill into that won't drift into whatever you numbered next. Rather than guess a default, Ticker requires you to set it explicitly (1000 comfortably covers a typical lineup — real provider data shows ~99.8% of channels at or below 999). A matched channel whose real station number falls outside your block still gets its correct absolute number and is called out in the result message, never silently moved.
 
 ---
 

@@ -1,22 +1,22 @@
 {
-  "generated_at": "2026-08-30T04:15:00Z",
+  "generated_at": "2026-09-04T16:52:32Z",
   "manifest": {
-    "registry_url": "https://github.com/jstevenscl/tickarr",
-    "registry_name": "jstevenscl/tickarr",
-    "root_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master",
+    "registry_url": "https://github.com/jstevenscl/ticker",
+    "registry_name": "jstevenscl/ticker",
+    "root_url": "https://raw.githubusercontent.com/jstevenscl/ticker/master",
     "plugins": [
       {
-        "slug": "tickarr",
-        "name": "Tickarr",
+        "slug": "ticker",
+        "name": "Ticker",
         "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
-        "manifest_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/manifest.json",
+        "manifest_url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/manifest.json",
         "author": "jstevenscl",
-        "last_updated": "2026-08-30T04:15:00Z",
-        "latest_version": "0.4.02",
-        "latest_md5": "5f573ddf716712c975bbcea70f47689a",
-        "latest_sha256": "7a43f404102f07e062856666f1ee75688d0625a0c0d13d8a42e867e09d14c907",
-        "latest_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-latest.zip",
-        "latest_size": 2185337
+        "last_updated": "2026-09-04T16:52:32Z",
+        "latest_version": "0.5.00",
+        "latest_md5": "223d3e284f353426956f53d0ffdab8e6",
+        "latest_sha256": "7d8c1daf4e9f80d9c3b8b32fcd7341738ec454ab9469cc37e7527c5ff668411b",
+        "latest_url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-latest.zip",
+        "latest_size": 2185482
       }
     ]
   }

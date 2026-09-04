@@ -1,6 +1,6 @@
 {
-  "name": "Tickarr",
-  "version": "0.4.02",
+  "name": "Ticker",
+  "version": "0.5.00",
   "logo": "logo.png",
   "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
@@ -30,12 +30,12 @@
     {
       "id": "fill_sxm_epg",
       "label": "Fill EPG — Full Satellite Radio Guide",
-      "description": "Downloads Tickarr's satellite radio EPG and assigns it to the selected channels — sets tvg-id, channel name, and full guide data. Run this first if your satellite radio channels have no EPG.",
+      "description": "Downloads Ticker's satellite radio EPG and assigns it to the selected channels — sets tvg-id, channel name, and full guide data. Run this first if your satellite radio channels have no EPG.",
       "button_label": "Fill EPG",
       "button_variant": "filled",
       "button_color": "cyan",
       "confirm": {
-        "message": "Downloads Tickarr's satellite radio EPG and assigns it to the selected channels. Continue?"
+        "message": "Downloads Ticker's satellite radio EPG and assigns it to the selected channels. Continue?"
       }
     },
     {
@@ -63,12 +63,12 @@
     {
       "id": "assign_logos",
       "label": "Assign Logos",
-      "description": "Sets channel logos from Tickarr's built-in satellite radio logo library. Channels with no match are skipped.",
+      "description": "Sets channel logos from Ticker's built-in satellite radio logo library. Channels with no match are skipped.",
       "button_label": "Logos",
       "button_variant": "outline",
       "button_color": "cyan",
       "confirm": {
-        "message": "Sets logos on selected channels using Tickarr's built-in satellite radio logo library. Channels with no match are skipped. Continue?"
+        "message": "Sets logos on selected channels using Ticker's built-in satellite radio logo library. Channels with no match are skipped. Continue?"
       }
     },
     {
@@ -137,7 +137,7 @@
     {
       "id": "migrate_eas",
       "label": "Migrate EAS to Dynamic Mode",
-      "description": "One-time migration for installs upgrading from an older Tickarr version that used always-on EAS profiles. Restores all EAS channels to passthrough and re-arms them in dynamic mode.",
+      "description": "One-time migration for installs upgrading from an older Ticker version that used always-on EAS profiles. Restores all EAS channels to passthrough and re-arms them in dynamic mode.",
       "button_label": "Migrate",
       "button_variant": "outline",
       "button_color": "orange",
@@ -260,7 +260,7 @@
     {
       "id": "view_active",
       "label": "View Active Tickers",
-      "description": "Lists all channels with an active Tickarr overlay, grouped by type. Shows which channels are actively transcoding vs. on passthrough.",
+      "description": "Lists all channels with an active Ticker overlay, grouped by type. Shows which channels are actively transcoding vs. on passthrough.",
       "button_label": "View",
       "button_variant": "outline",
       "button_color": "violet"
@@ -276,7 +276,7 @@
     {
       "id": "disable_all",
       "label": "Disable All Tickers",
-      "description": "Removes every active Tickarr overlay across all channels and restores all original stream profiles.",
+      "description": "Removes every active Ticker overlay across all channels and restores all original stream profiles.",
       "button_label": "Disable All",
       "button_variant": "filled",
       "button_color": "red",
@@ -287,12 +287,12 @@
     {
       "id": "clean_orphans",
       "label": "Clean Orphaned Profiles",
-      "description": "Removes Tickarr-cloned stream profiles left behind when channels were deleted while a ticker was active.",
+      "description": "Removes Ticker-cloned stream profiles left behind when channels were deleted while a ticker was active.",
       "button_label": "Clean",
       "button_variant": "outline",
       "button_color": "violet",
       "confirm": {
-        "message": "This will delete all Tickarr-cloned stream profiles that have no active channel mapping. Continue?"
+        "message": "This will delete all Ticker-cloned stream profiles that have no active channel mapping. Continue?"
       }
     },
     {
@@ -309,7 +309,7 @@
     {
       "id": "check_channel_id_support",
       "label": "Check Stream Profile Capabilities",
-      "description": "Checks whether this Dispatcharr install supports the {channelId} stream profile substitution token (Dispatcharr issue #1252, shipped v0.29.0). When supported, Tickarr automatically uses one shared stream profile per overlay type instead of cloning one per channel.",
+      "description": "Checks whether this Dispatcharr install supports the {channelId} stream profile substitution token (Dispatcharr issue #1252, shipped v0.29.0). When supported, Ticker automatically uses one shared stream profile per overlay type instead of cloning one per channel.",
       "button_label": "Check",
       "button_variant": "outline",
       "button_color": "violet"

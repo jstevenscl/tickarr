@@ -32,9 +32,9 @@ LOGOS_DIR = ROOT / "lib" / "logos"
 OUT_XML = ROOT / "lib" / "satellite_radio_epg.xml"
 OUT_JSON = ROOT / "lib" / "sports_schedule.json"
 
-GITHUB_PAGES_BASE = "https://jstevenscl.github.io/tickarr/lib/logos"
+GITHUB_PAGES_BASE = "https://jstevenscl.github.io/ticker/lib/logos"
 
-UA = "Tickarr-SportsEPG/1.0 (github.com/jstevenscl/tickarr)"
+UA = "Ticker-SportsEPG/1.0 (github.com/jstevenscl/ticker)"
 
 FILL_DAYS = 14        # fill window: how many days ahead to generate EPG
 FILL_BLOCK_HOURS = 24  # daily filler blocks between/around game slots
@@ -623,9 +623,9 @@ def build_xmltv(all_events, ch_segments, ch_logos=None):
     lines = ['<?xml version="1.0" encoding="UTF-8"?>']
     lines.append('<!DOCTYPE tv SYSTEM "xmltv.dtd">')
     lines.append(
-        '<tv source-info-name="Tickarr Satellite Radio EPG" '
-        'source-info-url="https://jstevenscl.github.io/tickarr/lib/satellite_radio_epg.xml" '
-        'generator-info-name="Tickarr">'
+        '<tv source-info-name="Ticker Satellite Radio EPG" '
+        'source-info-url="https://jstevenscl.github.io/ticker/lib/satellite_radio_epg.xml" '
+        'generator-info-name="Ticker">'
     )
 
     for ch in sorted(ch_segments):

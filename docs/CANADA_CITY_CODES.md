@@ -1,8 +1,8 @@
 # Weather Canada City Codes
 
-Reference list of Environment Canada city codes used by Tickarr's **Weather Canada Alerts** feature (`docs/USERGUIDE.md#weather-canada-alerts`). Copy the code from the **Code** column into **Weather Canada City IDs** in Tickarr settings.
+Reference list of Environment Canada city codes used by Ticker's **Weather Canada Alerts** feature (`docs/USERGUIDE.md#weather-canada-alerts`). Copy the code from the **Code** column into **Weather Canada City IDs** in Ticker settings.
 
-This file is generated from `ca_city_names.json` in the repo root — the same file Tickarr's in-app **Actions → City Lookup** reads from. If you don't see this file browsable elsewhere, use City Lookup in the plugin instead; both sources are identical.
+This file is generated from `ca_city_names.json` in the repo root — the same file Ticker's in-app **Actions → City Lookup** reads from. If you don't see this file browsable elsewhere, use City Lookup in the plugin instead; both sources are identical.
 
 **844 cities across 13 provinces/territories.**
 

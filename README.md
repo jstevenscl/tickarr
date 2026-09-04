@@ -1,10 +1,10 @@
-# Tickarr
+# Ticker
 
 ![Version](https://img.shields.io/badge/version-0.4.0-blue)
 
-A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects dynamic text overlays into IPTV channels via FFmpeg. Tickarr clones the channel's existing stream profile, injects overlay parameters, and restores the original profile on disable — the source profile is never modified.
+A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects dynamic text overlays into IPTV channels via FFmpeg. Ticker clones the channel's existing stream profile, injects overlay parameters, and restores the original profile on disable — the source profile is never modified.
 
-**On Dispatcharr v0.29.0+**, Tickarr uses the new [`{channelId}` stream profile token](https://github.com/Dispatcharr/Dispatcharr/issues/1252) to share **one** stream profile across every channel using the same overlay type and base profile, instead of cloning one profile per channel. Older Dispatcharr versions automatically fall back to the previous one-clone-per-channel behavior — Tickarr detects which mode it's running in and there's nothing to configure either way.
+**On Dispatcharr v0.29.0+**, Ticker uses the new [`{channelId}` stream profile token](https://github.com/Dispatcharr/Dispatcharr/issues/1252) to share **one** stream profile across every channel using the same overlay type and base profile, instead of cloning one profile per channel. Older Dispatcharr versions automatically fall back to the previous one-clone-per-channel behavior — Ticker detects which mode it's running in and there's nothing to configure either way.
 
 ---
 
@@ -30,7 +30,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 - Displays artist, song title, and channel name as a live-updating overlay
 - Audio-only channels receive an injected 1280x720 black video background — **the base profile must be genuinely audio-only (no `-c:v`/`-vcodec` flag, not even `-c:v copy`)** or the overlay will never render. See [Your base profile must be genuinely audio-only](docs/USERGUIDE.md#your-base-profile-must-be-genuinely-audio-only) in the User Guide.
 - On-Demand mode (default): overlay activates when a viewer tunes in, restores to passthrough when idle
-- Always On mode: overlay profile assigned permanently at enable time — no restart on connect, recommended for players sensitive to mid-stream restarts (e.g. Plex). On Dispatcharr v0.29.0+, every channel sharing the same base profile uses **one shared stream profile** regardless of lineup size. On older Dispatcharr versions, Tickarr falls back to **one cloned stream profile per enabled channel** — see [Shared vs. per-channel stream profiles](docs/USERGUIDE.md#shared-vs-per-channel-stream-profiles) in the User Guide. No performance impact either way — FFmpeg only runs while a channel is actively connected, regardless of how many profiles exist.
+- Always On mode: overlay profile assigned permanently at enable time — no restart on connect, recommended for players sensitive to mid-stream restarts (e.g. Plex). On Dispatcharr v0.29.0+, every channel sharing the same base profile uses **one shared stream profile** regardless of lineup size. On older Dispatcharr versions, Ticker falls back to **one cloned stream profile per enabled channel** — see [Shared vs. per-channel stream profiles](docs/USERGUIDE.md#shared-vs-per-channel-stream-profiles) in the User Guide. No performance impact either way — FFmpeg only runs while a channel is actively connected, regardless of how many profiles exist.
 
 **Satellite Radio EPG** (Fill EPG action in Satellite Radio Channel Setup)
 - Sports channels: real game-by-game listings (matchups, races, events), refreshed every 4 hours
@@ -77,7 +77,7 @@ A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects 
 
 ## How On-Demand Mode Works
 
-Every overlay type in Tickarr supports an on-demand mode, which keeps your channels on normal passthrough until there is actually something to show. No re-encoding, no CPU overhead, no unnecessary profile clones — until the trigger condition is met.
+Every overlay type in Ticker supports an on-demand mode, which keeps your channels on normal passthrough until there is actually something to show. No re-encoding, no CPU overhead, no unnecessary profile clones — until the trigger condition is met.
 
 ### Sports Ticker
 
@@ -89,40 +89,40 @@ If you are using Favorite Teams and only following one or two teams, you can set
 
 ### Satellite Radio Now Playing
 
-Tickarr does not do anything to a channel until someone actually starts watching it. The moment a viewer tunes in, the Now Playing overlay activates — showing the current artist, song title, and channel name. If nobody has been watching for about 30 seconds, it quietly switches back to normal passthrough until the next time someone tunes in.
+Ticker does not do anything to a channel until someone actually starts watching it. The moment a viewer tunes in, the Now Playing overlay activates — showing the current artist, song title, and channel name. If nobody has been watching for about 30 seconds, it quietly switches back to normal passthrough until the next time someone tunes in.
 
-This matters a lot if you have a large satellite radio lineup. Instead of re-encoding hundreds of channels around the clock whether anyone is watching or not, Tickarr only runs the overlay on the channels that are actually being watched right now. FFmpeg only runs while a channel is actively connected either way — the trigger mode doesn't change that.
+This matters a lot if you have a large satellite radio lineup. Instead of re-encoding hundreds of channels around the clock whether anyone is watching or not, Ticker only runs the overlay on the channels that are actually being watched right now. FFmpeg only runs while a channel is actively connected either way — the trigger mode doesn't change that.
 
 Switching a channel's stream profile always requires a brief restart to take effect. On-demand mode does this the moment a viewer connects, which most players handle fine — but some (Plex is a known example) are sensitive to a restart landing mid-connect. If you're seeing playback issues on first tune-in with a specific player, switch that channel's Trigger Mode to **Always On**: the overlay profile is assigned before anyone ever connects, so there's nothing to restart.
 
 ### Custom Text
 
-Nothing happens until you give it something to display. You enable it on a channel and the channel stays completely normal until you go to Update Custom Text, type your message, and run the action — at that point the overlay appears. When you want it gone, clear the text field and run Update Custom Text again. Tickarr removes the overlay and puts the channel back to passthrough instantly.
+Nothing happens until you give it something to display. You enable it on a channel and the channel stays completely normal until you go to Update Custom Text, type your message, and run the action — at that point the overlay appears. When you want it gone, clear the text field and run Update Custom Text again. Ticker removes the overlay and puts the channel back to passthrough instantly.
 
 ### EAS Weather Alerts
 
-Your channel runs 100% normally at all times. Tickarr sits quietly in the background watching the NWS API for your configured zone codes — no overlay, no extra encoding, nothing. The moment an actual weather alert goes active for your zone, Tickarr automatically switches the channel to the EAS overlay: scrolling alert bar, severity label, and attention tone if configured. The second that alert clears on the NWS side, your channel goes silently back to normal. Completely automatic, start to finish.
+Your channel runs 100% normally at all times. Ticker sits quietly in the background watching the NWS API for your configured zone codes — no overlay, no extra encoding, nothing. The moment an actual weather alert goes active for your zone, Ticker automatically switches the channel to the EAS overlay: scrolling alert bar, severity label, and attention tone if configured. The second that alert clears on the NWS side, your channel goes silently back to normal. Completely automatic, start to finish.
 
 ---
 
 ## Requirements
 
-- Dispatcharr v0.27.1 or later. **v0.29.0 or later is recommended** — Tickarr automatically uses a single shared stream profile per overlay type instead of cloning one per channel (see [Screenshots](#screenshots) above). Upgrading an existing install from an older Dispatcharr version to v0.29.0+ picks this up automatically the next time you enable a ticker; run **Actions → Migrate to Shared Profiles** to move already-enabled channels over immediately without waiting.
+- Dispatcharr v0.27.1 or later. **v0.29.0 or later is recommended** — Ticker automatically uses a single shared stream profile per overlay type instead of cloning one per channel (see [Screenshots](#screenshots) above). Upgrading an existing install from an older Dispatcharr version to v0.29.0+ picks this up automatically the next time you enable a ticker; run **Actions → Migrate to Shared Profiles** to move already-enabled channels over immediately without waiting.
 - Redis (used by Dispatcharr — standard in all installs)
 - FFmpeg in the Dispatcharr container (standard in all installs)
-- Channels must have an FFmpeg-based stream profile assigned — **Proxy** and **Redirect** profiles bypass FFmpeg and cannot be used with any Tickarr overlay. See [Before You Start](docs/USERGUIDE.md#before-you-start--universal-requirements) in the User Guide if affected channels are being skipped.
+- Channels must have an FFmpeg-based stream profile assigned — **Proxy** and **Redirect** profiles bypass FFmpeg and cannot be used with any Ticker overlay. See [Before You Start](docs/USERGUIDE.md#before-you-start--universal-requirements) in the User Guide if affected channels are being skipped.
 
 ---
 
 ## Installation
 
 1. Open Dispatcharr → **Plugins → Find Plugins**
-2. Search for **Tickarr** and install
-3. After installation, go to **Tickarr → Actions → Restart Dispatcharr**
+2. Search for **Ticker** and install
+3. After installation, go to **Ticker → Actions → Restart Dispatcharr**
 
    > A restart is required after every install or update. Django caches plugin code at startup — without a restart, new code will not load.
 
-4. Configure your settings on the Tickarr plugin page
+4. Configure your settings on the Ticker plugin page
 5. Run the appropriate enable action for the overlay type you want
 
 ---

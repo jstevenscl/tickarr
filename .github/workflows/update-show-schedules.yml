@@ -50,7 +50,7 @@ jobs:
           gh label create show-schedules --color 0075ca --description "Show schedule scrape alerts" 2>/dev/null || true
           gh issue create \
             --title "Show schedule scrape failed -- ${DATE}" \
-            --body "## Tickarr Show Schedule scrape failed
+            --body "## Ticker Show Schedule scrape failed
 
           The \`update-show-schedules\` workflow failed on ${DATE}.
 

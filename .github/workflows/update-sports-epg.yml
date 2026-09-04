@@ -48,7 +48,7 @@ jobs:
           gh label create sports-epg --color 0075ca --description "Sports EPG build alerts" 2>/dev/null || true
           gh issue create \
             --title "Sports EPG build failed -- ${DATE}" \
-            --body "## Tickarr Sports EPG build failed
+            --body "## Ticker Sports EPG build failed
 
           The \`update-sports-epg\` workflow failed on ${DATE}.
 

@@ -1,27 +1,36 @@
 {
-  "generated_at": "2026-08-30T04:15:00Z",
+  "generated_at": "2026-09-04T16:52:32Z",
   "manifest": {
-    "slug": "tickarr",
-    "name": "Tickarr",
+    "slug": "ticker",
+    "name": "Ticker",
     "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
     "author": "jstevenscl",
-    "registry_url": "https://github.com/jstevenscl/tickarr",
-    "registry_name": "jstevenscl/tickarr",
-    "last_updated": "2026-08-30T04:15:00Z",
+    "registry_url": "https://github.com/jstevenscl/ticker",
+    "registry_name": "jstevenscl/ticker",
+    "last_updated": "2026-09-04T16:52:32Z",
     "latest": {
-      "version": "0.4.02",
-      "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.4.02.zip",
-      "checksum_md5": "5f573ddf716712c975bbcea70f47689a",
-      "checksum_sha256": "7a43f404102f07e062856666f1ee75688d0625a0c0d13d8a42e867e09d14c907",
-      "size": 2185337,
-      "last_updated": "2026-08-30T04:15:00Z",
-      "build_timestamp": "2026-08-30T04:15:00Z",
-      "latest_url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-latest.zip"
+      "version": "0.5.00",
+      "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.5.00.zip",
+      "checksum_md5": "223d3e284f353426956f53d0ffdab8e6",
+      "checksum_sha256": "7d8c1daf4e9f80d9c3b8b32fcd7341738ec454ab9469cc37e7527c5ff668411b",
+      "size": 2185482,
+      "last_updated": "2026-09-04T16:52:32Z",
+      "build_timestamp": "2026-09-04T16:52:32Z",
+      "latest_url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-latest.zip"
     },
     "versions": [
       {
+        "version": "0.5.00",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.5.00.zip",
+        "checksum_md5": "223d3e284f353426956f53d0ffdab8e6",
+        "checksum_sha256": "7d8c1daf4e9f80d9c3b8b32fcd7341738ec454ab9469cc37e7527c5ff668411b",
+        "size": 2185482,
+        "last_updated": "2026-09-04T16:52:32Z",
+        "build_timestamp": "2026-09-04T16:52:32Z"
+      },
+      {
         "version": "0.4.02",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.4.02.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.4.02.zip",
         "checksum_md5": "5f573ddf716712c975bbcea70f47689a",
         "checksum_sha256": "7a43f404102f07e062856666f1ee75688d0625a0c0d13d8a42e867e09d14c907",
         "size": 2185337,
@@ -30,7 +39,7 @@
       },
       {
         "version": "0.4.01",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.4.01.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.4.01.zip",
         "checksum_md5": "588a60d63980c1238d04a95a47d8bda5",
         "checksum_sha256": "a1a7e779d320956055dfc1e8c884df01f6e847d764810f217685b99880a60173",
         "size": 2185081,
@@ -39,7 +48,7 @@
       },
       {
         "version": "0.4.0",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.4.0.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.4.0.zip",
         "checksum_md5": "05e10e6e318c5f6d324d84c300e6c08f",
         "checksum_sha256": "a3d42671af1d3051ded55c0f2bcbb36cb06bc12d44d22a1b8eefd83a067b0e77",
         "size": 2182552,
@@ -48,7 +57,7 @@
       },
       {
         "version": "0.3.06",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.3.06.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.3.06.zip",
         "checksum_md5": "aeff7556515fe838cc3b098c81a3acef",
         "checksum_sha256": "e76a22c2f7ed006ae4c019b0f37934aa8fc795a6174fb263e08f86408e5c22e0",
         "size": 2178557,
@@ -57,7 +66,7 @@
       },
       {
         "version": "0.3.03",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.3.03.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.3.03.zip",
         "checksum_md5": "fc6498692454c22fa910b3236c5a34b5",
         "checksum_sha256": "2a4a7192bf6b21e98094b450938f8f90a159b7ab7594dc47591cfb55ccd20fa1",
         "size": 2175788,
@@ -66,7 +75,7 @@
       },
       {
         "version": "0.3.02",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.3.02.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.3.02.zip",
         "checksum_md5": "50ae72a28a846742d2c25cabef42bb94",
         "checksum_sha256": "b4bd9729604dd950e200d37a3c2b0ab942228e620291eb9c13b2fbd10fa7d5ae",
         "size": 2174686,
@@ -75,7 +84,7 @@
       },
       {
         "version": "0.3.01",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.3.01.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.3.01.zip",
         "checksum_md5": "9dd4298e30fd17c5eda403f3e4e2d101",
         "checksum_sha256": "c37a19bb6d41e8417a7cdc24a2b3e0d6c3216d0074e3a1f7f73713e40e59859b",
         "size": 1310654,
@@ -84,7 +93,7 @@
       },
       {
         "version": "0.1.02",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.02.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.1.02.zip",
         "checksum_md5": "ad47b7240f0dc44ca50e2da1254d6ce6",
         "checksum_sha256": "258788c07161f85ca7be08aa887d9580b732345443f885146ce60b12405d88fc",
         "size": 23298,
@@ -93,7 +102,7 @@
       },
       {
         "version": "0.1.01",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.01.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.1.01.zip",
         "checksum_md5": "c3e3ff46d9eacd66bad4aaaa3c954103",
         "checksum_sha256": "c2d0fa4f26560b571fd8014d06b230ca6fff5321e79207bcce07b19c22793e34",
         "size": 22665,
@@ -102,7 +111,7 @@
       },
       {
         "version": "0.1.0",
-        "url": "https://raw.githubusercontent.com/jstevenscl/tickarr/master/zips/tickarr/tickarr-0.1.0.zip",
+        "url": "https://raw.githubusercontent.com/jstevenscl/ticker/master/zips/ticker/ticker-0.1.0.zip",
         "checksum_md5": "15b0c5a2fb0c9d7fefd5ef4129bc8ea1",
         "checksum_sha256": "e8c3258cf310c5b5cb3d313d474e7b8b18f9e792707ba9d29c6f78639149c858",
         "size": 21829,

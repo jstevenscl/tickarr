@@ -47,7 +47,7 @@ jobs:
           gh label create channel-update --color 0075ca --description "Channel cache alerts" 2>/dev/null || true
           gh issue create \
             --title "Channel cache update failed -- ${DATE}" \
-            --body "## Tickarr channel cache update failed
+            --body "## Ticker channel cache update failed
 
           The \`update-channels\` workflow failed on ${DATE}.
 

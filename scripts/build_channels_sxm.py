@@ -3,7 +3,7 @@
 Build lib/channels.json from StellarTunerLog (primary) or Rebrowser CSV (fallback).
 
 StellarTunerLog fetches channel data directly from SiriusXM's API and is the
-authoritative source for Tickarr. The Rebrowser public CSV is used as a fallback
+authoritative source for Ticker. The Rebrowser public CSV is used as a fallback
 if STL is unreachable.
 
 Run manually:
@@ -28,7 +28,7 @@ ALIASES_PATH = ROOT / "lib" / "channel_aliases.json"
 STL_API_URL       = "https://api.stellartunerlog.com/v1/channels"
 STL_CHANNELS_URL  = "https://stellartunerlog.com/channels.json"  # public fallback (437 channels)
 REBROWSER_CSV_URL = "https://raw.githubusercontent.com/rebrowser/siriusxm-dataset/main/channels/data.csv"
-UA = "Tickarr/1.0 (github.com/jstevenscl/tickarr)"
+UA = "Ticker/1.0 (github.com/jstevenscl/ticker)"
 
 _SEASONAL_RE = re.compile(
     r"(holiday|christmas|xmas|halloween|thanksgiving|seasonal|limited edition"

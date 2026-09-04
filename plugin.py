@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _PLUGIN_DIR        = os.path.dirname(os.path.abspath(__file__))
-_PLUGIN_KEY        = os.path.basename(_PLUGIN_DIR)   # e.g. "tickarr" or "tickarr_0_2_00_dev"
+_PLUGIN_KEY        = os.path.basename(_PLUGIN_DIR)   # e.g. "ticker" or "ticker_0_2_00_dev"
 # Always use a fixed data directory name regardless of versioned install dir
 _PLUGINS_DIR       = os.path.dirname(_PLUGIN_DIR)
-_DATA_DIR          = os.path.join(_PLUGINS_DIR, "tickarr_data")
+_DATA_DIR          = os.path.join(_PLUGINS_DIR, "ticker_data")
 TICKER_DIR         = os.path.join(_DATA_DIR, "tickers")
 MAPPINGS_FILE      = os.path.join(_DATA_DIR, "mappings.json")
 CHANNEL_CACHE_FILE = os.path.join(_DATA_DIR, "channel_cache.json")
@@ -28,7 +28,7 @@ CHANNEL_CACHE_FILE = os.path.join(_DATA_DIR, "channel_cache.json")
 # FFmpeg / StreamProfile helpers
 # ---------------------------------------------------------------------------
 
-PROFILE_PREFIX = "Tickarr — "   # em dash
+PROFILE_PREFIX = "Ticker — "   # em dash
 
 DRAWTEXT_FILTER_TEMPLATE = (
     "drawtext="
@@ -70,9 +70,9 @@ def _resolve_mono_font():
         "/usr/share/fonts/truetype/ubuntu/UbuntuMono-B.ttf",
     ):
         if os.path.exists(path):
-            logger.info(f"tickarr: sports ticker mono font: {path}")
+            logger.info(f"ticker: sports ticker mono font: {path}")
             return path
-    logger.warning("tickarr: no monospace font found — sports ticker will use single-layer white")
+    logger.warning("ticker: no monospace font found — sports ticker will use single-layer white")
     return ""
 
 _FONT_MONO_BOLD = _resolve_mono_font()
@@ -167,7 +167,7 @@ _SPORTS_LABELS_LAYER = (
 # whose passion for keeping people informed inspired this feature.
 # Rest easy.
 # ---------------------------------------------------------------------------
-# ── Tickarr Custom style (2 layers: flashing header + yellow scroll) ──────────
+# ── Ticker Custom style (2 layers: flashing header + yellow scroll) ──────────
 _EAS_TYPE_LAYER = (
     "drawtext="
     "fontfile={font}"
@@ -298,7 +298,7 @@ def _inject_drawtext(params, drawtext_filter):
 
 
 
-# Flags that must never appear in a Tickarr-cloned profile.
+# Flags that must never appear in a Ticker-cloned profile.
 # These cause audio gaps or stream instability on burst-delivered streams (e.g. SiriusXM).
 # Only the cloned profile is modified — the original base profile is never touched.
 _DANGEROUS_FLAGS = {
@@ -310,7 +310,7 @@ _DANGEROUS_FLAGS = {
 def _strip_dangerous_flags(channel_name, params):
     """Strip known problematic FFmpeg flags from cloned profile parameters.
     Logs a clear notification for every flag removed.
-    The original base profile is never modified — only the Tickarr clone is cleaned.
+    The original base profile is never modified — only the Ticker clone is cleaned.
     """
     removed = []
 
@@ -338,7 +338,7 @@ def _strip_dangerous_flags(channel_name, params):
         key = flag.lstrip('+-').split()[0]
         reason = _DANGEROUS_FLAGS.get(key, "known to cause stream issues")
         logger.warning(
-            f"[Tickarr] Auto-removed {flag} from cloned profile for \"{channel_name}\" "
+            f"[Ticker] Auto-removed {flag} from cloned profile for \"{channel_name}\" "
             f"— {reason} "
             f"Your original base profile is unchanged."
         )
@@ -354,7 +354,7 @@ def _supports_channel_id_token():
     """Detect whether this Dispatcharr install's StreamProfile.build_command() accepts
     a channel_id argument — added for the {channelId} substitution token (Dispatcharr
     issue #1252, shipped v0.29.0). Checked once per process and cached: Dispatcharr's
-    version can't change without a restart, which reloads Tickarr's plugin code anyway.
+    version can't change without a restart, which reloads Ticker's plugin code anyway.
     Fails closed (False) on any inspection error so an ambiguous result never risks
     breaking the existing per-channel-clone behavior.
     """
@@ -366,7 +366,7 @@ def _supports_channel_id_token():
         sig = inspect.signature(StreamProfile.build_command)
         _CHANNEL_ID_TOKEN_SUPPORTED = "channel_id" in sig.parameters
     except Exception as e:
-        logger.warning(f"tickarr: could not determine {{channelId}} token support, assuming unsupported — {e}")
+        logger.warning(f"ticker: could not determine {{channelId}} token support, assuming unsupported — {e}")
         _CHANNEL_ID_TOKEN_SUPPORTED = False
     return _CHANNEL_ID_TOKEN_SUPPORTED
 
@@ -409,7 +409,7 @@ def _get_or_create_shared_profile(overlay_type, original_profile, channel_name, 
         if existing.parameters != params:
             existing.parameters = params
             existing.save(update_fields=["parameters"])
-            logger.info(f"tickarr: shared profile {existing.id} ({name}) refreshed")
+            logger.info(f"ticker: shared profile {existing.id} ({name}) refreshed")
         return existing, removed_flags
     profile = StreamProfile(
         name=name,
@@ -419,7 +419,7 @@ def _get_or_create_shared_profile(overlay_type, original_profile, channel_name, 
         is_active=True,
     )
     profile.save()
-    logger.info(f"tickarr: shared profile created — {name} (id={profile.id})"
+    logger.info(f"ticker: shared profile created — {name} (id={profile.id})"
                 + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
     return profile, removed_flags
 
@@ -446,7 +446,7 @@ def _clone_and_inject(channel_id, original_profile, channel_name=""):
         is_active=True,
     )
     profile.save()
-    logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
+    logger.info(f"ticker: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
                 + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
     return profile, removed_flags
 
@@ -470,7 +470,7 @@ def _clone_and_inject_custom(channel_id, original_profile, channel_name, style, 
         is_active=True,
     )
     profile.save()
-    logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
+    logger.info(f"ticker: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
                 + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
     return profile, removed_flags
 
@@ -498,7 +498,7 @@ def _clone_and_inject_sports(channel_id, original_profile, channel_name, positio
         is_active=True,
     )
     profile.save()
-    logger.info(f"tickarr: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
+    logger.info(f"ticker: cloned profile {original_profile.id} → {profile.id} for channel {channel_id}"
                 + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
     return profile, removed_flags
 
@@ -514,7 +514,7 @@ def _inject_eas_tone(params, channel_id, interval_secs=300):
     """
     vf_match = re.search(r'-vf\s+"([^"]+)"', params)
     if not vf_match:
-        logger.warning("[Tickarr] EAS: no -vf in params — siren skipped")
+        logger.warning("[Ticker] EAS: no -vf in params — siren skipped")
         return params
 
     vf_filter = vf_match.group(1)
@@ -559,7 +559,7 @@ def _inject_eas_tone_wav(params, wav_path, interval_secs=300):
     """
     vf_match = re.search(r'-vf\s+"([^"]+)"', params)
     if not vf_match:
-        logger.warning("[Tickarr] EAS: no -vf in params — WAV tone skipped")
+        logger.warning("[Ticker] EAS: no -vf in params — WAV tone skipped")
         return params
 
     vf_filter = vf_match.group(1)
@@ -578,7 +578,7 @@ def _inject_eas_tone_wav(params, wav_path, interval_secs=300):
         f"[tcyc]aloop=loop=-1:size={cycle_samples}[tone];"
         f"[0:a][tone]amix=inputs=2:duration=first:weights=1 1.5:normalize=0[aout]"
     )
-    logger.info(f"[Tickarr] EAS CA tone inject: interval={interval_secs}s cycle={cycle_secs}s")
+    logger.info(f"[Ticker] EAS CA tone inject: interval={interval_secs}s cycle={cycle_secs}s")
     fc_clause = f'-filter_complex "{fc_graph}" -map "[vout]" -map "[aout]"'
     params = params[:vf_match.start()] + fc_clause + params[vf_match.end():]
     params = re.sub(r'\s*-map\s+0(?!:)', '', params)
@@ -600,13 +600,13 @@ _EAS_TRANSCODE_PREFIXES = {
 
 
 def _clone_and_inject_eas(channel_id, original_profile, channel_name="", tone_interval=0,
-                          overlay_style="tickarr", label_color="0xCC0000",
+                          overlay_style="ticker", label_color="0xCC0000",
                           transcode_mode="full", tone_wav=None):
     if _supports_channel_id_token():
         # label_color is alert-severity-driven at runtime (only meaningful for the
         # "broadcast" style) — including it in the signature only when it's actually used
         # means channels currently showing different alert severities correctly get
-        # different shared profiles, without needlessly fragmenting the "tickarr" style
+        # different shared profiles, without needlessly fragmenting the "ticker" style
         # (which never reads label_color) into one profile per severity ever seen.
         sig_color = label_color if overlay_style == "broadcast" else ""
         sig = _config_sig(original_profile.id, overlay_style, transcode_mode, tone_interval,
@@ -662,7 +662,7 @@ def _clone_and_inject_eas(channel_id, original_profile, channel_name="", tone_in
         is_active=True,
     )
     profile.save()
-    logger.info(f"tickarr: EAS profile cloned {original_profile.id} → {profile.id} for channel {channel_id}"
+    logger.info(f"ticker: EAS profile cloned {original_profile.id} → {profile.id} for channel {channel_id}"
                 + (f" (removed: {', '.join(removed_flags)})" if removed_flags else ""))
     return profile, removed_flags
 
@@ -673,7 +673,7 @@ def _assign_profile(channel, profile):
     try:
         channel.update_stream_profile(profile.id)
     except Exception as e:
-        logger.warning(f"tickarr: update_stream_profile failed for {channel.name}: {e}")
+        logger.warning(f"ticker: update_stream_profile failed for {channel.name}: {e}")
 
 
 def _assign_logo(channel, logo_url, channel_display_name):
@@ -687,7 +687,7 @@ def _assign_logo(channel, logo_url, channel_display_name):
         channel.save(update_fields=["logo"])
         return True, created
     except Exception as e:
-        logger.warning(f"tickarr: logo assign failed for {channel_display_name}: {e}")
+        logger.warning(f"ticker: logo assign failed for {channel_display_name}: {e}")
         return False, False
 
 
@@ -702,7 +702,7 @@ def _restore_profile(channel, original_profile_id):
 
 
 def _delete_cloned_profile(profile_id):
-    """Delete a Tickarr-managed StreamProfile — unless it's a shared profile (name contains
+    """Delete a Ticker-managed StreamProfile — unless it's a shared profile (name contains
     "[shared:"), in which case it's retained: other channels may still be actively using it,
     and per-channel disable/idle-restore/alert-clear call sites have no way to know that.
     Shared profiles are only ever reaped by the Clean Orphaned Profiles action, once no
@@ -714,15 +714,15 @@ def _delete_cloned_profile(profile_id):
         if not profile:
             return
         if " [shared:" in profile.name:
-            logger.debug(f"tickarr: shared profile {profile_id} ({profile.name}) retained — "
+            logger.debug(f"ticker: shared profile {profile_id} ({profile.name}) retained — "
                          f"may still be in use by other channels")
             return
         profile.delete()
     except Exception as e:
-        logger.warning(f"tickarr: could not delete profile {profile_id}: {e}")
+        logger.warning(f"ticker: could not delete profile {profile_id}: {e}")
 
 
-def _get_tickarr_profiles():
+def _get_ticker_profiles():
     from core.models import StreamProfile
     return list(StreamProfile.objects.filter(name__startswith=PROFILE_PREFIX))
 
@@ -770,7 +770,7 @@ def _atomic_write(filename, content):
             f.write(content)
         os.replace(tmp, path)
     except Exception as e:
-        logger.error(f"tickarr: write failed for {filename}: {e}")
+        logger.error(f"ticker: write failed for {filename}: {e}")
 
 
 def _truncate(text, max_len):
@@ -809,7 +809,7 @@ def _remove_channel_files(channel_id):
             if os.path.exists(path):
                 os.remove(path)
         except Exception as e:
-            logger.warning(f"tickarr: could not remove {path}: {e}")
+            logger.warning(f"ticker: could not remove {path}: {e}")
 
 
 def _remove_custom_file(channel_id):
@@ -818,7 +818,7 @@ def _remove_custom_file(channel_id):
         if os.path.exists(path):
             os.remove(path)
     except Exception as e:
-        logger.warning(f"tickarr: could not remove {path}: {e}")
+        logger.warning(f"ticker: could not remove {path}: {e}")
 
 
 def _write_sports_text(channel_id, labels_text, abbrevs_text, scores_text, full_text=""):
@@ -829,7 +829,7 @@ def _write_sports_text(channel_id, labels_text, abbrevs_text, scores_text, full_
     _atomic_write(f"channel_{channel_id}_sports_full.txt",    full_text    or "")
 
 
-def _eas_write_alert(channel_id, unique_alerts, overlay_style="tickarr"):
+def _eas_write_alert(channel_id, unique_alerts, overlay_style="ticker"):
     """Write EAS overlay text files for the active style."""
     _ensure_dirs()
     if not unique_alerts:
@@ -848,7 +848,7 @@ def _eas_write_alert(channel_id, unique_alerts, overlay_style="tickarr"):
                      for a in unique_alerts]
             area_text = "     |     ".join(parts)
     else:
-        # Tickarr custom style — label always shows worst event
+        # Ticker custom style — label always shows worst event
         type_text = f"⚠  {unique_alerts[0]['event'].upper()}  ⚠"
         if len(unique_alerts) == 1:
             area_text = _area(unique_alerts[0])
@@ -916,11 +916,11 @@ def _restart_channel_stream(channel_uuid, label=""):
         state_val = (state_raw.decode() if isinstance(state_raw, bytes) else state_raw) if state_raw else ""
         if state_val == "stopping":
             rc.hdel(meta_key, "state")
-        logger.info(f"tickarr:{tag} channel {channel_uuid} reconnect gate cleared")
+        logger.info(f"ticker:{tag} channel {channel_uuid} reconnect gate cleared")
     except ImportError:
-        logger.warning(f"tickarr:{tag} live_proxy unavailable — profile will apply on next client connect")
+        logger.warning(f"ticker:{tag} live_proxy unavailable — profile will apply on next client connect")
     except Exception as e:
-        logger.debug(f"tickarr:{tag} restart {channel_uuid}: {e}")
+        logger.debug(f"ticker:{tag} restart {channel_uuid}: {e}")
 
 
 def _restart_channel_stream_async(channel, label=""):
@@ -1008,7 +1008,7 @@ def _fetch_weather_canada_alerts(city_ids, severity_threshold="Moderate", langua
             with urllib.request.urlopen(req, timeout=15) as r:
                 data = json.loads(r.read())
         except Exception as e:
-            logger.warning(f"[Tickarr] EAS: Weather Canada fetch failed for {city_id}: {e}")
+            logger.warning(f"[Ticker] EAS: Weather Canada fetch failed for {city_id}: {e}")
             continue
         props = data.get("properties", {}) or {}
         warnings = props.get("warnings") or []
@@ -1032,15 +1032,15 @@ def _fetch_weather_canada_alerts(city_ids, severity_threshold="Moderate", langua
     return all_alerts
 
 
-_EAS_REDIS_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_result"
-_EAS_REDIS_LOCK   = f"tickarr:{_PLUGIN_KEY}:eas_poll_lock"
-_EAS_STATE_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_state"     # JSON {cid: event_name or null}
-_EAS_OWNER_KEY    = f"tickarr:{_PLUGIN_KEY}:eas_owner"     # nx lock — one worker applies transitions
-_EAS_ALERTS_KEY   = f"tickarr:{_PLUGIN_KEY}:eas_alerts"    # fingerprint of current alert set
-_EAS_ROTATION_KEY = f"tickarr:{_PLUGIN_KEY}:eas_rotation"  # current rotation index
+_EAS_REDIS_KEY    = f"ticker:{_PLUGIN_KEY}:eas_result"
+_EAS_REDIS_LOCK   = f"ticker:{_PLUGIN_KEY}:eas_poll_lock"
+_EAS_STATE_KEY    = f"ticker:{_PLUGIN_KEY}:eas_state"     # JSON {cid: event_name or null}
+_EAS_OWNER_KEY    = f"ticker:{_PLUGIN_KEY}:eas_owner"     # nx lock — one worker applies transitions
+_EAS_ALERTS_KEY   = f"ticker:{_PLUGIN_KEY}:eas_alerts"    # fingerprint of current alert set
+_EAS_ROTATION_KEY = f"ticker:{_PLUGIN_KEY}:eas_rotation"  # current rotation index
 _EAS_CACHE_TTL    = 50   # seconds — one worker polls, all others read from Redis
-_EAS_CA_REDIS_KEY  = f"tickarr:{_PLUGIN_KEY}:eas_ca_result"
-_EAS_CA_REDIS_LOCK = f"tickarr:{_PLUGIN_KEY}:eas_ca_poll_lock"
+_EAS_CA_REDIS_KEY  = f"ticker:{_PLUGIN_KEY}:eas_ca_result"
+_EAS_CA_REDIS_LOCK = f"ticker:{_PLUGIN_KEY}:eas_ca_poll_lock"
 _EAS_CA_TONE_FILE      = os.path.join(_PLUGIN_DIR, "eas_tone_ca.wav")
 _EAS_CA_CITY_NAMES     = os.path.join(_PLUGIN_DIR, "ca_city_names.json")
 
@@ -1079,7 +1079,7 @@ def _eas_sweep():
         tone_interval = max(30, tone_interval) if tone_interval > 0 else 0
     except Exception:
         tone_interval = 300
-    overlay_style = settings.get("eas_overlay_style") or "tickarr"
+    overlay_style = settings.get("eas_overlay_style") or "ticker"
     transcode_mode = settings.get("eas_transcode_mode") or "full"
 
     mappings = _get_mappings()
@@ -1113,14 +1113,14 @@ def _eas_sweep():
                             nws_alerts = _fetch_nws_alerts(zones, severity_threshold)
                             rc.setex(_EAS_REDIS_KEY, _EAS_CACHE_TTL, json.dumps(nws_alerts))
                         except Exception as e:
-                            logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
+                            logger.warning(f"[Ticker] EAS: NWS fetch failed: {e}")
                             nws_alerts = None  # unavailable
                     else:
                         nws_alerts = None  # another worker is fetching
             else:
                 nws_alerts = _fetch_nws_alerts(zones, severity_threshold)
         except Exception as e:
-            logger.warning(f"[Tickarr] EAS: NWS fetch failed: {e}")
+            logger.warning(f"[Ticker] EAS: NWS fetch failed: {e}")
             nws_alerts = None
 
     # ── Fetch Weather Canada alerts ───────────────────────────────────────────
@@ -1137,14 +1137,14 @@ def _eas_sweep():
                             ca_alerts = _fetch_weather_canada_alerts(ca_ids, severity_threshold, ca_language)
                             rc.setex(_EAS_CA_REDIS_KEY, _EAS_CACHE_TTL, json.dumps(ca_alerts))
                         except Exception as e:
-                            logger.warning(f"[Tickarr] EAS: Weather Canada fetch failed: {e}")
+                            logger.warning(f"[Ticker] EAS: Weather Canada fetch failed: {e}")
                             ca_alerts = None  # unavailable
                     else:
                         ca_alerts = None  # another worker is fetching
             else:
                 ca_alerts = _fetch_weather_canada_alerts(ca_ids, severity_threshold, ca_language)
         except Exception as e:
-            logger.warning(f"[Tickarr] EAS: Weather Canada fetch failed: {e}")
+            logger.warning(f"[Ticker] EAS: Weather Canada fetch failed: {e}")
             ca_alerts = None
 
     # ── Read persisted state and active viewers ───────────────────────────────
@@ -1249,7 +1249,7 @@ def _eas_sweep():
 
                 orig = StreamProfile.objects.filter(id=mapping["original_profile_id"]).first()
                 if not orig:
-                    logger.warning(f"[Tickarr] EAS: original profile missing for ch {cid}")
+                    logger.warning(f"[Ticker] EAS: original profile missing for ch {cid}")
                     continue
 
                 tone_wav = None
@@ -1267,7 +1267,7 @@ def _eas_sweep():
                 mappings[cid] = mapping
                 new_state[cid] = True
                 src = "EC" if use_ca_tone else "NWS"
-                logger.info(f"[Tickarr] EAS ALERT ({src}): {channel_worst['event']} — "
+                logger.info(f"[Ticker] EAS ALERT ({src}): {channel_worst['event']} — "
                             f"{channel_worst.get('area', '')[:60]} (ch {cid})")
                 _eas_restart_channel(str(channel.uuid))
 
@@ -1281,7 +1281,7 @@ def _eas_sweep():
                 mappings[cid] = mapping
                 _eas_clear(cid)
                 new_state[cid] = False
-                logger.info(f"[Tickarr] EAS: alert cleared — ch {cid}")
+                logger.info(f"[Ticker] EAS: alert cleared — ch {cid}")
                 _eas_restart_channel(str(channel.uuid))
 
             with _eas_lock:
@@ -1293,7 +1293,7 @@ def _eas_sweep():
             changed = True
 
         except Exception as e:
-            logger.error(f"[Tickarr] EAS: transition failed ch {cid}: {e}", exc_info=True)
+            logger.error(f"[Ticker] EAS: transition failed ch {cid}: {e}", exc_info=True)
 
     if changed:
         _save_mappings(mappings)
@@ -1332,7 +1332,7 @@ def _eas_sweep_loop(stop_event):
     # A Dispatcharr community member and severe weather enthusiast
     # whose passion for keeping people informed inspired this feature.
     # Rest easy.
-    logger.info("[Tickarr] EAS module initialized — for jesmannstl, who understood why this matters.")
+    logger.info("[Ticker] EAS module initialized — for jesmannstl, who understood why this matters.")
     while not stop_event.is_set():
         interval = 60
         try:
@@ -1342,7 +1342,7 @@ def _eas_sweep_loop(stop_event):
                 pass
             _eas_sweep()
         except Exception as e:
-            logger.error(f"[Tickarr] EAS loop error: {e}", exc_info=True)
+            logger.error(f"[Ticker] EAS loop error: {e}", exc_info=True)
         finally:
             try:
                 from django.db import connection
@@ -1363,7 +1363,7 @@ def _remove_sports_file(channel_id):
             if os.path.exists(path):
                 os.remove(path)
         except Exception as e:
-            logger.warning(f"tickarr: could not remove {path}: {e}")
+            logger.warning(f"ticker: could not remove {path}: {e}")
 
 
 
@@ -1384,7 +1384,7 @@ CACHE_TTL = 24 * 3600  # was 7 days -- shortened alongside the live-fetch fix be
 # Data only ever re-read this same frozen file. Running Sort Channels against it
 # reverted already-corrected channel names back to their pre-reshuffle SXM numbers,
 # because the bundled data still reflected the old lineup. Live-fetching from the
-# same stellartunerlog.com source TICKARR_CHANNEL_URL already uses for nowplaying
+# same stellartunerlog.com source TICKER_CHANNEL_URL already uses for nowplaying
 # data (below) is the actual fix -- reshaped into the same {name.lower(): {...}}
 # structure the bundled file used, so _match_channel/_do_fill/_do_logos/
 # _sort_channels all work unchanged regardless of which source supplied the data.
@@ -1393,11 +1393,11 @@ _BUNDLED_ALIASES  = os.path.join(_PLUGIN_DIR, "channel_aliases.json")
 
 
 def _fetch_live_channel_catalog():
-    """Fetch + reshape the live StellarTunerLog catalog (TICKARR_CHANNEL_URL,
+    """Fetch + reshape the live StellarTunerLog catalog (TICKER_CHANNEL_URL,
     defined below) into the same {name.lower(): {name, description, genre,
     sxm_number, seasonal, logo_url, sxm_logo_src, sxm_entity_id,
     lookaround_channel_id}} shape the bundled channels.json already uses."""
-    req = urllib.request.Request(TICKARR_CHANNEL_URL, headers={"User-Agent": "Tickarr/1.0"})
+    req = urllib.request.Request(TICKER_CHANNEL_URL, headers={"User-Agent": "Ticker/1.0"})
     with urllib.request.urlopen(req, timeout=15) as r:
         data = json.loads(r.read())
     channels = {}
@@ -1434,20 +1434,20 @@ def _get_channel_data(force=False):
     # Live fetch is authoritative -- see _BUNDLED_CHANNELS's comment above for why.
     try:
         channels = _fetch_live_channel_catalog()
-        logger.info(f"tickarr: loaded {len(channels)} channels from live stellartunerlog.com fetch")
+        logger.info(f"ticker: loaded {len(channels)} channels from live stellartunerlog.com fetch")
     except Exception as e:
-        logger.warning(f"tickarr: live channel catalog fetch failed ({e}) -- falling back to bundled channels.json")
+        logger.warning(f"ticker: live channel catalog fetch failed ({e}) -- falling back to bundled channels.json")
 
     # Fallback: bundled snapshot, only used when the live fetch above failed entirely.
     if not channels and os.path.exists(_BUNDLED_CHANNELS):
         try:
             with open(_BUNDLED_CHANNELS, encoding="utf-8") as f:
                 channels = json.load(f)
-            logger.info(f"tickarr: loaded {len(channels)} channels from bundled channels.json (fallback)")
+            logger.info(f"ticker: loaded {len(channels)} channels from bundled channels.json (fallback)")
         except Exception as e:
-            logger.error(f"tickarr: failed to load bundled channels.json: {e}")
+            logger.error(f"ticker: failed to load bundled channels.json: {e}")
     elif not channels:
-        logger.warning("tickarr: bundled channels.json not found and live fetch failed — channel matching unavailable")
+        logger.warning("ticker: bundled channels.json not found and live fetch failed — channel matching unavailable")
 
     # Load aliases — bundled file, flat dict format
     if os.path.exists(_BUNDLED_ALIASES):
@@ -1456,9 +1456,9 @@ def _get_channel_data(force=False):
                 raw = json.load(f)
             # Support both flat dict and wrapped {"aliases": {...}} format
             aliases = raw.get("aliases", raw) if isinstance(raw, dict) and "aliases" in raw else raw
-            logger.info(f"tickarr: loaded {len(aliases)} aliases from bundled channel_aliases.json")
+            logger.info(f"ticker: loaded {len(aliases)} aliases from bundled channel_aliases.json")
         except Exception as e:
-            logger.error(f"tickarr: failed to load bundled channel_aliases.json: {e}")
+            logger.error(f"ticker: failed to load bundled channel_aliases.json: {e}")
 
     if channels:
         os.makedirs(_DATA_DIR, exist_ok=True)
@@ -1500,7 +1500,7 @@ def _get_mappings():
         # Genuinely unparseable content (not a transient I/O error) — heal so we
         # don't re-log this on every sweep tick forever. Preserve the bad file
         # for forensics first.
-        logger.error(f"tickarr: mappings file is corrupt, resetting to empty: {e}")
+        logger.error(f"ticker: mappings file is corrupt, resetting to empty: {e}")
         try:
             os.replace(MAPPINGS_FILE, MAPPINGS_FILE + ".corrupt")
         except OSError:
@@ -1509,7 +1509,7 @@ def _get_mappings():
     except OSError as e:
         # Transient read failure (lock, permissions, race with a concurrent
         # writer) — do NOT touch the file; it may well be fine on the next read.
-        logger.error(f"tickarr: failed to read mappings: {e}")
+        logger.error(f"ticker: failed to read mappings: {e}")
     return {}
 
 
@@ -1523,7 +1523,7 @@ def _save_mappings(mappings):
         os.replace(tmp, MAPPINGS_FILE)
         _uuid_map_cache = {"map": {}, "fetched_at": 0}  # force refresh on next scan
     except Exception as e:
-        logger.error(f"tickarr: failed to save mappings: {e}")
+        logger.error(f"ticker: failed to save mappings: {e}")
 
 
 def _get_settings():
@@ -1643,7 +1643,7 @@ SPORTS_CACHE_TTL = 30  # seconds
 
 # EAS globals
 NWS_ALERTS_URL  = "https://api.weather.gov/alerts/active"
-NWS_UA          = "Tickarr/0.2 (github.com/jstevenscl/tickarr)"
+NWS_UA          = "Ticker/0.2 (github.com/jstevenscl/ticker)"
 _EAS_SEV        = {"Unknown": 0, "Minor": 1, "Moderate": 2, "Severe": 3, "Extreme": 4}
 _eas_active     = {}   # channel_id → alert event string when alert is active
 _eas_lock       = threading.Lock()
@@ -1752,7 +1752,7 @@ def _fetch_sports_text(sports_list, favorites=""):
         try:
             if sport_id in ESPN_PATHS:
                 url = f'https://site.api.espn.com/apis/site/v2/{ESPN_PATHS[sport_id]}/scoreboard'
-                req = urllib.request.Request(url, headers={"User-Agent": "Tickarr/0.1"})
+                req = urllib.request.Request(url, headers={"User-Agent": "Ticker/0.1"})
                 with urllib.request.urlopen(req, timeout=8) as r:
                     data = json.loads(r.read())
                 events = data.get('events', [])
@@ -1822,7 +1822,7 @@ def _fetch_sports_text(sports_list, favorites=""):
                         ))
 
         except Exception as e:
-            logger.warning(f"tickarr: sports fetch error for {sport_id}: {e}")
+            logger.warning(f"ticker: sports fetch error for {sport_id}: {e}")
 
     all_triples = live_triples + final_triples
     if not all_triples:
@@ -1884,13 +1884,13 @@ def _has_live_games(sports_list, favorites=""):
     return _sports_text_cache.get("has_live", False)
 
 # ---------------------------------------------------------------------------
-# tickarr.com data client (replaces xmplaylist.com)
+# ticker.com data client (replaces xmplaylist.com)
 # ---------------------------------------------------------------------------
 
-TICKARR_NOWPLAYING_URL = "https://stellartunerlog.com/nowplaying.json"
-TICKARR_CHANNEL_URL    = "https://stellartunerlog.com/channels.json"
-TICKARR_SXM_EPG_URL    = "https://jstevenscl.github.io/tickarr/lib/satellite_radio_epg.xml"
-TICKARR_SXM_SOURCE     = "Tickarr: Satellite Radio"
+TICKER_NOWPLAYING_URL = "https://stellartunerlog.com/nowplaying.json"
+TICKER_CHANNEL_URL    = "https://stellartunerlog.com/channels.json"
+TICKER_SXM_EPG_URL    = "https://jstevenscl.github.io/ticker/lib/satellite_radio_epg.xml"
+TICKER_SXM_SOURCE     = "Ticker: Satellite Radio"
 STATION_CACHE_TTL      = 24 * 3600
 STATION_CACHE_FILE     = os.path.join(_DATA_DIR, "station_cache.json")
 NOWPLAYING_CACHE_TTL   = 15   # seconds — 15s cuts worst-case song display lag vs 30s source update cycle
@@ -1912,7 +1912,7 @@ _xmplaylist_last  = {"time": 0.0}
 
 
 def _get_stations(force=False):
-    """Fetch channel catalog from tickarr.com/channels.json (24h TTL, disk-cached)."""
+    """Fetch channel catalog from ticker.com/channels.json (24h TTL, disk-cached)."""
     global _station_cache
     now = time.time()
     if not force and _station_cache["fetched_at"] + STATION_CACHE_TTL > now and _station_cache["stations"]:
@@ -1923,12 +1923,12 @@ def _get_stations(force=False):
                 cached = json.load(f)
             if cached.get("fetched_at", 0) + STATION_CACHE_TTL > now and cached.get("stations"):
                 _station_cache = cached
-                logger.debug(f"tickarr: channel list loaded from disk ({len(cached['stations'])} channels)")
+                logger.debug(f"ticker: channel list loaded from disk ({len(cached['stations'])} channels)")
                 return cached["stations"]
         except Exception:
             pass
     try:
-        req = urllib.request.Request(TICKARR_CHANNEL_URL, headers={"User-Agent": "Tickarr/0.1"})
+        req = urllib.request.Request(TICKER_CHANNEL_URL, headers={"User-Agent": "Ticker/0.1"})
         with urllib.request.urlopen(req, timeout=15) as r:
             data = json.loads(r.read())
         stations = list((data.get("channels") or {}).values())
@@ -1938,22 +1938,22 @@ def _get_stations(force=False):
         with open(tmp, "w", encoding="utf-8") as f:
             json.dump(_station_cache, f)
         os.replace(tmp, STATION_CACHE_FILE)
-        logger.info(f"tickarr: fetched {len(stations)} channels from tickarr.com")
+        logger.info(f"ticker: fetched {len(stations)} channels from ticker.com")
         return stations
     except Exception as e:
-        logger.error(f"tickarr: channel list fetch failed: {e}")
+        logger.error(f"ticker: channel list fetch failed: {e}")
         return _station_cache.get("stations") or []
 
 
 def _get_nowplaying_bulk():
-    """Fetch all channels' now-playing from tickarr.com in one request (30s TTL)."""
+    """Fetch all channels' now-playing from ticker.com in one request (30s TTL)."""
     global _nowplaying_cache
     now = time.time()
     with _nowplaying_lock:
         if now - _nowplaying_cache["fetched_at"] < NOWPLAYING_CACHE_TTL and _nowplaying_cache["stations"]:
             return _nowplaying_cache["stations"]
     try:
-        req = urllib.request.Request(TICKARR_NOWPLAYING_URL, headers={"User-Agent": "Tickarr/0.1"})
+        req = urllib.request.Request(TICKER_NOWPLAYING_URL, headers={"User-Agent": "Ticker/0.1"})
         with urllib.request.urlopen(req, timeout=10) as r:
             data = json.loads(r.read())
         stations = data.get("stations") or {}
@@ -1961,7 +1961,7 @@ def _get_nowplaying_bulk():
             _nowplaying_cache = {"fetched_at": time.time(), "stations": stations}
         return stations
     except Exception as e:
-        logger.warning(f"tickarr: nowplaying bulk fetch failed: {e}")
+        logger.warning(f"ticker: nowplaying bulk fetch failed: {e}")
         return _nowplaying_cache.get("stations") or {}
 
 
@@ -1977,7 +1977,7 @@ def _xmplaylist_fetch(deeplink):
             time.sleep(XMPLAYLIST_MIN_INTERVAL - elapsed)
         try:
             url = XMPLAYLIST_STATION_URL.format(deeplink=deeplink)
-            req = urllib.request.Request(url, headers={"User-Agent": "Tickarr/0.1"})
+            req = urllib.request.Request(url, headers={"User-Agent": "Ticker/0.1"})
             with urllib.request.urlopen(req, timeout=8) as r:
                 data = json.loads(r.read())
             _xmplaylist_last["time"] = time.time()
@@ -1987,13 +1987,13 @@ def _xmplaylist_fetch(deeplink):
                 song   = track.get("title", "")
                 return artist or "", song or ""
         except Exception as e:
-            logger.debug(f"tickarr: xmplaylist fallback failed for {deeplink}: {e}")
+            logger.debug(f"ticker: xmplaylist fallback failed for {deeplink}: {e}")
         _xmplaylist_last["time"] = time.time()
     return None, None
 
 
 def _match_station_by_uuid(uuid, stations):
-    # tickarr.com channels.json uses "guid" for the SiriusXM UUID
+    # ticker.com channels.json uses "guid" for the SiriusXM UUID
     for s in stations:
         if s.get("guid") == uuid:
             return s
@@ -2087,9 +2087,9 @@ _uuid_map_cache = {"map": {}, "fetched_at": 0}
 UUID_MAP_TTL = 300
 
 # Distributed lock keys — one winner per loop across all uWSGI workers
-SWEEP_LOCK_KEY   = "tickarr:sweep_lock"
-FAST_LOCK_KEY    = "tickarr:fast_lock"
-SPORTS_LOCK_KEY  = "tickarr:sports_lock"
+SWEEP_LOCK_KEY   = "ticker:sweep_lock"
+FAST_LOCK_KEY    = "ticker:fast_lock"
+SPORTS_LOCK_KEY  = "ticker:sports_lock"
 _SWEEP_LOCK_TTL  = 45   # SWEEP_SLEEP(15) + up to 10s poll + 20s buffer; refreshed post-sweep
 _FAST_LOCK_TTL   = 10   # renewed every 2s tick; 10s crash-recovery window
 _IDLE_RESTORE_DELAY = 30  # seconds with no active viewers before restoring passthrough profile
@@ -2163,10 +2163,10 @@ def _get_uuid_to_id_map(mappings):
             if uuid_val:
                 result[str(uuid_val).lower()] = ch.id
         _uuid_map_cache = {"map": result, "fetched_at": now}
-        logger.debug(f"tickarr: uuid map refreshed — {len(result)} entries")
+        logger.debug(f"ticker: uuid map refreshed — {len(result)} entries")
         return result
     except Exception as e:
-        logger.debug(f"tickarr: uuid map error: {e}")
+        logger.debug(f"ticker: uuid map error: {e}")
         return _uuid_map_cache.get("map", {})
     finally:
         # Close the thread-local DB connection so it doesn't sit open indefinitely.
@@ -2205,7 +2205,7 @@ def _redis_scan_active():
                 if cid is not None:
                     active.add(cid)
     except Exception as e:
-        logger.debug(f"tickarr: Redis scan error: {e}")
+        logger.debug(f"ticker: Redis scan error: {e}")
         return None
     return active
 
@@ -2249,7 +2249,7 @@ def _fetch_and_write(args):
     try:
         rc = _get_redis_client()
         if rc is not None:
-            if not rc.set(f"tickarr:last_fetch:{channel_id}", "1", nx=True, ex=8):
+            if not rc.set(f"ticker:last_fetch:{channel_id}", "1", nx=True, ex=8):
                 return  # another worker fetched this channel in the last 8s — skip
         stations = _get_nowplaying_bulk()
         station  = stations.get(deeplink) if deeplink else None
@@ -2277,17 +2277,17 @@ def _fetch_and_write(args):
             if artist is not None or song is not None:
                 _write_nowplaying(channel_id, artist or "", song or "", channel_name)
             else:
-                logger.warning(f"tickarr: no data for {channel_name} ({deeplink}) from either source")
+                logger.warning(f"ticker: no data for {channel_name} ({deeplink}) from either source")
                 path = os.path.join(TICKER_DIR, f"channel_{channel_id}_song.txt")
                 if os.path.exists(path):
                     os.utime(path, None)
         else:
-            logger.warning(f"tickarr: no data for {channel_name} ({deeplink})")
+            logger.warning(f"ticker: no data for {channel_name} ({deeplink})")
             path = os.path.join(TICKER_DIR, f"channel_{channel_id}_song.txt")
             if os.path.exists(path):
                 os.utime(path, None)
     except Exception as e:
-        logger.warning(f"tickarr: fetch failed for {channel_name} ({deeplink}): {e}")
+        logger.warning(f"ticker: fetch failed for {channel_name} ({deeplink}): {e}")
 
 
 def _poll_channels(ch_list):
@@ -2349,10 +2349,10 @@ def _fast_loop(stop_event):
                             mapping.pop("no_viewer_since", None)
                             mappings[str(cid)] = mapping
                             mappings_changed = True
-                            logger.info(f"tickarr: on-demand overlay activated ch{cid} ({channel.name})")
+                            logger.info(f"ticker: on-demand overlay activated ch{cid} ({channel.name})")
                             _restart_channel_stream_async(channel, "NP")
                     except Exception as e:
-                        logger.warning(f"tickarr: on-demand clone failed ch{cid}: {e}")
+                        logger.warning(f"ticker: on-demand clone failed ch{cid}: {e}")
 
                 # On-demand sports: clone overlay profile for newly active channels
                 for cid in list(newly_active):
@@ -2390,10 +2390,10 @@ def _fast_loop(stop_event):
                             mapping.pop("no_viewer_since", None)
                             mappings[str(cid)] = mapping
                             mappings_changed   = True
-                            logger.info(f"tickarr: sports on-demand overlay activated ch{cid} ({channel.name})")
+                            logger.info(f"ticker: sports on-demand overlay activated ch{cid} ({channel.name})")
                             _restart_channel_stream_async(channel, "Sports")
                     except Exception as e:
-                        logger.warning(f"tickarr: sports on-demand clone failed ch{cid}: {e}")
+                        logger.warning(f"ticker: sports on-demand clone failed ch{cid}: {e}")
 
                 if mappings_changed:
                     _save_mappings(mappings)
@@ -2404,10 +2404,10 @@ def _fast_loop(stop_event):
 
                 to_poll = [ch_ids[cid] for cid in newly_active if cid in ch_ids]
                 if to_poll:
-                    logger.info(f"tickarr: stream-start → {[ch[2] for ch in to_poll]}")
+                    logger.info(f"ticker: stream-start → {[ch[2] for ch in to_poll]}")
                     _poll_channels(to_poll)
         except Exception as e:
-            logger.debug(f"tickarr: fast loop error: {e}")
+            logger.debug(f"ticker: fast loop error: {e}")
 
 
 def _channel_is_stale(channel_id, now):
@@ -2447,7 +2447,7 @@ def _sweep_loop(stop_event):
                                      and _channel_is_stale(c[0], now)][:STALE_BATCH_SIZE]
                         ch_to_poll = active_ch + stale_ch
                         if ch_to_poll:
-                            logger.debug(f"tickarr: sweep {len(active_ch)} active, "
+                            logger.debug(f"ticker: sweep {len(active_ch)} active, "
                                          f"{len(stale_ch)} stale (of {len(all_ch)})")
                             _poll_channels(ch_to_poll)
 
@@ -2483,23 +2483,23 @@ def _sweep_loop(stop_event):
                                         mapping.pop("no_viewer_since", None)
                                         mappings[cid_str] = mapping
                                         mappings_changed = True
-                                        logger.info(f"tickarr: on-demand idle-restore ch{cid_str} (no viewers >{_IDLE_RESTORE_DELAY}s)")
+                                        logger.info(f"ticker: on-demand idle-restore ch{cid_str} (no viewers >{_IDLE_RESTORE_DELAY}s)")
                                 else:
                                     if "no_viewer_since" in mapping:
                                         mapping.pop("no_viewer_since")
                                         mappings[cid_str] = mapping
                                         mappings_changed = True
                         except Exception as e:
-                            logger.warning(f"tickarr: on-demand restore error: {e}")
+                            logger.warning(f"ticker: on-demand restore error: {e}")
                     else:
                         # Redis unavailable — fall back to all channels
-                        logger.info(f"tickarr: sweep (no Redis) — {len(all_ch)} channels")
+                        logger.info(f"ticker: sweep (no Redis) — {len(all_ch)} channels")
                         _poll_channels(all_ch)
 
             if mappings_changed:
                 _save_mappings(mappings)
         except Exception as e:
-            logger.error(f"tickarr: sweep error: {e}", exc_info=True)
+            logger.error(f"ticker: sweep error: {e}", exc_info=True)
         if rc is not None:
             try:
                 _redis_lock_acquire_or_refresh(rc, SWEEP_LOCK_KEY, _SWEEP_LOCK_TTL)
@@ -2559,7 +2559,7 @@ def _sports_sweep_loop(stop_event):
                                     mapping["sports_live"] = True
                                     mappings[cid]          = mapping
                                     mappings_changed       = True
-                                    logger.info(f"tickarr: sports live gate open ch{cid} (mode={trigger_mode})")
+                                    logger.info(f"ticker: sports live gate open ch{cid} (mode={trigger_mode})")
 
                             elif was_live:
                                 # Games ended — close gate and restore profile if a viewer
@@ -2578,10 +2578,10 @@ def _sports_sweep_loop(stop_event):
                                 mappings[cid]    = mapping
                                 mappings_changed = True
                                 _remove_channel_files(int(cid))
-                                logger.info(f"tickarr: sports live gate closed ch{cid} (no live games)")
+                                logger.info(f"ticker: sports live gate closed ch{cid} (no live games)")
 
                     except Exception as e:
-                        logger.warning(f"tickarr: sports write failed for channel {cid}: {e}")
+                        logger.warning(f"ticker: sports write failed for channel {cid}: {e}")
 
             # Auto-restore smart-mode channels with no active viewers
             try:
@@ -2611,20 +2611,20 @@ def _sports_sweep_loop(stop_event):
                                 mapping.pop("no_viewer_since", None)
                                 mappings[cid]    = mapping
                                 mappings_changed = True
-                                logger.info(f"tickarr: sports idle-restore ch{cid} (no viewers >{_IDLE_RESTORE_DELAY}s)")
+                                logger.info(f"ticker: sports idle-restore ch{cid} (no viewers >{_IDLE_RESTORE_DELAY}s)")
                         else:
                             if "no_viewer_since" in mapping:
                                 mapping.pop("no_viewer_since")
                                 mappings[cid]    = mapping
                                 mappings_changed = True
             except Exception as e:
-                logger.warning(f"tickarr: sports viewer auto-restore error: {e}")
+                logger.warning(f"ticker: sports viewer auto-restore error: {e}")
 
             if mappings_changed:
                 _save_mappings(mappings)
 
         except Exception as e:
-            logger.error(f"tickarr: sports sweep error: {e}", exc_info=True)
+            logger.error(f"ticker: sports sweep error: {e}", exc_info=True)
         finally:
             try:
                 from django.db import connection
@@ -2639,13 +2639,13 @@ def _sports_sweep_loop(stop_event):
         stop_event.wait(timeout=SWEEP_SLEEP)
 
 
-_POLLER_LOCK_KEY = "tickarr:poller:owner"
+_POLLER_LOCK_KEY = "ticker:poller:owner"
 _POLLER_LOCK_TTL = 15  # seconds
 
 
 def _try_acquire_poller_lock():
     """Cross-process leader election so only one Dispatcharr worker process runs
-    Tickarr's background loops. Without this, every uWSGI worker independently
+    Ticker's background loops. Without this, every uWSGI worker independently
     detects the same viewer connect and races to clone+restart the channel —
     confirmed in production logs as two overlapping restarts firing 5ms apart.
     Falls back to True (old per-worker behavior) if Redis is unreachable, since
@@ -2677,9 +2677,9 @@ def _renew_poller_lock(stop_event):
 
 def _poll_loop(stop_event):
     if not _try_acquire_poller_lock():
-        logger.info(f"tickarr: poller not started on PID {os.getpid()} — already owned by another worker")
+        logger.info(f"ticker: poller not started on PID {os.getpid()} — already owned by another worker")
         return
-    logger.info(f"tickarr: poller lock acquired by PID {os.getpid()}")
+    logger.info(f"ticker: poller lock acquired by PID {os.getpid()}")
     renew_t = threading.Thread(target=_renew_poller_lock, args=(stop_event,), daemon=True)
     renew_t.start()
 
@@ -2697,7 +2697,7 @@ def _poll_loop(stop_event):
     # EAS sweep — NWS alert polling, interval configurable (default 60s)
     eas_t = threading.Thread(target=_eas_sweep_loop, args=(stop_event,), daemon=True)
     eas_t.start()
-    # Now-playing sweep loop — one bulk fetch from tickarr.com per cycle
+    # Now-playing sweep loop — one bulk fetch from ticker.com per cycle
     _sweep_loop(stop_event)
 
 # ---------------------------------------------------------------------------
@@ -2711,8 +2711,8 @@ class Plugin:
         try:
             return self._build_fields()
         except Exception as e:
-            logger.error(f"tickarr: _build_fields failed: {e}", exc_info=True)
-            return [{"id": "_error", "type": "info", "label": f"Tickarr error: {e}"}]
+            logger.error(f"ticker: _build_fields failed: {e}", exc_info=True)
+            return [{"id": "_error", "type": "info", "label": f"Ticker error: {e}"}]
 
     def __init__(self):
         global _scheduler_thread, _stop_event
@@ -2722,10 +2722,10 @@ class Plugin:
                 target=_poll_loop,
                 args=(_stop_event,),
                 daemon=True,
-                name="tickarr-poller",
+                name="ticker-poller",
             )
             _scheduler_thread.start()
-            logger.info("tickarr: poller thread started")
+            logger.info("ticker: poller thread started")
 
     def _build_fields(self):
         try:
@@ -2783,7 +2783,7 @@ class Plugin:
             {"id": "_np_section",       "type": "info",   "label": "==========  NOW PLAYING  =========="},
             {"id": "np_target_type",    "type": "select", "label": "Apply To",
              "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "_np_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Tickarr ticker types already active on specific channels or groups (e.g. EAS on news channels, Sports Ticker on a TV group), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
+            {"id": "_np_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Ticker ticker types already active on specific channels or groups (e.g. EAS on news channels, Sports Ticker on a TV group), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
             {"id": "_np_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
             {"id": "np_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
             {"id": "np_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
@@ -2893,7 +2893,7 @@ class Plugin:
             {"id": "eas_overlay_style", "type": "select", "label": "Alert Overlay Style",
              "options": [
                  {"value": "broadcast", "label": "TV Broadcast (news ticker bar — label box + scrolling crawl)"},
-                 {"value": "tickarr",   "label": "Tickarr Custom (flashing overlay boxes)"},
+                 {"value": "ticker",   "label": "Ticker Custom (flashing overlay boxes)"},
              ]},
             {"id": "eas_poll_interval",  "type": "number", "label": "Poll Interval (seconds)", "min": 15},
             {"id": "eas_tone_interval",  "type": "number", "label": "Siren Tone Interval (seconds) — how often the attention tone repeats during an active alert. Set to 0 to disable the tone entirely.", "min": 0},
@@ -2908,7 +2908,7 @@ class Plugin:
              "label": "⚠ TRANSCODING NOTE (ticker active only): Custom text overlays require FFmpeg to decode and re-encode video while the ticker is running. Channels on stream-copy profiles will transcode only while the custom ticker is active — they return to their original profile when the ticker is disabled. If you experience buffering or stuttering, your system may not have sufficient CPU headroom for transcoding at your source resolution and framerate."},
             {"id": "custom_target_type",   "type": "select", "label": "Apply To",
              "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "_custom_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Tickarr ticker types already active on specific channels or groups (e.g. Now Playing on satellite radio, EAS on news channels), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
+            {"id": "_custom_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Ticker ticker types already active on specific channels or groups (e.g. Now Playing on satellite radio, EAS on news channels), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
             {"id": "_custom_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
             {"id": "custom_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
             {"id": "custom_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
@@ -3043,7 +3043,7 @@ class Plugin:
              ]},
             {"id": "sports_target_type",    "type": "select",  "label": "Apply To",
              "options": [{"value": "all", "label": "All Channels"}, {"value": "group", "label": "Channel Group"}, {"value": "groups", "label": "Multiple Groups (CSV)"}, {"value": "channel", "label": "Single Channel"}]},
-            {"id": "_sports_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Tickarr ticker types already active on specific channels or groups (e.g. Now Playing on satellite radio, EAS on news channels), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
+            {"id": "_sports_allchannels_warn", "type": "info", "label": "⚠ ALL CHANNELS WARNING: If you have other Ticker ticker types already active on specific channels or groups (e.g. Now Playing on satellite radio, EAS on news channels), use Exclude Groups below to skip those groups. Channels already mapped to any ticker type are skipped automatically, but excluding groups avoids confusion and prevents unexpected results."},
             {"id": "_sports_target_note",         "type": "info",   "label": "Fill in only the field that matches your Apply To selection above -- leave the others blank."},
             {"id": "sports_channel_group_id",    "type": "select", "label": "Channel Group (Single Group)",             "options": groups},
             {"id": "sports_channel_group_names", "type": "text",   "label": "Group Names (Multiple Groups -- comma-separated)", "placeholder": "e.g. Entertainment, Sports, News"},
@@ -3105,7 +3105,7 @@ class Plugin:
         try:
             return handler(params)
         except Exception as e:
-            logger.error(f"tickarr: action {action} failed: {e}", exc_info=True)
+            logger.error(f"ticker: action {action} failed: {e}", exc_info=True)
             return {"success": False, "message": f"Error: {e}"}
 
     def stop(self, context):
@@ -3113,7 +3113,7 @@ class Plugin:
         _stop_event.set()
         if _scheduler_thread:
             _scheduler_thread.join(timeout=5)
-        logger.info("tickarr: poller thread stopped")
+        logger.info("ticker: poller thread stopped")
 
     # ------------------------------------------------------------------ #
     # Actions                                                              #
@@ -3153,7 +3153,7 @@ class Plugin:
                     skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
-                    skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
+                    skipped.append(f"{channel.name} (already has a Ticker profile — run Disable Ticker first)")
                     continue
 
                 # Strip any station-number prefix Sort may have already added — otherwise
@@ -3195,7 +3195,7 @@ class Plugin:
                         if removed_flags else "")
                 enabled.append(f"{channel.name}{note}")
             except Exception as e:
-                logger.error(f"tickarr: enable failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: enable failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
 
         _save_mappings(mappings)
@@ -3265,7 +3265,7 @@ class Plugin:
                     skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
-                    skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
+                    skipped.append(f"{channel.name} (already has a Ticker profile — run Disable Ticker first)")
                     continue
 
                 removed_flags = []
@@ -3296,7 +3296,7 @@ class Plugin:
                 enabled.append(f"{channel.name}{note}")
 
             except Exception as e:
-                logger.error(f"tickarr: enable_custom failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: enable_custom failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
 
         _save_mappings(mappings)
@@ -3375,7 +3375,7 @@ class Plugin:
                         mapping["ticker_profile_id"] = cloned.id
                     except Exception as e:
                         skipped.append(f"{channel.name} (clone failed: {e})")
-                        logger.warning(f"tickarr: on-demand custom clone failed ch{cid}: {e}")
+                        logger.warning(f"ticker: on-demand custom clone failed ch{cid}: {e}")
                         continue
                 _write_custom_text(channel.id, custom_text)
                 mapping["custom_text"] = custom_text
@@ -3393,7 +3393,7 @@ class Plugin:
                         _remove_channel_files(channel.id)
                         _restart_channel_stream_async(ch_obj, "Custom")
                     except Exception as e:
-                        logger.warning(f"tickarr: on-demand custom restore failed ch{cid}: {e}")
+                        logger.warning(f"ticker: on-demand custom restore failed ch{cid}: {e}")
                 mapping["ticker_profile_id"] = None
                 mapping["custom_text"] = ""
                 mappings[cid] = mapping
@@ -3452,7 +3452,7 @@ class Plugin:
                     skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
-                    skipped.append(f"{channel.name} (already has a Tickarr profile — run Disable Ticker first)")
+                    skipped.append(f"{channel.name} (already has a Ticker profile — run Disable Ticker first)")
                     continue
 
                 removed_flags = []
@@ -3484,7 +3484,7 @@ class Plugin:
                 enabled.append(f"{channel.name}{note}")
 
             except Exception as e:
-                logger.error(f"tickarr: enable_sports failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: enable_sports failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
 
         _save_mappings(mappings)
@@ -3563,7 +3563,7 @@ class Plugin:
                 mappings[cid] = mapping
                 updated.append(channel.name)
             except Exception as e:
-                logger.error(f"tickarr: update_sports failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: update_sports failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
 
         _save_mappings(mappings)
@@ -3620,7 +3620,7 @@ class Plugin:
                     del mappings[cid]
                 disabled.append(channel.name)
             except Exception as e:
-                logger.error(f"tickarr: disable failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: disable failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
 
         _save_mappings(mappings)
@@ -3690,7 +3690,7 @@ class Plugin:
                     skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
-                    skipped.append(f"{channel.name} (already has a Tickarr profile — disable first)")
+                    skipped.append(f"{channel.name} (already has a Ticker profile — disable first)")
                     continue
                 _eas_clear(channel.id)
                 mappings[cid] = {
@@ -3700,7 +3700,7 @@ class Plugin:
                 }
                 enabled.append(channel.name)
             except Exception as e:
-                logger.error(f"tickarr: enable EAS failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: enable EAS failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} ({e})")
 
         _save_mappings(mappings)
@@ -3742,7 +3742,7 @@ class Plugin:
                     mappings[cid] = mapping
                 disabled.append(channel.name)
             except Exception as e:
-                logger.error(f"tickarr: disable EAS failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: disable EAS failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} ({e})")
         _save_mappings(mappings)
         parts = []
@@ -3781,7 +3781,7 @@ class Plugin:
             return {"success": False, "message": "Enter a city name or province code in the City Lookup field above (e.g. Toronto, ON, Montréal)."}
 
         if not os.path.exists(_EAS_CA_CITY_NAMES):
-            return {"success": False, "message": "City names reference file not found. Please update Tickarr to get the bundled city list."}
+            return {"success": False, "message": "City names reference file not found. Please update Ticker to get the bundled city list."}
         try:
             with open(_EAS_CA_CITY_NAMES, encoding="utf-8") as f:
                 city_names = json.load(f)
@@ -3860,7 +3860,7 @@ class Plugin:
                     skipped.append(f"{channel.name} (stream profile is Proxy or Redirect — assign an FFmpeg profile to enable this ticker)")
                     continue
                 if original_profile.name.startswith(PROFILE_PREFIX):
-                    skipped.append(f"{channel.name} (already has a Tickarr profile — disable first)")
+                    skipped.append(f"{channel.name} (already has a Ticker profile — disable first)")
                     continue
                 mappings[cid] = {
                     "original_profile_id": original_profile.id,
@@ -3869,7 +3869,7 @@ class Plugin:
                 }
                 enabled.append(channel.name)
             except Exception as e:
-                logger.error(f"tickarr: enable EAS CA failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: enable EAS CA failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} ({e})")
 
         _save_mappings(mappings)
@@ -3910,7 +3910,7 @@ class Plugin:
                     mappings[cid] = mapping
                 disabled.append(channel.name)
             except Exception as e:
-                logger.error(f"tickarr: disable EAS CA failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: disable EAS CA failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} ({e})")
         _save_mappings(mappings)
         parts = []
@@ -3954,7 +3954,7 @@ class Plugin:
 
                 tone_interval  = int(settings.get("eas_tone_interval") or 300)
                 tone_interval  = max(30, tone_interval) if tone_interval > 0 else 0
-                overlay_style  = settings.get("eas_overlay_style")  or "tickarr"
+                overlay_style  = settings.get("eas_overlay_style")  or "ticker"
                 label_color    = settings.get("eas_label_color")     or "0xCC0000"
                 transcode_mode = settings.get("eas_transcode_mode")  or "full"
 
@@ -3982,7 +3982,7 @@ class Plugin:
                 fired.append((cid, channel.name, eas_profile.id, str(channel.uuid)))
 
             except Exception as e:
-                logger.error(f"tickarr: test_eas_ca failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: test_eas_ca failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
 
         if fired:
@@ -4012,12 +4012,12 @@ class Plugin:
                                 _eas_active.pop(_cid, None)
                             if _ch:
                                 _eas_restart_channel(_uuid)
-                            logger.info(f"tickarr: test EAS CA auto-restored ch {_cid}")
+                            logger.info(f"ticker: test EAS CA auto-restored ch {_cid}")
                         except Exception as _e:
-                            logger.error(f"tickarr: test EAS CA restore failed ch {_cid}: {_e}")
+                            logger.error(f"ticker: test EAS CA restore failed ch {_cid}: {_e}")
                     _save_mappings(m)
                 except Exception as _e:
-                    logger.error(f"tickarr: test EAS CA auto-restore thread failed: {_e}")
+                    logger.error(f"ticker: test EAS CA auto-restore thread failed: {_e}")
 
             _threading.Thread(target=_auto_restore_ca, args=(list(fired), duration), daemon=True).start()
 
@@ -4062,7 +4062,7 @@ class Plugin:
                 del mappings[cid]
                 disabled.append(name)
             except Exception as e:
-                logger.error(f"tickarr: disable_all failed for {name}: {e}", exc_info=True)
+                logger.error(f"ticker: disable_all failed for {name}: {e}", exc_info=True)
                 failed.append(f"{name} (error: {e})")
 
         _save_mappings(mappings)
@@ -4106,7 +4106,7 @@ class Plugin:
 
                 tone_interval  = int(settings.get("eas_tone_interval") or 300)
                 tone_interval  = max(30, tone_interval) if tone_interval > 0 else 0
-                overlay_style  = settings.get("eas_overlay_style")  or "tickarr"
+                overlay_style  = settings.get("eas_overlay_style")  or "ticker"
                 label_color    = settings.get("eas_label_color")     or "0xCC0000"
                 transcode_mode = settings.get("eas_transcode_mode")  or "full"
 
@@ -4117,7 +4117,7 @@ class Plugin:
                 _assign_profile(channel, eas_profile)
 
                 fake_alerts = [{
-                    "event":    "TEST — Tickarr EAS Test Alert",
+                    "event":    "TEST — Ticker EAS Test Alert",
                     "area":     "Test Zone — this is only a test",
                     "severity": "Moderate",
                     "headline": f"TEST: EAS overlay firing for {duration} seconds. No action required.",
@@ -4129,7 +4129,7 @@ class Plugin:
                 fired.append((cid, channel.name, eas_profile.id, str(channel.uuid)))
 
             except Exception as e:
-                logger.error(f"tickarr: test_eas failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: test_eas failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
 
         if fired:
@@ -4154,9 +4154,9 @@ class Plugin:
                         m[cid] = mapping
                     _save_mappings(m)
                     _eas_clear(int(entries[0][0]))
-                    logger.info(f"tickarr: EAS test auto-restored after {delay}s")
+                    logger.info(f"ticker: EAS test auto-restored after {delay}s")
                 except Exception as e:
-                    logger.error(f"tickarr: EAS test auto-restore failed: {e}", exc_info=True)
+                    logger.error(f"ticker: EAS test auto-restore failed: {e}", exc_info=True)
 
             t = _threading.Thread(target=_auto_restore, args=(fired, duration), daemon=True)
             t.start()
@@ -4260,7 +4260,7 @@ class Plugin:
                 fired.append((cid, channel.name, mapping["original_profile_id"], mapping["ticker_profile_id"]))
 
             except Exception as e:
-                logger.error(f"tickarr: test_sports failed for {channel.name}: {e}", exc_info=True)
+                logger.error(f"ticker: test_sports failed for {channel.name}: {e}", exc_info=True)
                 failed.append(f"{channel.name} (error: {e})")
 
         if fired:
@@ -4283,9 +4283,9 @@ class Plugin:
                         mapping["sports_active"] = False
                         m[cid] = mapping
                     _save_mappings(m)
-                    logger.info(f"tickarr: sports test auto-restored after {delay}s")
+                    logger.info(f"ticker: sports test auto-restored after {delay}s")
                 except Exception as e:
-                    logger.error(f"tickarr: sports test auto-restore failed: {e}", exc_info=True)
+                    logger.error(f"ticker: sports test auto-restore failed: {e}", exc_info=True)
 
             t = _threading.Thread(target=_auto_restore, args=(fired, duration), daemon=True)
             t.start()
@@ -4331,7 +4331,7 @@ class Plugin:
                     _eas_active.pop(cid, None)
                 migrated.append(name)
             except Exception as e:
-                logger.error(f"tickarr: migrate EAS failed for {name}: {e}", exc_info=True)
+                logger.error(f"ticker: migrate EAS failed for {name}: {e}", exc_info=True)
                 failed.append(f"{name} ({e})")
 
         _save_mappings(mappings)
@@ -4368,7 +4368,7 @@ class Plugin:
         if np_channels:
             with_deeplink = [(cid, m) for cid, m in np_channels if m.get("xm_deeplink")]
             no_deeplink   = [(cid, m) for cid, m in np_channels if not m.get("xm_deeplink")]
-            lines.append(f"-- Now Playing ({len(np_channels)}, {len(with_deeplink)} matched to tickarr.com) --")
+            lines.append(f"-- Now Playing ({len(np_channels)}, {len(with_deeplink)} matched to ticker.com) --")
             for cid, mapping in with_deeplink[:25]:
                 name = mapping.get("channel_name", f"Channel {cid}")
                 deeplink = mapping.get("xm_deeplink")
@@ -4384,7 +4384,7 @@ class Plugin:
                 else:
                     lines.append(f"  [{deeplink}] {name}: (no data yet)")
             if no_deeplink:
-                lines.append(f"  No tickarr.com match ({len(no_deeplink)} - run Refresh Channel Data):")
+                lines.append(f"  No ticker.com match ({len(no_deeplink)} - run Refresh Channel Data):")
                 for cid, m in no_deeplink[:5]:
                     lines.append(f"    - {m.get('channel_name', cid)}")
             lines.append("")
@@ -4423,7 +4423,7 @@ class Plugin:
             channels, aliases = _get_channel_data(force=True)
             stations = _get_stations(force=True)
             if not stations:
-                return {"success": False, "message": "tickarr.com channel list came back empty - try again in a moment."}
+                return {"success": False, "message": "ticker.com channel list came back empty - try again in a moment."}
             mappings = _get_mappings()
             deeplinks_fixed = 0
             descs_fixed = 0
@@ -4450,7 +4450,7 @@ class Plugin:
                         deeplink = station.get("id")
                         mappings[cid]["xm_deeplink"] = deeplink
                         deeplinks_fixed += 1
-                        logger.info(f"tickarr: resolved deeplink for {channel_name} → {deeplink}")
+                        logger.info(f"ticker: resolved deeplink for {channel_name} → {deeplink}")
                     else:
                         unmatched.append(channel_name)
 
@@ -4460,13 +4460,13 @@ class Plugin:
             mapped_deeplinks = {m.get("xm_deeplink") for m in mappings.values() if m.get("xm_deeplink")}
             orphan_stations = [s["name"] for s in stations if s.get("id") not in mapped_deeplinks]
 
-            msg = (f"Fetched: {len(channels)} channel descriptions, {len(stations)} tickarr.com channels.\n"
+            msg = (f"Fetched: {len(channels)} channel descriptions, {len(stations)} ticker.com channels.\n"
                    f"Fixed: {deeplinks_fixed} deeplink(s), {descs_fixed} description(s).\n"
-                   f"Matched: {len(mapped_deeplinks)} of {len(stations)} tickarr.com channels.")
+                   f"Matched: {len(mapped_deeplinks)} of {len(stations)} ticker.com channels.")
             if orphan_stations:
-                msg += f"\n\nTickarr.com channels with no Dispatcharr match ({len(orphan_stations)}):\n" + ", ".join(orphan_stations[:20])
+                msg += f"\n\nTicker.com channels with no Dispatcharr match ({len(orphan_stations)}):\n" + ", ".join(orphan_stations[:20])
             if unmatched:
-                msg += f"\n\nNo tickarr.com match for {len(unmatched)} Dispatcharr channel(s) (first 20):\n" + ", ".join(unmatched[:20])
+                msg += f"\n\nNo ticker.com match for {len(unmatched)} Dispatcharr channel(s) (first 20):\n" + ", ".join(unmatched[:20])
             return {"success": True, "message": msg}
         except Exception as e:
             return {"success": False, "message": f"Refresh failed: {e}"}
@@ -4510,7 +4510,7 @@ class Plugin:
             channel.save(update_fields=["tvg_id"])
             return True
         except Exception as e:
-            logger.warning(f"tickarr: fill failed for {channel.name}: {e}")
+            logger.warning(f"ticker: fill failed for {channel.name}: {e}")
             return False
 
     def _do_logos(self, channel, xm_entry):
@@ -4671,7 +4671,7 @@ class Plugin:
                 ch.save(update_fields=update_fields)
                 updated += 1
             except Exception as e:
-                logger.warning(f"tickarr: sort failed for {ch.name}: {e}")
+                logger.warning(f"ticker: sort failed for {ch.name}: {e}")
                 failed.append(ch.name)
 
         start_note = " (auto-detected)" if auto_detected else ""
@@ -4726,7 +4726,7 @@ class Plugin:
         return {"success": not failed, "message": "\n\n".join(parts) or "Nothing to do."}
 
     def _fill_sxm_epg(self, params):
-        """Download Tickarr's own SiriusXM XMLTV and import EPG data into Dispatcharr."""
+        """Download Ticker's own SiriusXM XMLTV and import EPG data into Dispatcharr."""
         import xml.etree.ElementTree as ET
         import io
         import gc
@@ -4739,12 +4739,12 @@ class Plugin:
         except ValueError as e:
             return {"success": False, "message": str(e)}
 
-        # Download Tickarr's own hosted XMLTV
+        # Download Ticker's own hosted XMLTV
         xml_bytes = None
         last_err = None
         for _attempt in range(2):
             try:
-                req = urllib.request.Request(TICKARR_SXM_EPG_URL, headers={"User-Agent": "Tickarr/0.1"})
+                req = urllib.request.Request(TICKER_SXM_EPG_URL, headers={"User-Agent": "Ticker/0.1"})
                 with urllib.request.urlopen(req, timeout=60) as r:
                     xml_bytes = r.read()
                 break
@@ -4757,8 +4757,8 @@ class Plugin:
         xml_bytes = re.sub(rb'[\x00-\x08\x0b\x0c\x0e-\x1f]', b'', xml_bytes)
 
         sxm_src, _ = EPGSource.objects.get_or_create(
-            name=TICKARR_SXM_SOURCE,
-            defaults={"source_type": "xmltv", "url": TICKARR_SXM_EPG_URL, "refresh_interval": 24},
+            name=TICKER_SXM_SOURCE,
+            defaults={"source_type": "xmltv", "url": TICKER_SXM_EPG_URL, "refresh_interval": 24},
         )
         # Backfill: sources created before this field was set default to 0 (disabled),
         # which leaves Dispatcharr's periodic refresh task permanently off.
@@ -4872,7 +4872,7 @@ class Plugin:
         gc.collect()
 
         sxm_src.status = "success"
-        sxm_src.last_message = f"Tickarr: {n_ch:,} channels, {total_programs:,} programs"
+        sxm_src.last_message = f"Ticker: {n_ch:,} channels, {total_programs:,} programs"
         sxm_src.save(update_fields=["status", "last_message"])
 
         lines = [
@@ -4911,12 +4911,12 @@ class Plugin:
         orphans = [p for p in named if p.id not in active_ticker_ids]
 
         # Secondary sweep: catch FIFO-era leftovers whose name didn't use the current
-        # prefix (different dash, older naming) but whose parameters contain tickarr_data
+        # prefix (different dash, older naming) but whose parameters contain ticker_data
         seen_ids = {p.id for p in named}
         for p in StreamProfile.objects.all():
             if p.id in seen_ids or p.id in active_ticker_ids:
                 continue
-            if "tickarr_data" in (p.parameters or ""):
+            if "ticker_data" in (p.parameters or ""):
                 orphans.append(p)
 
         if not orphans:
@@ -4927,7 +4927,7 @@ class Plugin:
                 profile.delete()
                 deleted.append(profile.name)
             except Exception as e:
-                logger.warning(f"tickarr: could not delete profile {profile.name}: {e}")
+                logger.warning(f"ticker: could not delete profile {profile.name}: {e}")
         return {"success": True, "message": f"Deleted {len(deleted)} orphaned profile(s):\n" + "\n".join(f"  - {n}" for n in deleted)}
 
     def _migrate_shared_profiles(self, params):
@@ -5005,7 +5005,7 @@ class Plugin:
                 mappings[cid] = mapping
                 migrated.append(name)
             except Exception as e:
-                logger.error(f"tickarr: migrate_shared_profiles failed for {name}: {e}", exc_info=True)
+                logger.error(f"ticker: migrate_shared_profiles failed for {name}: {e}", exc_info=True)
                 failed.append(f"{name} (error: {e})")
 
         # Only delete a legacy profile once nothing in the (post-migration) mappings still
@@ -5038,14 +5038,14 @@ class Plugin:
             return {"success": True, "message": (
                 "Supported — this Dispatcharr install's StreamProfile.build_command() "
                 "accepts channel_id, so the {channelId} stream profile substitution token "
-                "(Dispatcharr issue #1252, shipped in v0.29.0) is available here. Tickarr will "
+                "(Dispatcharr issue #1252, shipped in v0.29.0) is available here. Ticker will "
                 "use one shared stream profile per overlay type (per distinct combination of "
                 "base profile + settings) instead of cloning one per channel."
             )}
         return {"success": False, "message": (
             "Not supported — this Dispatcharr install's StreamProfile.build_command() does "
             "not accept channel_id, so the {channelId} token (Dispatcharr issue #1252) is "
-            "unavailable. Upgrade to Dispatcharr v0.29.0 or later to use it. Tickarr will "
+            "unavailable. Upgrade to Dispatcharr v0.29.0 or later to use it. Ticker will "
             "keep using one cloned stream profile per channel on this install."
         )}
 
@@ -5151,10 +5151,10 @@ class Plugin:
             target=_poll_loop,
             args=(_stop_event,),
             daemon=True,
-            name="tickarr-poller",
+            name="ticker-poller",
         )
         _scheduler_thread.start()
-        logger.info("tickarr: poller thread reloaded via action")
+        logger.info("ticker: poller thread reloaded via action")
         return {"success": True, "message": "Poller thread restarted. Live data will resume within 15 seconds."}
 
     def _restart_dispatcharr(self, params):
@@ -5168,14 +5168,14 @@ class Plugin:
                     capture_output=True, text=True
                 )
                 pid = int(result.stdout.strip())
-                logger.info(f"tickarr: sending SIGHUP to gunicorn master PID {pid}")
+                logger.info(f"ticker: sending SIGHUP to gunicorn master PID {pid}")
                 os.kill(pid, _signal.SIGHUP)
             except Exception as e:
-                logger.warning(f"tickarr: gunicorn SIGHUP failed ({e}), falling back to PID 1")
+                logger.warning(f"ticker: gunicorn SIGHUP failed ({e}), falling back to PID 1")
                 try:
                     os.kill(1, _signal.SIGHUP)
                 except Exception as e2:
-                    logger.error(f"tickarr: restart failed: {e2}")
+                    logger.error(f"ticker: restart failed: {e2}")
 
         threading.Thread(target=_do_restart, daemon=True).start()
         return {"success": True, "message": "Restart signal sent. Dispatcharr will reload in ~2 seconds.\n\nRefresh this page in about 15 seconds."}

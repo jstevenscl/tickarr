@@ -44,7 +44,7 @@ ROOT = Path(__file__).parent.parent
 CHANNELS_JSON = ROOT / "lib" / "channels.json"
 OUT_JSON = ROOT / "lib" / "show_schedules.json"
 
-UA = "Tickarr-ShowScheduleEPG/1.0 (github.com/jstevenscl/tickarr)"
+UA = "Ticker-ShowScheduleEPG/1.0 (github.com/jstevenscl/ticker)"
 CHANNELS_LIST_URL = "https://www.siriusxm.com/channels"
 
 FETCH_DELAY_SECONDS = 1.5  # politeness delay between per-channel fetches
