@@ -1,30 +1,6 @@
 {
-  "generated_at": "2026-09-05T11:43:02Z",
+  "generated_at": "2026-09-05T14:22:31Z",
   "events": [
-    {
-      "slug": "f1",
-      "title": "F-1 Practice 3",
-      "description": "Formula 1 Racing and Analysis · F-1 Practice 3 · Autodromo Nazionale Monza",
-      "start_utc": "2026-09-05T10:25:00Z",
-      "end_utc": "2026-09-05T12:25:00Z",
-      "channels": [
-        "F1 on SiriusXM",
-        "Formula 1 Racing and Analysis"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Newcastle @ Bournemouth",
-      "description": "SOCCER · Newcastle @ Bournemouth",
-      "start_utc": "2026-09-05T11:30:00Z",
-      "end_utc": "2026-09-05T13:30:00Z",
-      "channels": [
-        "Bournemouth",
-        "Newcastle",
-        "MLB Play-by-Play 188",
-        "SiriusXM FC"
-      ]
-    },
     {
       "slug": "f1",
       "title": "F-1 Qualifying",
@@ -270,6 +246,18 @@
     },
     {
       "slug": "soccer",
+      "title": "Philadelphia Union @ CF Montreal",
+      "description": "SOCCER · Philadelphia Union @ CF Montreal",
+      "start_utc": "2026-09-05T23:30:00Z",
+      "end_utc": "2026-09-06T01:30:00Z",
+      "channels": [
+        "CF Montreal",
+        "Philadelphia Union",
+        "SiriusXM FC"
+      ]
+    },
+    {
+      "slug": "soccer",
       "title": "Inter Miami CF @ Atlanta United",
       "description": "SOCCER · Inter Miami CF @ Atlanta United",
       "start_utc": "2026-09-05T23:30:00Z",
@@ -278,18 +266,6 @@
         "Atlanta United",
         "Inter Miami CF",
         "Soccer en Español",
-        "SiriusXM FC"
-      ]
-    },
-    {
-      "slug": "soccer",
-      "title": "Philadelphia Union @ CF Montreal",
-      "description": "SOCCER · Philadelphia Union @ CF Montreal",
-      "start_utc": "2026-09-05T23:30:00Z",
-      "end_utc": "2026-09-06T01:30:00Z",
-      "channels": [
-        "CF Montreal",
-        "Philadelphia Union",
         "SiriusXM FC"
       ]
     },
