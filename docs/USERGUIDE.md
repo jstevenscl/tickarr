@@ -152,6 +152,22 @@ If you enabled Ticker on a Dispatcharr version older than v0.29.0 and later upgr
 
 ---
 
+#### Upgrading from the old Tickarr plugin
+
+Ticker was renamed from **Tickarr** in v0.5.00. It's the same plugin — a full rebrand, not a fork — but Dispatcharr sees it as a brand-new plugin: different plugin key, different data directory. Updating an existing Tickarr install in place to a Ticker release does **not** carry your channel configuration forward automatically.
+
+If you're upgrading from Tickarr:
+
+1. Install Ticker **alongside** your existing Tickarr install — do not uninstall Tickarr yet.
+2. Enable Ticker, then run **Actions → Migrate from Tickarr**.
+3. Ticker reads Tickarr's own configuration directly, and for every channel with an active overlay, clones a fresh Ticker-managed stream profile (so playback keeps working once Tickarr's own files are gone) and reassigns the channel to it. Channels with no overlay currently active (e.g. idle On-Demand channels) are imported as-is — Ticker will clone their profile the normal way the next time they're needed.
+4. If every channel migrates without error, the action also removes Tickarr's leftover data directory and any of its stream profiles that are no longer in use — so uninstalling the Tickarr plugin is the only manual step left.
+5. If anything fails partway through (e.g. a channel's original stream profile was deleted), nothing is torn down — already-migrated channels are safe and won't be touched again, and the action can be re-run after resolving the issue.
+
+This is a one-time bridge — safe to run again, but it only has anything to do while Tickarr is still installed. EAS/Weather Canada alert state does not carry over (it's live, in-progress alert data, not configuration) — it rebuilds automatically the next time an alert fires after migrating; which channels have EAS/Weather Canada armed, and their settings, migrate normally along with everything else.
+
+---
+
 ### Step 3 — Enable the overlay
 
 Run **Actions → Enable Now Playing**.
@@ -705,6 +721,7 @@ Each section has its own button color so you can identify which overlay type an 
 | Disable All Tickers | Disables every active Ticker overlay across all channels. |
 | Clean Orphaned Profiles | Removes cloned stream profiles left behind when channels were deleted while a Ticker overlay was active. Also reaps shared profiles once no channel references them anymore. |
 | Migrate to Shared Profiles | On Dispatcharr v0.29.0+, moves already-enabled channels off their old per-channel cloned profile onto a shared one. Safe to run repeatedly. See [Upgrading an existing install to shared profiles](#upgrading-an-existing-install-to-shared-profiles). |
+| Migrate from Tickarr | One-time upgrade helper for anyone coming from the pre-v0.5.00 "Tickarr" plugin. Requires Tickarr to still be installed alongside Ticker. See [Upgrading from the old Tickarr plugin](#upgrading-from-the-old-tickarr-plugin). |
 | Check Stream Profile Capabilities | Reports whether this Dispatcharr install supports the `{channelId}` token (v0.29.0+) and therefore which profile mode Ticker is using — shared or per-channel. |
 | Redis Diagnostics | Reports whether Redis is reachable and how many channels have active viewers detected. |
 | Reload Poller | Restarts background polling threads without restarting Dispatcharr. Use if overlays stop updating but streams are still live. |

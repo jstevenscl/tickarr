@@ -1,6 +1,6 @@
 # Ticker
 
-![Version](https://img.shields.io/badge/version-0.4.0-blue)
+![Version](https://img.shields.io/badge/version-0.5.01-blue)
 
 A [Dispatcharr](https://github.com/Dispatcharr/Dispatcharr) plugin that injects dynamic text overlays into IPTV channels via FFmpeg. Ticker clones the channel's existing stream profile, injects overlay parameters, and restores the original profile on disable — the source profile is never modified.
 
@@ -104,6 +104,10 @@ Nothing happens until you give it something to display. You enable it on a chann
 Your channel runs 100% normally at all times. Ticker sits quietly in the background watching the NWS API for your configured zone codes — no overlay, no extra encoding, nothing. The moment an actual weather alert goes active for your zone, Ticker automatically switches the channel to the EAS overlay: scrolling alert bar, severity label, and attention tone if configured. The second that alert clears on the NWS side, your channel goes silently back to normal. Completely automatic, start to finish.
 
 ---
+
+## Upgrading from Tickarr
+
+Ticker was renamed from **Tickarr** in v0.5.00 — a full rebrand, not a fork, but Dispatcharr treats it as a brand-new plugin (different plugin key and data directory), so an in-place update does not carry your configuration over automatically. If you still have the old Tickarr plugin installed alongside Ticker, run **Actions → Migrate from Tickarr** once: it imports Tickarr's channel configuration, moves active overlays onto new Ticker-managed stream profiles, and — if nothing fails — cleans up Tickarr's leftover data and profiles so uninstalling the Tickarr plugin is the only step left. See [Upgrading from the old Tickarr plugin](docs/USERGUIDE.md#upgrading-from-the-old-tickarr-plugin) in the User Guide for details.
 
 ## Requirements
 

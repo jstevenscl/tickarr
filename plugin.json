@@ -1,6 +1,6 @@
 {
   "name": "Ticker",
-  "version": "0.5.00",
+  "version": "0.5.01",
   "logo": "logo.png",
   "description": "Dynamic text overlays for IPTV channels — Satellite Radio Now Playing, Sports Ticker, Custom Text, EAS Weather Alerts",
   "author": "jstevenscl",
@@ -304,6 +304,17 @@
       "button_color": "violet",
       "confirm": {
         "message": "This will reassign already-enabled channels from their per-channel cloned stream profile to a shared one and delete the old clones. Active streams will briefly restart to pick up the new profile. Continue?"
+      }
+    },
+    {
+      "id": "migrate_from_tickarr",
+      "label": "Migrate from Tickarr",
+      "description": "One-time upgrade helper for anyone coming from the pre-v0.5.00 \"Tickarr\" plugin. Requires the old Tickarr plugin to still be installed alongside this one. Imports its channel mappings, re-clones active overlays under Ticker's own paths, and — if everything migrates cleanly — removes Tickarr's leftover data and stream profiles so uninstalling the Tickarr plugin is the only step left.",
+      "button_label": "Migrate",
+      "button_variant": "outline",
+      "button_color": "violet",
+      "confirm": {
+        "message": "This will import all channel configuration from the Tickarr plugin (if still installed), reassign active overlays to new Ticker-managed stream profiles, and — if nothing fails — delete Tickarr's leftover data/profiles. Continue?"
       }
     },
     {

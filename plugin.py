@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import subprocess
 import threading
 import time
@@ -29,6 +30,14 @@ CHANNEL_CACHE_FILE = os.path.join(_DATA_DIR, "channel_cache.json")
 # ---------------------------------------------------------------------------
 
 PROFILE_PREFIX = "Ticker — "   # em dash
+
+# Bridge-migration support for users upgrading from the pre-v0.5.00 "Tickarr" branding
+# (full rename, not a fork — see CURRENT.md). Every Tickarr-era release used this same
+# profile-name prefix and sibling data-dir name regardless of its own version number, so
+# these are safe to hardcode as fixed legacy constants rather than something derived from
+# the currently-installed folder name.
+LEGACY_PROFILE_PREFIX = "Tickarr — "   # em dash
+LEGACY_DATA_DIR_NAME  = "tickarr_data"
 
 DRAWTEXT_FILTER_TEMPLATE = (
     "drawtext="
@@ -1511,6 +1520,21 @@ def _get_mappings():
         # writer) — do NOT touch the file; it may well be fine on the next read.
         logger.error(f"ticker: failed to read mappings: {e}")
     return {}
+
+
+def _find_legacy_mappings():
+    """Locate the old Tickarr plugin's own mappings.json, if that plugin is still installed
+    alongside this one. Returns (path, mappings_dict) or (None, None) if not found/unreadable.
+    """
+    path = os.path.join(_PLUGINS_DIR, LEGACY_DATA_DIR_NAME, "mappings.json")
+    if not os.path.isfile(path):
+        return None, None
+    try:
+        with open(path, encoding="utf-8") as f:
+            return path, json.load(f)
+    except (json.JSONDecodeError, UnicodeDecodeError, OSError) as e:
+        logger.error(f"ticker: found legacy Tickarr mappings but could not read them ({path}): {e}")
+        return path, None
 
 
 def _save_mappings(mappings):
@@ -3092,6 +3116,7 @@ class Plugin:
             "fill_sort_logos":      self._fill_sort_logos,
             "clean_orphans":        self._clean_orphans,
             "migrate_shared_profiles": self._migrate_shared_profiles,
+            "migrate_from_tickarr":  self._migrate_from_tickarr,
             "check_channel_id_support": self._check_channel_id_support,
             "redis_diag":           self._redis_diag,
             "reload_poller":        self._reload_poller,
@@ -5031,6 +5056,148 @@ class Plugin:
         if failed:   parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
         return {"success": not failed, "message": "\n\n".join(parts) or
                 "Nothing to migrate — every channel is already on a shared profile (or has none assigned right now)."}
+
+    def _migrate_from_tickarr(self, params):
+        """One-time bridge migration for users upgrading from the pre-v0.5.00 "Tickarr"
+        branding (full rename, not a fork — old and new plugin can be installed side by
+        side, see CURRENT.md). Reads the legacy plugin's own mappings.json directly off
+        disk, re-clones each active overlay under this plugin's own data dir/paths (the
+        old clones point ffmpeg at tickarr_data/tickers/..., which nothing will be writing
+        to anymore once Tickarr is removed), and imports every mapping — including ones
+        with no currently-active clone (idle on-demand channels) — as-is.
+        On a clean run (no failures) this also tears down the legacy install's own data:
+        its mappings/caches directory and any of its cloned stream profiles that are no
+        longer actually in use. That leaves uninstalling the Tickarr plugin itself (a
+        Dispatcharr-side action this plugin has no access to) as the only manual step.
+        If anything fails, nothing is torn down — safe to fix the issue and re-run.
+        """
+        from apps.channels.models import Channel
+        from core.models import StreamProfile
+
+        legacy_path, legacy_mappings = _find_legacy_mappings()
+        if not legacy_path:
+            return {"success": False, "message": (
+                "No legacy Tickarr installation found (looked for "
+                f"{LEGACY_DATA_DIR_NAME}/mappings.json next to this plugin). "
+                "Nothing to migrate."
+            )}
+        if legacy_mappings is None:
+            return {"success": False, "message": f"Found a legacy Tickarr install but could not read its mappings ({legacy_path}). See the log for details."}
+        if not legacy_mappings:
+            return {"success": False, "message": "Found a legacy Tickarr install, but it has no configured channels. Nothing to migrate."}
+
+        mappings = _get_mappings()
+        migrated, skipped, failed = [], [], []
+        legacy_pids_touched = set()
+
+        for cid, old in legacy_mappings.items():
+            name = old.get("channel_name", f"channel {cid}")
+            if cid in mappings:
+                skipped.append(f"{name} (already configured under Ticker — skipped)")
+                continue
+            try:
+                channel = Channel.objects.filter(id=int(cid)).first()
+                if not channel:
+                    skipped.append(f"{name} (channel no longer exists)")
+                    continue
+
+                ticker_type = old.get("type", "nowplaying")
+                old_pid = old.get("ticker_profile_id")
+                new_pid = None
+
+                if old_pid:
+                    orig = StreamProfile.objects.filter(id=old.get("original_profile_id")).first()
+                    if not orig:
+                        skipped.append(f"{name} (original base profile missing — active overlay could not be migrated)")
+                        continue
+
+                    if ticker_type == "nowplaying":
+                        new_profile, _ = _clone_and_inject(channel.id, orig, name)
+                    elif ticker_type == "custom":
+                        new_profile, _ = _clone_and_inject_custom(
+                            channel.id, orig, name,
+                            old.get("custom_style", "static"),
+                            old.get("custom_position", "bottom"),
+                            old.get("custom_schedule", "always"),
+                            old.get("custom_duration", 10),
+                            old.get("custom_interval", 5),
+                        )
+                    elif ticker_type == "sports":
+                        new_profile, _ = _clone_and_inject_sports(
+                            channel.id, orig, name,
+                            old.get("sports_position", "bottom"),
+                            int(old.get("sports_fontsize") or 36),
+                            old.get("sports_labelcolor", "#ffd700"),
+                            old.get("sports_abbrcolor", "#00d4ff"),
+                            old.get("sports_color_mode", "single"),
+                            old.get("sports_transcode_mode_video", "1080p30"),
+                            old.get("sports_ticker_style", "scrolling"),
+                        )
+                    else:
+                        new_profile = None  # EAS-only entries never have ticker_profile_id set
+
+                    if new_profile:
+                        _assign_profile(channel, new_profile)
+                        _restart_channel_stream_async(channel, "Migrate from Tickarr")
+                        new_pid = new_profile.id
+                        legacy_pids_touched.add(old_pid)
+
+                new_mapping = dict(old)
+                new_mapping["ticker_profile_id"] = new_pid
+                mappings[cid] = new_mapping
+                migrated.append(name)
+            except Exception as e:
+                logger.error(f"ticker: migrate_from_tickarr failed for {name}: {e}", exc_info=True)
+                failed.append(f"{name} (error: {e})")
+
+        if migrated:
+            _save_mappings(mappings)
+
+        parts = []
+        if migrated: parts.append(f"Migrated: {len(migrated)} channel(s)\n" + "\n".join(f"  - {n}" for n in migrated))
+        if skipped:  parts.append("Skipped:\n" + "\n".join(f"  - {s}" for s in skipped))
+        if failed:   parts.append("Failed:\n" + "\n".join(f"  - {f}" for f in failed))
+
+        if failed:
+            parts.append(
+                "Not tearing down the old Tickarr install because of the failures above — "
+                "fix the issue and re-run this action. Already-migrated channels above are "
+                "safe and won't be touched again."
+            )
+            return {"success": False, "message": "\n\n".join(parts)}
+
+        # Clean run — tear down everything Tickarr left behind. A profile is only ever
+        # deleted here if nothing (the mappings we just saved, or a live Channel FK) still
+        # actually points at it — same safety check as Clean Orphaned Profiles.
+        active_ids = set()
+        for m in mappings.values():
+            for key in ("ticker_profile_id", "eas_profile_id"):
+                if m.get(key):
+                    active_ids.add(m[key])
+
+        torn_down = []
+        for profile in StreamProfile.objects.filter(name__startswith=LEGACY_PROFILE_PREFIX):
+            if profile.id in active_ids:
+                continue
+            if Channel.objects.filter(stream_profile_id=profile.id).exists():
+                continue
+            try:
+                profile.delete()
+                torn_down.append(profile.name)
+            except Exception as e:
+                logger.warning(f"ticker: could not delete legacy profile {profile.name}: {e}")
+
+        try:
+            shutil.rmtree(os.path.join(_PLUGINS_DIR, LEGACY_DATA_DIR_NAME))
+        except OSError as e:
+            logger.warning(f"ticker: could not remove legacy data dir {LEGACY_DATA_DIR_NAME}: {e}")
+            parts.append(f"Note: could not remove the old {LEGACY_DATA_DIR_NAME} directory automatically ({e}) — safe to delete by hand.")
+
+        if torn_down:
+            parts.append(f"Removed {len(torn_down)} leftover Tickarr stream profile(s).")
+        parts.append("Migration complete. You can now uninstall the Tickarr plugin — nothing else references it.")
+
+        return {"success": True, "message": "\n\n".join(parts)}
 
     def _check_channel_id_support(self, params):
         supported = _supports_channel_id_token()
